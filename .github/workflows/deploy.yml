@@ -1,0 +1,382 @@
+name: Deploy D&D Character Manager
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+  pull_request:
+    branches:
+      - main
+      - staging
+
+# Environment variables
+env:
+  NODE_VERSION: '20'
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+jobs:
+  # Security and code quality checks
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            api/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install API dependencies
+        run: |
+          cd api
+          npm ci
+
+      - name: Install Frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run security audit
+        run: |
+          cd api
+          npm audit --audit-level=moderate
+          cd ../frontend
+          npm audit --audit-level=moderate
+
+      - name: Lint API code
+        run: |
+          cd api
+          npm run lint || echo "Linting not configured"
+
+      - name: Lint Frontend code
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Type check
+        run: |
+          cd api
+          npm run build
+          cd ../frontend
+          npm run type-check
+
+  # Test suite
+  test:
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install API dependencies
+        run: |
+          cd api
+          npm ci
+
+      - name: Install Frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run API tests
+        run: |
+          cd api
+          npm test
+
+      - name: Run Frontend tests
+        run: |
+          cd frontend
+          npm test
+
+      - name: Generate test coverage
+        run: |
+          cd api
+          npm run test:coverage || echo "Coverage not configured"
+          cd ../frontend
+          npm run test:coverage || echo "Coverage not configured"
+
+  # Database migrations and validation
+  database:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Authenticate Wrangler
+        run: |
+          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+
+      - name: Validate database migrations
+        run: |
+          cd api
+          # Validate migration syntax
+          for file in ../database/migrations/*.sql; do
+            echo "Validating $file"
+            # Basic SQL syntax check (would need proper SQL validator in production)
+            grep -q "CREATE TABLE\|ALTER TABLE\|CREATE INDEX" "$file" || echo "Warning: $file may not be a valid migration"
+          done
+
+      - name: Run database migrations (staging)
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          cd api
+          npm run db:migrate:staging
+
+      - name: Run database migrations (production)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd api
+          npm run db:migrate:production
+
+  # Build and deploy API (Cloudflare Workers)
+  deploy-api:
+    runs-on: ubuntu-latest
+    needs: [test, database]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd api
+          npm ci
+
+      - name: Build API
+        run: |
+          cd api
+          npm run build
+
+      - name: Deploy to development
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          cd api
+          npx wrangler deploy --env development
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          cd api
+          npx wrangler deploy --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd api
+          npx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Health check API
+        run: |
+          # Wait for deployment to propagate
+          sleep 30
+          
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            HEALTH_URL="https://dnd-character-api-prod.your-account.workers.dev/health"
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            HEALTH_URL="https://dnd-character-api-staging.your-account.workers.dev/health"
+          else
+            HEALTH_URL="https://dnd-character-api-dev.your-account.workers.dev/health"
+          fi
+          
+          # Check if API is responding
+          for i in {1..5}; do
+            if curl -f "$HEALTH_URL"; then
+              echo "API health check passed"
+              break
+            else
+              echo "Health check attempt $i failed, retrying..."
+              sleep 10
+            fi
+          done
+
+  # Build and deploy Frontend (Cloudflare Pages)
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: [test, deploy-api]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Set environment variables
+        run: |
+          cd frontend
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "VITE_API_URL=https://dnd-character-api-prod.your-account.workers.dev" >> .env.production
+            echo "VITE_ENVIRONMENT=production" >> .env.production
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            echo "VITE_API_URL=https://dnd-character-api-staging.your-account.workers.dev" >> .env.staging
+            echo "VITE_ENVIRONMENT=staging" >> .env.staging
+          else
+            echo "VITE_API_URL=https://dnd-character-api-dev.your-account.workers.dev" >> .env.development
+            echo "VITE_ENVIRONMENT=development" >> .env.development
+          fi
+
+      - name: Build Frontend (Development)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Build Frontend (Staging)
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          cd frontend
+          npm run build:staging
+
+      - name: Build Frontend (Production)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd frontend
+          npm run build:production
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: dnd-character-manager
+          directory: frontend/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+
+      - name: Health check Frontend
+        run: |
+          # Wait for deployment to propagate
+          sleep 60
+          
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            HEALTH_URL="https://dnd-character-manager.pages.dev"
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            HEALTH_URL="https://staging.dnd-character-manager.pages.dev"
+          else
+            HEALTH_URL="https://develop.dnd-character-manager.pages.dev"
+          fi
+          
+          # Check if frontend is responding
+          for i in {1..5}; do
+            if curl -f -s "$HEALTH_URL" | grep -q "D&D Character Manager"; then
+              echo "Frontend health check passed"
+              break
+            else
+              echo "Frontend health check attempt $i failed, retrying..."
+              sleep 10
+            fi
+          done
+
+  # Post-deployment tasks
+  post-deploy:
+    runs-on: ubuntu-latest
+    needs: [deploy-api, deploy-frontend]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Authenticate Wrangler
+        run: |
+          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+
+      - name: Warm up caches
+        run: |
+          # Make requests to warm up the Workers and caches
+          curl -f "https://dnd-character-api-prod.your-account.workers.dev/health"
+          curl -f "https://dnd-character-manager.pages.dev"
+
+      - name: Create deployment tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Create a tag for this deployment
+          TAG="deploy-$(date +%Y%m%d-%H%M%S)"
+          git tag -a "$TAG" -m "Deployment $TAG"
+          git push origin "$TAG"
+
+      - name: Notify deployment success
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "Frontend: https://dnd-character-manager.pages.dev"
+          echo "API: https://dnd-character-api-prod.your-account.workers.dev"
+
+  # Rollback job (manual trigger)
+  rollback:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Authenticate Wrangler
+        run: |
+          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+
+      - name: Rollback deployment
+        run: |
+          echo "Manual rollback would be implemented here"
+          # This would involve deploying a previous version or 
+          # rolling back database migrations if necessary

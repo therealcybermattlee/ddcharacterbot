@@ -1,0 +1,53 @@
+# Development Environment Configuration for D&D Character Manager
+# This file contains environment-specific settings for development
+
+[environment]
+name = "development"
+description = "Local development environment"
+
+[api]
+worker_name = "dnd-character-api-dev"
+domain = "localhost:8787"
+cors_origin = "http://localhost:3000"
+
+[frontend]
+pages_project = "dnd-character-manager-dev"
+domain = "localhost:3000"
+build_command = "npm run build"
+
+[database]
+name = "dnd-character-db-dev"
+# Database ID will be generated when created
+database_id = ""
+
+[kv_storage]
+cache_namespace = "dnd-cache-dev"
+sessions_namespace = "dnd-sessions-dev"
+# KV namespace IDs will be generated when created
+cache_id = ""
+sessions_id = ""
+
+[r2_storage]
+bucket_name = "dnd-character-assets-dev"
+public_domain = ""
+
+[security]
+jwt_secret = "dev-jwt-secret-change-in-production"
+rate_limit_requests = 500
+rate_limit_window = 60
+
+[features]
+debug_mode = true
+verbose_logging = true
+development_tools = true
+mock_external_services = true
+
+[monitoring]
+enable_analytics = false
+enable_error_tracking = false
+log_level = "debug"
+
+[performance]
+enable_caching = true
+cache_ttl_default = 300  # 5 minutes
+cache_ttl_long = 1800    # 30 minutes

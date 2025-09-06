@@ -1,0 +1,58 @@
+# Staging Environment Configuration for D&D Character Manager
+# This file contains environment-specific settings for staging
+
+[environment]
+name = "staging"
+description = "Pre-production staging environment"
+
+[api]
+worker_name = "dnd-character-api-staging"
+domain = "dnd-character-api-staging.your-account.workers.dev"
+cors_origin = "https://staging.dnd-character-manager.pages.dev"
+
+[frontend]
+pages_project = "dnd-character-manager-staging"
+domain = "staging.dnd-character-manager.pages.dev"
+build_command = "npm run build:staging"
+
+[database]
+name = "dnd-character-db-staging"
+# Database ID should be set during infrastructure setup
+database_id = ""
+
+[kv_storage]
+cache_namespace = "dnd-cache-staging"
+sessions_namespace = "dnd-sessions-staging"
+# KV namespace IDs should be set during infrastructure setup
+cache_id = ""
+sessions_id = ""
+
+[r2_storage]
+bucket_name = "dnd-character-assets-staging"
+public_domain = "https://pub-dnd-character-assets-staging.r2.dev"
+
+[security]
+# JWT secret should be set via environment variables or secrets
+jwt_secret = ""
+rate_limit_requests = 200
+rate_limit_window = 60
+
+[features]
+debug_mode = false
+verbose_logging = true
+development_tools = false
+mock_external_services = false
+
+[monitoring]
+enable_analytics = true
+enable_error_tracking = true
+log_level = "info"
+
+[performance]
+enable_caching = true
+cache_ttl_default = 900   # 15 minutes
+cache_ttl_long = 3600     # 1 hour
+
+[testing]
+enable_test_data = true
+reset_data_on_deploy = true

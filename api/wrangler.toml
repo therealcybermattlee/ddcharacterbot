@@ -1,0 +1,62 @@
+# Main configuration for D&D Character Manager API
+name = "dnd-character-manager-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Development environment
+[env.development]
+name = "dnd-character-manager-api-dev"
+d1_databases = [
+  { binding = "DB", database_name = "dnd-character-manager-dev", database_id = "875afef7-f88b-464f-9242-d804f8f3c47d" }
+]
+kv_namespaces = [
+  { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
+]
+# r2_buckets = [
+#   { binding = "ASSETS", bucket_name = "dnd-assets-dev" }
+# ]
+[env.development.vars]
+ENVIRONMENT = "development"
+CORS_ORIGIN = "http://localhost:3000"
+RATE_LIMIT_REQUESTS = "1000"
+RATE_LIMIT_WINDOW = "60"
+# Secrets must be set via: wrangler secret put JWT_SECRET --env development
+
+# Staging environment  
+[env.staging]
+name = "dnd-character-manager-api-staging"
+d1_databases = [
+  { binding = "DB", database_name = "dnd-character-manager-staging", database_id = "" }
+]
+kv_namespaces = [
+  { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
+]
+r2_buckets = [
+  { binding = "ASSETS", bucket_name = "dnd-assets-staging" }
+]
+[env.staging.vars]
+ENVIRONMENT = "staging"
+CORS_ORIGIN = "https://dnd-character-manager-staging.pages.dev"
+RATE_LIMIT_REQUESTS = "500"
+RATE_LIMIT_WINDOW = "60"
+# Secrets must be set via: wrangler secret put JWT_SECRET --env staging
+
+# Production environment
+[env.production] 
+name = "dnd-character-manager-api"
+d1_databases = [
+  { binding = "DB", database_name = "dnd-character-manager-prod", database_id = "" }
+]
+kv_namespaces = [
+  { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
+]
+r2_buckets = [
+  { binding = "ASSETS", bucket_name = "dnd-assets-prod" }
+]
+[env.production.vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "https://dnd-character-manager.pages.dev"
+RATE_LIMIT_REQUESTS = "100"
+RATE_LIMIT_WINDOW = "60"
+# Secrets must be set via: wrangler secret put JWT_SECRET --env production

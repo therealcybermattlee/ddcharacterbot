@@ -1,0 +1,24 @@
+# Cloudflare Pages Redirects Configuration
+# Single Page Application routing and API redirects
+
+# SPA Routing - Redirect all non-file requests to index.html
+# This ensures React Router works correctly on direct URL access
+/*    /index.html   200
+
+# API Proxy - Redirect API calls to the Workers API
+/api/*  https://dnd-character-api-prod.your-account.workers.dev/:splat  200  Country=US,GB,CA,AU
+/api/*  https://dnd-character-api-staging.your-account.workers.dev/:splat  200  Environment=staging
+/api/*  https://dnd-character-api-dev.your-account.workers.dev/:splat  200  Environment=development
+
+# Legacy redirects (if migrating from old URLs)
+/character/*  /characters/:splat  301
+/campaign/*   /campaigns/:splat  301
+
+# Permanent redirects for SEO
+/home         /              301
+/dashboard    /              301
+
+# Block access to sensitive files
+/.env*        /404.html      404
+/src/*        /404.html      404
+/config/*     /404.html      404

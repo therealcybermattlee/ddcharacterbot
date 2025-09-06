@@ -1,0 +1,80 @@
+# Production Environment Configuration for D&D Character Manager
+# This file contains environment-specific settings for production
+
+[environment]
+name = "production"
+description = "Production environment"
+
+[api]
+worker_name = "dnd-character-api-prod"
+domain = "dnd-character-api-prod.your-account.workers.dev"
+cors_origin = "https://dnd-character-manager.pages.dev"
+custom_domain = "api.dndcharacterbot.com"
+
+[frontend]
+pages_project = "dnd-character-manager"
+domain = "dnd-character-manager.pages.dev"
+custom_domain = "dndcharacterbot.com"
+build_command = "npm run build:production"
+
+[database]
+name = "dnd-character-db-prod"
+# Database ID should be set during infrastructure setup
+database_id = ""
+
+[kv_storage]
+cache_namespace = "dnd-cache-prod"
+sessions_namespace = "dnd-sessions-prod"
+# KV namespace IDs should be set during infrastructure setup
+cache_id = ""
+sessions_id = ""
+
+[r2_storage]
+bucket_name = "dnd-character-assets-prod"
+public_domain = "https://assets.dndcharacterbot.com"
+custom_domain = "assets.dndcharacterbot.com"
+
+[security]
+# JWT secret MUST be set via environment variables or secrets
+jwt_secret = ""
+rate_limit_requests = 100
+rate_limit_window = 60
+enable_csrf_protection = true
+enable_rate_limiting = true
+min_password_length = 8
+
+[features]
+debug_mode = false
+verbose_logging = false
+development_tools = false
+mock_external_services = false
+
+[monitoring]
+enable_analytics = true
+enable_error_tracking = true
+enable_performance_monitoring = true
+log_level = "warn"
+
+[performance]
+enable_caching = true
+enable_compression = true
+cache_ttl_default = 1800  # 30 minutes
+cache_ttl_long = 86400    # 24 hours
+enable_edge_caching = true
+
+[backup]
+enable_automated_backups = true
+backup_frequency = "daily"
+backup_retention_days = 30
+
+[scaling]
+auto_scaling = true
+max_concurrent_requests = 1000
+max_cpu_time_ms = 50
+max_memory_mb = 128
+
+[compliance]
+gdpr_compliant = true
+data_retention_days = 365
+enable_data_export = true
+enable_data_deletion = true
