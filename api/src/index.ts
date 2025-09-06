@@ -11,6 +11,9 @@ import {
 // Import routes
 import auth from './routes/auth';
 import characters from './routes/characters';
+import races from './routes/races';
+import classes from './routes/classes';
+import backgrounds from './routes/backgrounds';
 
 // Create Hono app with Cloudflare bindings
 const app = new Hono<{ Bindings: Env }>();
@@ -95,6 +98,9 @@ app.get('/health', async (c) => {
 // Mount API routes
 app.route('/api/auth', auth);
 app.route('/api/characters', characters);
+app.route('/api/races', races);
+app.route('/api/classes', classes);
+app.route('/api/backgrounds', backgrounds);
 
 // API status endpoint
 app.get('/api/v1/status', (c) => {
