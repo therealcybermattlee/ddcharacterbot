@@ -234,3 +234,149 @@ export interface CachedReferenceData<T> {
   timestamp: number;
   ttl: number;
 }
+
+// Character Sheet types for Sprint 4
+export interface CharacterSheet {
+  // Basic character info
+  character: Character;
+
+  // Calculated ability scores (base + racial bonuses)
+  abilityScores: AbilityScores;
+
+  // Ability modifiers
+  abilityModifiers: AbilityModifiers;
+
+  // Skills with calculated bonuses
+  skills: SkillBonuses;
+
+  // Saving throws with calculated bonuses
+  savingThrows: SavingThrowBonuses;
+
+  // Combat statistics
+  combat: CombatStats;
+
+  // Spell information (if applicable)
+  spellcasting?: SpellcastingInfo;
+
+  // Equipment and inventory
+  equipment: EquipmentInfo;
+
+  // Character background and features
+  features: CharacterFeatures;
+}
+
+export interface AbilityScores {
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+}
+
+export interface AbilityModifiers {
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+}
+
+export interface SkillBonuses {
+  acrobatics: SkillBonus;
+  animalHandling: SkillBonus;
+  arcana: SkillBonus;
+  athletics: SkillBonus;
+  deception: SkillBonus;
+  history: SkillBonus;
+  insight: SkillBonus;
+  intimidation: SkillBonus;
+  investigation: SkillBonus;
+  medicine: SkillBonus;
+  nature: SkillBonus;
+  perception: SkillBonus;
+  performance: SkillBonus;
+  persuasion: SkillBonus;
+  religion: SkillBonus;
+  sleightOfHand: SkillBonus;
+  stealth: SkillBonus;
+  survival: SkillBonus;
+}
+
+export interface SkillBonus {
+  bonus: number;
+  isProficient: boolean;
+  abilityModifier: number;
+  proficiencyBonus: number;
+}
+
+export interface SavingThrowBonuses {
+  strength: SavingThrowBonus;
+  dexterity: SavingThrowBonus;
+  constitution: SavingThrowBonus;
+  intelligence: SavingThrowBonus;
+  wisdom: SavingThrowBonus;
+  charisma: SavingThrowBonus;
+}
+
+export interface SavingThrowBonus {
+  bonus: number;
+  isProficient: boolean;
+  abilityModifier: number;
+  proficiencyBonus: number;
+}
+
+export interface CombatStats {
+  armorClass: number;
+  initiative: number;
+  speed: number;
+  hitPointsMax: number;
+  hitPointsCurrent: number;
+  hitDie: string;
+  proficiencyBonus: number;
+  passivePerception: number;
+}
+
+export interface SpellcastingInfo {
+  spellcastingAbility: string;
+  spellcastingModifier: number;
+  spellSaveDC: number;
+  spellAttackBonus: number;
+  cantripsKnown?: number;
+  spellsKnown?: number;
+  spellSlots?: SpellSlots;
+}
+
+export interface SpellSlots {
+  level1?: number;
+  level2?: number;
+  level3?: number;
+  level4?: number;
+  level5?: number;
+  level6?: number;
+  level7?: number;
+  level8?: number;
+  level9?: number;
+}
+
+export interface EquipmentInfo {
+  armor: string[];
+  weapons: string[];
+  tools: string[];
+  other: string[];
+  totalWeight?: number;
+  carryingCapacity?: number;
+}
+
+export interface CharacterFeatures {
+  raceFeatures: RaceTrait[];
+  classFeatures: ClassFeature[];
+  backgroundFeatures: BackgroundFeature[];
+}
+
+export interface BackgroundFeature {
+  name: string;
+  description: string;
+  type: string;
+}

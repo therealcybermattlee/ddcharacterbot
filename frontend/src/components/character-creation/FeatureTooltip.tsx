@@ -178,7 +178,7 @@ export function withTooltip<T extends React.ComponentType<any>>(
     
     return (
       <FeatureTooltip feature={feature} side={tooltipSide}>
-        <Component {...componentProps} ref={ref} />
+        <Component {...(componentProps as any)} ref={ref} />
       </FeatureTooltip>
     )
   })

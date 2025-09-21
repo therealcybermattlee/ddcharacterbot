@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './components/Home'
 import CharacterList from './components/characters/CharacterList'
-import CharacterDetail from './components/characters/CharacterDetail'
+import CharacterSheet from './components/characters/CharacterSheet'
 import AnalyticsDashboard from './components/analytics/AnalyticsDashboard'
 import DesignSystemShowcase from './components/DesignSystemShowcase'
 import { CharacterWizard } from './components/wizard/CharacterWizard'
@@ -14,7 +14,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="characters" element={<CharacterList />} />
-        <Route path="characters/:id" element={<CharacterDetail />} />
+        <Route path="characters/:id" element={<CharacterSheet />} />
         <Route 
           path="characters/new" 
           element={

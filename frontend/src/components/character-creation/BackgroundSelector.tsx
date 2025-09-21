@@ -29,6 +29,10 @@ export function BackgroundSelector({
 
   // Filter and search backgrounds
   const filteredBackgrounds = useMemo(() => {
+    if (!Array.isArray(backgrounds)) {
+      return []
+    }
+
     let filtered = backgrounds
 
     // Apply search
@@ -40,16 +44,19 @@ export function BackgroundSelector({
     switch (state.filterBy) {
       case 'skills':
         // Show backgrounds that complement the selected class
-        if (selectedClass) {
+        if (selectedClass && Array.isArray(selectedClass?.skill_proficiencies?.from)) {
           const classSkills = selectedClass.skill_proficiencies.from
-          filtered = filtered.filter(bg => 
+          filtered = filtered.filter(bg =>
+            Array.isArray(bg?.skill_proficiencies) &&
             bg.skill_proficiencies.some(skill => !classSkills.includes(skill))
           )
         }
         break
       case 'tools':
         // Show backgrounds with tool proficiencies
-        filtered = filtered.filter(bg => bg.tool_proficiencies && bg.tool_proficiencies.length > 0)
+        filtered = filtered.filter(bg =>
+          Array.isArray(bg?.tool_proficiencies) && bg.tool_proficiencies.length > 0
+        )
         break
       default:
         // All backgrounds
@@ -79,17 +86,21 @@ export function BackgroundSelector({
   }
 
   const checkSkillConflicts = (background: Background) => {
-    if (!selectedClass) return { conflicts: [], suggestions: [] }
-    
+    if (!selectedClass || !Array.isArray(selectedClass?.skill_proficiencies?.from)) {
+      return { conflicts: [], suggestions: [] }
+    }
+
     const classSkills = selectedClass.skill_proficiencies.from
-    const conflicts = background.skill_proficiencies.filter(skill => 
+    const backgroundSkills = Array.isArray(background?.skill_proficiencies) ? background.skill_proficiencies : []
+
+    const conflicts = backgroundSkills.filter(skill =>
       classSkills.includes(skill)
     )
-    
-    const suggestions = background.skill_proficiencies.filter(skill => 
+
+    const suggestions = backgroundSkills.filter(skill =>
       !classSkills.includes(skill)
     )
-    
+
     return { conflicts, suggestions }
   }
 
@@ -199,16 +210,16 @@ export function BackgroundSelector({
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" size="sm">
-                            {background.skill_proficiencies.length} Skills
+                            {Array.isArray(background?.skill_proficiencies) ? background.skill_proficiencies.length : 0} Skills
                           </Badge>
-                          {background.tool_proficiencies && background.tool_proficiencies.length > 0 && (
+                          {Array.isArray(background?.tool_proficiencies) && background.tool_proficiencies.length > 0 && (
                             <Badge variant="outline" size="sm">
                               {background.tool_proficiencies.length} Tool{background.tool_proficiencies.length !== 1 ? 's' : ''}
                             </Badge>
                           )}
-                          {background.languages && (
+                          {background?.languages && (
                             <Badge variant="outline" size="sm">
-                              {background.languages.count || background.languages.specific?.length} Language{(background.languages.count || background.languages.specific?.length || 0) !== 1 ? 's' : ''}
+                              {background.languages.count || background.languages.specific?.length || 0} Language{(background.languages.count || background.languages.specific?.length || 0) !== 1 ? 's' : ''}
                             </Badge>
                           )}
                         </div>
@@ -225,12 +236,12 @@ export function BackgroundSelector({
                         Skill Proficiencies
                       </h4>
                       <div className="flex flex-wrap gap-1">
-                        {background.skill_proficiencies.map((skill, index) => {
+                        {Array.isArray(background?.skill_proficiencies) && background.skill_proficiencies.map((skill, index) => {
                           const hasConflict = conflicts.includes(skill)
                           const isGoodChoice = suggestions.includes(skill)
-                          
+
                           return (
-                            <Badge 
+                            <Badge
                               key={index}
                               variant={hasConflict ? "destructive" : isGoodChoice ? "default" : "secondary"}
                               size="sm"
@@ -254,16 +265,16 @@ export function BackgroundSelector({
                     </div>
 
                     {/* Tool Proficiencies */}
-                    {background.tool_proficiencies && background.tool_proficiencies.length > 0 && (
+                    {Array.isArray(background?.tool_proficiencies) && background.tool_proficiencies.length > 0 && (
                       <div className="space-y-2 mt-3">
                         <h4 className="text-xs font-medium text-foreground">
                           Tool Proficiencies
                         </h4>
                         <div className="flex flex-wrap gap-1">
                           {background.tool_proficiencies.map((tool, index) => (
-                            <Badge 
+                            <Badge
                               key={index}
-                              variant="outline" 
+                              variant="outline"
                               size="sm"
                             >
                               {tool}
@@ -296,13 +307,13 @@ export function BackgroundSelector({
                     </div>
 
                     {/* Starting Equipment Preview */}
-                    {background.equipment.length > 0 && (
+                    {Array.isArray(background?.equipment) && background.equipment.length > 0 && (
                       <div className="space-y-2 mt-3">
                         <h4 className="text-xs font-medium text-foreground">
                           Starting Equipment
                         </h4>
                         <div className="text-xs text-muted-foreground">
-                          {background.equipment.length} item{background.equipment.length !== 1 ? 's' : ''} including {background.equipment.slice(0, 2).map(item => item.name).join(', ')}
+                          {background.equipment.length} item{background.equipment.length !== 1 ? 's' : ''} including {background.equipment.slice(0, 2).map(item => item?.name || 'Unknown').join(', ')}
                           {background.equipment.length > 2 && ` and ${background.equipment.length - 2} more`}
                         </div>
                       </div>

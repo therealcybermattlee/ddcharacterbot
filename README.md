@@ -60,6 +60,7 @@ A comprehensive web application for managing Dungeons & Dragons characters and c
 
 #### Backend API
 - **Production Deployment**: https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev
+- **Frontend Production**: https://dnd.cyberlees.dev
 - **Authentication**: JWT-based with secure session management
 - **Character Management**: Full CRUD operations for D&D 5e characters
 - **Security**: CORS, rate limiting, input validation, password hashing

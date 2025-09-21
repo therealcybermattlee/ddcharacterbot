@@ -229,7 +229,7 @@ export function CharacterPreview({
                   </Badge>
                 )}
                 {background && (
-                  <Badge variant="ghost" className="text-sm">
+                  <Badge variant="outline" className="text-sm">
                     {background.name}
                   </Badge>
                 )}
@@ -363,7 +363,7 @@ export function CharacterPreview({
                       <h4 className="font-medium text-foreground text-sm">
                         {feature.name}
                       </h4>
-                      <Badge variant="ghost" size="sm">
+                      <Badge variant="outline" size="sm">
                         {feature.source}
                       </Badge>
                       {feature.type && (

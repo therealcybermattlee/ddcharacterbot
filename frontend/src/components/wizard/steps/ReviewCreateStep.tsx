@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Badge, Button } from '../../ui'
 import { WizardStepProps } from '../../../types/wizard'
 import { useCharacterCreation } from '../../../contexts/CharacterCreationContext'
+import { LoginModal } from '../../auth/LoginModal'
+import { api } from '../../../services/api'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../contexts/AuthContext'
 
 function getModifier(score: number): number {
   return Math.floor((score - 10) / 2)
@@ -12,12 +16,83 @@ function formatModifier(modifier: number): string {
 }
 
 export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
+  const navigate = useNavigate()
+  const { checkAuthStatus } = useAuth()
   const { characterData } = useCharacterCreation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [pendingCharacterData, setPendingCharacterData] = useState<any>(null)
 
   // Always valid since this is just a review
   React.useEffect(() => {
     onValidationChange(true, [])
   }, [onValidationChange])
+
+  const handleCreateCharacter = async () => {
+    const characterPayload = {
+      name: characterData.name,
+      race: characterData.race,
+      class: characterData.class,
+      level: characterData.level || 1,
+      background: characterData.background,
+      alignment: characterData.alignment,
+      stats: characterData.stats || {
+        strength: 13,
+        dexterity: 14,
+        constitution: 15,
+        intelligence: 12,
+        wisdom: 10,
+        charisma: 8
+      },
+      hitPoints: characterData.hitPoints,
+      armorClass: characterData.armorClass,
+      proficiencyBonus: characterData.proficiencyBonus,
+      savingThrows: characterData.savingThrows || {},
+      skills: characterData.skills || {},
+      equipment: characterData.equipment || [],
+      spells: characterData.spells || [],
+      notes: characterData.notes || `Created with D&D Character Builder on ${new Date().toLocaleDateString()}`
+    }
+
+    // Check authentication before attempting save
+    const authStatus = await checkAuthStatus()
+
+    if (!authStatus) {
+      // User not authenticated - save character data and show login modal
+      setPendingCharacterData(characterPayload)
+      setShowLoginModal(true)
+      return
+    }
+
+    // User is authenticated - proceed with save
+    await saveCharacter(characterPayload)
+  }
+
+  const saveCharacter = async (characterPayload: any) => {
+    setIsSubmitting(true)
+    try {
+      const response = await api.post('/characters', characterPayload)
+      if (response.data.success) {
+        // Navigate to characters list or character view
+        navigate('/characters')
+      } else {
+        throw new Error('Failed to save character')
+      }
+    } catch (error) {
+      console.error('Failed to save character:', error)
+      alert('Failed to save character. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleLoginSuccess = async () => {
+    // User successfully logged in - save the pending character
+    if (pendingCharacterData) {
+      await saveCharacter(pendingCharacterData)
+      setPendingCharacterData(null)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -207,7 +282,7 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
           </svg>
           Preview Sheet
         </Button>
-        
+
         <Button variant="outline" className="flex-1" disabled>
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
@@ -215,6 +290,42 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
           Export PDF
         </Button>
       </div>
+
+      {/* Save Character Action */}
+      <div className="pt-6 border-t-2">
+        <Button
+          onClick={handleCreateCharacter}
+          size="lg"
+          className="w-full bg-green-600 hover:bg-green-700 text-white"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <svg className="w-4 h-4 animate-spin mr-2" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating Character...
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              Create Character
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={handleLoginSuccess}
+        title="Save Your Character"
+        description="Create an account or log in to save your D&D character"
+      />
     </div>
   )
 }

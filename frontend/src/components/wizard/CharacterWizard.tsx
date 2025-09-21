@@ -34,11 +34,15 @@ export function CharacterWizard({
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [isValidating, setIsValidating] = useState(false)
+  const [hasAttemptedNavigation, setHasAttemptedNavigation] = useState(false)
 
   const currentStep = steps[navigation.currentStep]
   const currentStepErrors = errors[currentStep?.id] || []
 
-  // Validate current step when data changes
+  // Only show errors after user has attempted to navigate
+  const shouldShowErrors = hasAttemptedNavigation
+
+  // Validate current step when data changes (but don't show errors until navigation attempted)
   useEffect(() => {
     if (currentStep) {
       const timer = setTimeout(async () => {
@@ -53,6 +57,9 @@ export function CharacterWizard({
 
   const handleNext = async () => {
     if (!currentStep) return
+
+    // Mark that user has attempted navigation
+    setHasAttemptedNavigation(true)
 
     setIsValidating(true)
     const isValid = await validateStep(currentStep.id)
@@ -76,6 +83,8 @@ export function CharacterWizard({
         // Move to next step
         navigation.nextStep()
         setValidationErrors([])
+        // Reset navigation attempt flag for new step
+        setHasAttemptedNavigation(false)
       }
     } else {
       setValidationErrors(currentStepErrors)
@@ -85,6 +94,8 @@ export function CharacterWizard({
   const handlePrevious = () => {
     navigation.previousStep()
     setValidationErrors([])
+    // Reset navigation attempt flag for new step
+    setHasAttemptedNavigation(false)
   }
 
   const handleCancel = () => {
@@ -106,12 +117,18 @@ export function CharacterWizard({
     if (stepIndex <= navigation.currentStep) {
       navigation.goToStep(stepIndex)
       setValidationErrors([])
+      // Reset navigation attempt flag for new step
+      setHasAttemptedNavigation(false)
     } else if (stepIndex === navigation.currentStep + 1) {
+      // Mark that user has attempted navigation
+      setHasAttemptedNavigation(true)
       // Allow jumping to next step if current step is valid
       const isValid = await validateStep(currentStep.id)
       if (isValid) {
         navigation.goToStep(stepIndex)
         setValidationErrors([])
+        // Reset navigation attempt flag for new step
+        setHasAttemptedNavigation(false)
       }
     }
   }
@@ -139,7 +156,7 @@ export function CharacterWizard({
                 <WizardStep
                   title={currentStep?.title || 'Loading...'}
                   description={currentStep?.description}
-                  errors={currentStepErrors}
+                  errors={shouldShowErrors ? currentStepErrors : []}
                   isValid={currentStep?.isValid}
                   showValidation={true}
                 >
@@ -186,7 +203,7 @@ export function CharacterWizard({
               <WizardStep
                 title={currentStep?.title || 'Loading...'}
                 description={currentStep?.description}
-                errors={currentStepErrors}
+                errors={shouldShowErrors ? currentStepErrors : []}
                 isValid={currentStep?.isValid}
                 showValidation={true}
                 className="p-4"

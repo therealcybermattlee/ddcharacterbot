@@ -30,6 +30,10 @@ export function ClassSelector({
 
   // Filter and search classes
   const filteredClasses = useMemo(() => {
+    if (!Array.isArray(classes)) {
+      return []
+    }
+
     let filtered = classes
 
     // Apply search
@@ -44,13 +48,13 @@ export function ClassSelector({
         break
       case 'complexity':
         // Show simple and moderate complexity classes
-        filtered = filtered.filter(cls => cls.complexity !== 'complex')
+        filtered = filtered.filter(cls => cls?.complexity !== 'complex')
         break
       case 'role':
         // Group by general role - this would need more sophisticated logic
         // For now, just show martial classes
-        filtered = filtered.filter(cls => 
-          ['Fighter', 'Ranger', 'Paladin', 'Barbarian'].includes(cls.name)
+        filtered = filtered.filter(cls =>
+          ['Fighter', 'Ranger', 'Paladin', 'Barbarian'].includes(cls?.name || '')
         )
         break
       default:
@@ -181,7 +185,7 @@ export function ClassSelector({
           const isSelected = selectedClass?.id === cls.id
           const isComparing = state.comparisonClass?.id === cls.id
           const estimatedHP = getHitPointsAtLevel(cls, characterLevel)
-          const level1Features = cls.class_features.filter(f => f.level === 1)
+          const level1Features = Array.isArray(cls?.class_features) ? cls.class_features.filter(f => f?.level === 1) : []
           
           return (
             <Card
@@ -215,7 +219,7 @@ export function ClassSelector({
                             d{cls.hit_die} Hit Die
                           </Badge>
                           {cls.spellcasting && (
-                            <Badge variant="magic" size="sm">
+                            <Badge variant="secondary" size="sm">
                               Spellcaster
                             </Badge>
                           )}
@@ -254,10 +258,10 @@ export function ClassSelector({
                         Key Abilities
                       </h4>
                       <div className="flex flex-wrap gap-1">
-                        {cls.primary_abilities.map((ability, index) => (
-                          <Badge 
+                        {Array.isArray(cls?.primary_abilities) && cls.primary_abilities.map((ability, index) => (
+                          <Badge
                             key={index}
-                            variant="secondary" 
+                            variant="secondary"
                             size="sm"
                           >
                             {ability}
@@ -272,10 +276,10 @@ export function ClassSelector({
                         Saving Throw Proficiencies
                       </h4>
                       <div className="flex flex-wrap gap-1">
-                        {cls.saving_throw_proficiencies.map((save, index) => (
-                          <Badge 
+                        {Array.isArray(cls?.saving_throw_proficiencies) && cls.saving_throw_proficiencies.map((save, index) => (
+                          <Badge
                             key={index}
-                            variant="outline" 
+                            variant="outline"
                             size="sm"
                           >
                             {save}
@@ -307,7 +311,7 @@ export function ClassSelector({
                             </ClassFeatureTooltip>
                           ))}
                           {level1Features.length > 3 && (
-                            <Badge variant="ghost" size="sm">
+                            <Badge variant="outline" size="sm">
                               +{level1Features.length - 3} more
                             </Badge>
                           )}
@@ -353,7 +357,7 @@ export function ClassSelector({
                         <div>
                           <div className="font-medium text-foreground">Skills</div>
                           <div className="text-muted-foreground">
-                            {cls.skill_proficiencies.choose} of {cls.skill_proficiencies.from.length}
+                            {cls?.skill_proficiencies?.choose || 0} of {cls?.skill_proficiencies?.from?.length || 0}
                           </div>
                         </div>
                       </div>
@@ -416,7 +420,7 @@ export function ClassSelector({
                       <span className="font-medium">Hit Die:</span>
                       <span className="ml-2">d{cls.hit_die}</span>
                       {cls.spellcasting && (
-                        <Badge variant="magic" size="sm" className="ml-2">
+                        <Badge variant="secondary" size="sm" className="ml-2">
                           Spellcaster
                         </Badge>
                       )}

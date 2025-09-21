@@ -42,69 +42,63 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
     loadReferenceData()
   }, [])
 
-  // Determine current step based on data completion
+  // Determine current step based on data completion - progressive disclosure
+  // Only auto-advance when selections are made (not during typing)
   useEffect(() => {
     if (!data.name?.trim()) {
       setCurrentStep('name')
-    } else if (!data.raceData) {
+    } else if (data.name?.trim() && !data.race?.trim() && currentStep === 'name') {
+      // Stay on name step until user explicitly continues
+      return
+    } else if (!data.race?.trim()) {
       setCurrentStep('race')
-    } else if (!data.classData) {
+    } else if (!data.class?.trim()) {
       setCurrentStep('class')
-    } else if (!data.backgroundData) {
+    } else if (!data.background?.trim()) {
       setCurrentStep('background')
     } else if (!data.alignment) {
       setCurrentStep('alignment')
     } else {
       setCurrentStep('complete')
     }
-  }, [data])
+  }, [data, currentStep])
 
   const handleInputChange = (field: string, value: string | number) => {
     const newData = { ...data, [field]: value }
     onChange(newData)
-    validateData(newData)
+    // Let the parent wizard handle validation timing
   }
 
   const handleRaceSelect = (race: Race) => {
-    const newData = { 
-      ...data, 
-      race: race.name, 
-      raceData: race 
+    const newData = {
+      ...data,
+      race: race.name,
+      raceData: race
     }
     onChange(newData)
-    validateData(newData)
+    // Let the parent wizard handle validation timing
   }
 
   const handleClassSelect = (cls: Class) => {
-    const newData = { 
-      ...data, 
-      class: cls.name, 
-      classData: cls 
+    const newData = {
+      ...data,
+      class: cls.name,
+      classData: cls
     }
     onChange(newData)
-    validateData(newData)
+    // Let the parent wizard handle validation timing
   }
 
   const handleBackgroundSelect = (background: Background) => {
-    const newData = { 
-      ...data, 
-      background: background.name, 
-      backgroundData: background 
+    const newData = {
+      ...data,
+      background: background.name,
+      backgroundData: background
     }
     onChange(newData)
-    validateData(newData)
+    // Let the parent wizard handle validation timing
   }
 
-  const validateData = (newData: any) => {
-    const errors: string[] = []
-    if (!newData.name?.trim()) errors.push('Character name is required')
-    if (!newData.raceData) errors.push('Race is required')
-    if (!newData.classData) errors.push('Class is required')
-    if (!newData.backgroundData) errors.push('Background is required')
-    if (!newData.alignment) errors.push('Alignment is required')
-    
-    onValidationChange(errors.length === 0, errors)
-  }
 
   const handleRandomName = () => {
     const randomNames = [
@@ -115,6 +109,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
     const randomName = randomNames[Math.floor(Math.random() * randomNames.length)]
     handleInputChange('name', randomName)
   }
+
 
   const getCharacterConcept = () => {
     return {
@@ -169,118 +164,190 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Main Content */}
-      <div className="lg:col-span-2 space-y-8">
+      <div className="lg:col-span-2 space-y-6">
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          {['name', 'race', 'class', 'background', 'alignment'].map((step, index) => {
+            const isActive = currentStep === step
+            const isCompleted = ['name', 'race', 'class', 'background', 'alignment'].indexOf(currentStep) > index
+            return (
+              <div key={step} className="flex items-center">
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                  ${isActive ? 'bg-primary text-primary-foreground' :
+                    isCompleted ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}
+                `}>
+                  {index + 1}
+                </div>
+                {index < 4 && (
+                  <div className={`w-12 h-0.5 mx-2 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+
         {/* Character Name */}
-        <Card className={currentStep === 'name' ? 'ring-2 ring-primary/50' : ''}>
-          <CardHeader>
-            <CardTitle className="text-lg">Character Name</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter your character's name"
-                value={data.name || ''}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                className="flex-1"
-              />
-              <Button 
-                variant="outline" 
-                onClick={handleRandomName}
-                type="button"
-                className="whitespace-nowrap"
-              >
-                Random
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Choose a name that fits your character's personality and background
-            </p>
-          </CardContent>
-        </Card>
+        {currentStep === 'name' && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">What's your character's name?</CardTitle>
+              <p className="text-muted-foreground">This is the first step in creating your D&D character</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex gap-3 max-w-md mx-auto">
+                <Input
+                  placeholder="Enter your character's name"
+                  value={data.name || ''}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="flex-1 text-lg py-3"
+                  autoFocus
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleRandomName}
+                  type="button"
+                  className="px-4"
+                >
+                  Random
+                </Button>
+              </div>
+              {data.name && (
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-4">Great! Now let's choose a race for {data.name}</p>
+                  <Button onClick={() => setCurrentStep('race')} className="px-8">
+                    Continue to Race Selection
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Race Selection */}
-        {(currentStep === 'race' || data.raceData) && (
-          <Card className={currentStep === 'race' ? 'ring-2 ring-primary/50' : ''}>
-            <CardHeader>
-              <CardTitle className="text-lg">Choose Your Race</CardTitle>
+        {currentStep === 'race' && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Choose {data.name}'s Race</CardTitle>
+              <p className="text-muted-foreground">Your race determines your character's physical traits and abilities</p>
             </CardHeader>
             <CardContent>
-              <RaceSelector
-                races={referenceData.races}
-                selectedRace={data.raceData}
-                onRaceSelect={handleRaceSelect}
-                baseAbilityScores={baseAbilityScores}
-              />
+              {referenceData?.races ? (
+                <RaceSelector
+                  races={referenceData.races}
+                  selectedRace={data.raceData}
+                  onRaceSelect={handleRaceSelect}
+                  baseAbilityScores={baseAbilityScores}
+                />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">Loading races...</div>
+              )}
+              {data.race && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-muted-foreground mb-4">Excellent! {data.name} the {data.race}. Now choose a class.</p>
+                  <Button onClick={() => setCurrentStep('class')} className="px-8">
+                    Continue to Class Selection
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
         {/* Class Selection */}
-        {(currentStep === 'class' || data.classData) && (
-          <Card className={currentStep === 'class' ? 'ring-2 ring-primary/50' : ''}>
-            <CardHeader>
-              <CardTitle className="text-lg">Choose Your Class</CardTitle>
+        {currentStep === 'class' && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Choose {data.name}'s Class</CardTitle>
+              <p className="text-muted-foreground">Your class determines your character's abilities and role in the party</p>
             </CardHeader>
             <CardContent>
-              <ClassSelector
-                classes={referenceData.classes}
-                selectedClass={data.classData}
-                onClassSelect={handleClassSelect}
-                characterLevel={data.level || 1}
-              />
+              {referenceData?.classes ? (
+                <ClassSelector
+                  classes={referenceData.classes}
+                  selectedClass={data.classData}
+                  onClassSelect={handleClassSelect}
+                  characterLevel={data.level || 1}
+                />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">Loading classes...</div>
+              )}
+              {data.class && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-muted-foreground mb-4">{data.name} the {data.race} {data.class}! Now choose a background.</p>
+                  <Button onClick={() => setCurrentStep('background')} className="px-8">
+                    Continue to Background Selection
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
         {/* Background Selection */}
-        {(currentStep === 'background' || data.backgroundData) && (
-          <Card className={currentStep === 'background' ? 'ring-2 ring-primary/50' : ''}>
-            <CardHeader>
-              <CardTitle className="text-lg">Choose Your Background</CardTitle>
+        {currentStep === 'background' && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Choose {data.name}'s Background</CardTitle>
+              <p className="text-muted-foreground">Your background represents your character's life before becoming an adventurer</p>
             </CardHeader>
             <CardContent>
-              <BackgroundSelector
-                backgrounds={referenceData.backgrounds}
-                selectedBackground={data.backgroundData}
-                onBackgroundSelect={handleBackgroundSelect}
-                selectedClass={data.classData}
-              />
+              {referenceData?.backgrounds ? (
+                <BackgroundSelector
+                  backgrounds={referenceData.backgrounds}
+                  selectedBackground={data.backgroundData}
+                  onBackgroundSelect={handleBackgroundSelect}
+                  selectedClass={data.classData}
+                />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">Loading backgrounds...</div>
+              )}
+              {data.background && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-muted-foreground mb-4">Perfect! Now set {data.name}'s alignment and level.</p>
+                  <Button onClick={() => setCurrentStep('alignment')} className="px-8">
+                    Continue to Final Details
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
         {/* Level and Alignment */}
-        {(currentStep === 'alignment' || data.alignment) && (
-          <Card className={currentStep === 'alignment' ? 'ring-2 ring-primary/50' : ''}>
-            <CardHeader>
-              <CardTitle className="text-lg">Final Details</CardTitle>
+        {currentStep === 'alignment' && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Final Details for {data.name}</CardTitle>
+              <p className="text-muted-foreground">Set your character's starting level and moral alignment</p>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8 max-w-md mx-auto">
               {/* Level */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
+              <div className="space-y-3 text-center">
+                <label className="text-lg font-medium text-foreground">
                   Starting Level
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-4">
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="lg"
                     onClick={() => handleInputChange('level', Math.max(1, (data.level || 1) - 1))}
                     disabled={data.level <= 1}
                     type="button"
                   >
                     -
                   </Button>
-                  <div className="w-16 text-center">
-                    <Badge variant="outline" className="text-lg px-3 py-1">
+                  <div className="w-20 text-center">
+                    <Badge variant="outline" className="text-2xl px-4 py-2">
                       {data.level || 1}
                     </Badge>
                   </div>
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="lg"
                     onClick={() => handleInputChange('level', Math.min(20, (data.level || 1) + 1))}
                     disabled={data.level >= 20}
                     type="button"
@@ -288,15 +355,12 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
                     +
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Starting level (1-20)
-                </p>
               </div>
 
               {/* Alignment */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Alignment *
+              <div className="space-y-3 text-center">
+                <label className="text-lg font-medium text-foreground">
+                  Alignment
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {ALIGNMENTS.map((alignment) => (
@@ -305,10 +369,10 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
                       type="button"
                       onClick={() => handleInputChange('alignment', alignment)}
                       className={`
-                        p-2 text-xs border rounded-md transition-all
-                        ${data.alignment === alignment 
-                          ? 'border-primary bg-primary/10 text-primary font-medium' 
-                          : 'border-border hover:border-primary/50 text-foreground'
+                        p-3 text-sm border rounded-lg transition-all font-medium
+                        ${data.alignment === alignment
+                          ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                          : 'border-border hover:border-primary/50 text-foreground hover:bg-muted'
                         }
                       `}
                     >
@@ -316,8 +380,55 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {data.alignment && (
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Perfect! {data.name} the {data.alignment} {data.race} {data.class} is ready!
+                  </p>
+                  <Button onClick={() => setCurrentStep('complete')} size="lg" className="px-8">
+                    Complete Basic Info
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Complete */}
+        {currentStep === 'complete' && (
+          <Card className="ring-2 ring-green-500/50 bg-green-50/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl text-green-700">Character Created!</CardTitle>
+              <p className="text-green-600">Your basic character information is complete</p>
+            </CardHeader>
+            <CardContent className="text-center space-y-6">
+              <div className="text-lg font-semibold">
+                {data.name} - Level {data.level || 1} {data.alignment} {data.race} {data.class}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Background: {data.background}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Choose what to do next:
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={() => {
+                      // Trigger validation to show this step is complete and allow progression
+                      onValidationChange(true, [])
+                    }}
+                    className="bg-green-600 hover:bg-green-700 px-6"
+                  >
+                    Continue Building
+                  </Button>
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Your character's moral and ethical outlook
+                  Continue to customize ability scores, skills, and equipment before saving
                 </p>
               </div>
             </CardContent>
@@ -334,6 +445,8 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
           />
         </div>
       </div>
-    </div>
+      </div>
+
+    </>
   )
 }

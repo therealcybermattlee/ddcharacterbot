@@ -30,6 +30,10 @@ export function RaceSelector({
 
   // Filter and search races
   const filteredRaces = useMemo(() => {
+    if (!Array.isArray(races)) {
+      return []
+    }
+
     let filtered = races
 
     // Apply search
@@ -41,12 +45,13 @@ export function RaceSelector({
     switch (state.filterBy) {
       case 'size':
         // For demo, filter by Medium vs Small
-        filtered = filtered.filter(race => race.size === 'Medium' || race.size === 'Small')
+        filtered = filtered.filter(race => race?.size === 'Medium' || race?.size === 'Small')
         break
       case 'abilities':
         // Show races with +2 ability bonuses
-        filtered = filtered.filter(race => 
-          race.ability_score_increases.some(asi => asi.increase >= 2)
+        filtered = filtered.filter(race =>
+          Array.isArray(race?.ability_score_increases) &&
+          race.ability_score_increases.some(asi => asi?.increase >= 2)
         )
         break
       default:
@@ -285,7 +290,7 @@ export function RaceSelector({
                             </TraitTooltip>
                           ))}
                           {race.traits.length > 3 && (
-                            <Badge variant="ghost" size="sm">
+                            <Badge variant="outline" size="sm">
                               +{race.traits.length - 3} more
                             </Badge>
                           )}

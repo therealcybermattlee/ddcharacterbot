@@ -1,5 +1,14 @@
 # Claude Configuration
 
+## Development Environment Policy
+**PRODUCTION ONLY DEVELOPMENT**
+- NEVER run local development servers (`npm run dev`, `npm start`)
+- NEVER use localhost URLs for API calls
+- ALWAYS use Cloudflare Pages for frontend deployment
+- ALWAYS use Cloudflare Workers for API deployment
+- Frontend URL: https://dnd.cyberlees.dev
+- API URL: https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev/api
+
 ## Agent Preference
 ALWAYS prefer using specialized agents over direct implementation when available. Agents are optimized for specific tasks and provide better results.
 
