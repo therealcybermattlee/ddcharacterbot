@@ -33,9 +33,9 @@ d1_databases = [
 kv_namespaces = [
   { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
 ]
-r2_buckets = [
-  { binding = "ASSETS", bucket_name = "dnd-assets-staging" }
-]
+# r2_buckets = [
+#   { binding = "ASSETS", bucket_name = "dnd-assets-staging" }
+# ]
 [env.staging.vars]
 ENVIRONMENT = "staging"
 CORS_ORIGIN = "https://dnd-character-manager-staging.pages.dev"
@@ -52,9 +52,9 @@ d1_databases = [
 kv_namespaces = [
   { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
 ]
-r2_buckets = [
-  { binding = "ASSETS", bucket_name = "dnd-assets-prod" }
-]
+# r2_buckets = [
+#   { binding = "ASSETS", bucket_name = "dnd-assets-prod" }
+# ]
 [env.production.vars]
 ENVIRONMENT = "production"
 CORS_ORIGIN = "https://dnd.cyberlees.dev"
