@@ -128,7 +128,7 @@ jobs:
 
       - name: Authenticate Wrangler
         run: |
-          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+          echo "Wrangler authentication via environment variables"
 
       - name: Validate database migrations
         run: |
@@ -331,7 +331,7 @@ jobs:
 
       - name: Authenticate Wrangler
         run: |
-          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+          echo "Wrangler authentication via environment variables"
 
       - name: Warm up caches
         run: |
@@ -373,7 +373,7 @@ jobs:
 
       - name: Authenticate Wrangler
         run: |
-          echo "${{ secrets.CLOUDFLARE_API_TOKEN }}" | wrangler auth login --api-token
+          echo "Wrangler authentication via environment variables"
 
       - name: Rollback deployment
         run: |
