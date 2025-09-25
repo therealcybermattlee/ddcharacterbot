@@ -28,7 +28,7 @@ RATE_LIMIT_WINDOW = "60"
 [env.staging]
 name = "dnd-character-manager-api-staging"
 d1_databases = [
-  { binding = "DB", database_name = "dnd-character-manager-staging", database_id = "" }
+  { binding = "DB", database_name = "dnd-character-manager-staging", database_id = "ca591138-e49e-444a-adbd-42ba624e8366", migrations_dir = "../database/migrations" }
 ]
 kv_namespaces = [
   { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
@@ -47,7 +47,7 @@ RATE_LIMIT_WINDOW = "60"
 [env.production] 
 name = "dnd-character-manager-api"
 d1_databases = [
-  { binding = "DB", database_name = "dnd-character-manager-prod", database_id = "" }
+  { binding = "DB", database_name = "dnd-character-manager-prod", database_id = "00ae6e9f-afee-446e-b53f-818f2fc0feb3", migrations_dir = "../database/migrations" }
 ]
 kv_namespaces = [
   { binding = "KV", id = "47c6af0ea66145d4a769fcf4313ed09b", preview_id = "53cf768516504722af779fe173567083" }
