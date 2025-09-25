@@ -14,7 +14,7 @@ const ALIGNMENTS = [
   'Lawful Evil', 'Neutral Evil', 'Chaotic Evil'
 ]
 
-export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStepProps) {
+export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: WizardStepProps) {
   const [referenceData, setReferenceData] = useState<{
     races: Race[]
     classes: Class[]
@@ -421,6 +421,10 @@ export function BasicInfoStep({ data, onChange, onValidationChange }: WizardStep
                     onClick={() => {
                       // Trigger validation to show this step is complete and allow progression
                       onValidationChange(true, [])
+                      // Advance to next step in the main wizard
+                      if (onNext) {
+                        onNext()
+                      }
                     }}
                     className="bg-green-600 hover:bg-green-700 px-6"
                   >

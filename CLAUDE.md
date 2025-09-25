@@ -72,6 +72,13 @@ npx wrangler tail --config api/wrangler.toml --env development
 npx wrangler list
 ```
 
+## Git Configuration
+**Authentication Setup:**
+- Username: TheRealTwoBowShow
+- Token stored in environment: GITHUB_TOKEN
+- Remote configured with token authentication
+- Commits and pushes automated with stored credentials
+
 ## Project Memory Management
 **REQUIRED:** Always update project memory files after significant changes:
 - Update MEMORY.md with session context and decisions

@@ -81,6 +81,7 @@ export interface WizardStepProps {
   data: any
   onChange: (data: any) => void
   onValidationChange: (isValid: boolean, errors?: string[]) => void
+  onNext?: () => void
 }
 
 // Character creation data interface

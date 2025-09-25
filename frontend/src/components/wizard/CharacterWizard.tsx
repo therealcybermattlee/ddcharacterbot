@@ -167,6 +167,7 @@ export function CharacterWizard({
                       onValidationChange={(_isValid: boolean, _errors?: string[]) => {
                         // This could be used for real-time validation feedback
                       }}
+                      onNext={handleNext}
                     />
                   )}
                 </WizardStep>
@@ -215,6 +216,7 @@ export function CharacterWizard({
                     onValidationChange={(_isValid: boolean, _errors?: string[]) => {
                       // This could be used for real-time validation feedback
                     }}
+                    onNext={handleNext}
                   />
                 )}
               </WizardStep>
