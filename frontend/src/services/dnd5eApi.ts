@@ -107,7 +107,7 @@ function transformClassData(apiClass: any): Class {
     id: apiClass.id || '',
     name: apiClass.name || '',
     description: `A ${apiClass.name} adventurer. (Description not available)`, // Default description
-    hit_die: parseInt(apiClass.hitDie?.replace('d', '') || '8'),
+    hit_die: typeof apiClass.hitDie === 'number' ? apiClass.hitDie : parseInt(String(apiClass.hitDie || '8').replace('d', '')),
     primary_abilities: Array.isArray(apiClass.primaryAbility) ? apiClass.primaryAbility : [],
     saving_throw_proficiencies: Array.isArray(apiClass.savingThrowProficiencies) ? apiClass.savingThrowProficiencies : [],
     skill_proficiencies: {
