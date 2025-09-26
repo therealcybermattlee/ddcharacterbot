@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev'
+const API_BASE_URL = 'https://dnd-character-manager-api.cybermattlee-llc.workers.dev/api'
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
