@@ -163,7 +163,7 @@ export function RaceSelector({
       </div>
 
       {/* Race Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredRaces.map((race) => {
           const isSelected = selectedRace?.id === race.id
           const isComparing = state.comparisonRace?.id === race.id
@@ -179,7 +179,7 @@ export function RaceSelector({
               )}
               onClick={() => onRaceSelect(race)}
             >
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex gap-4">
                   {/* Race Artwork Placeholder */}
                   <div className={cn(
@@ -222,16 +222,16 @@ export function RaceSelector({
                       </Button>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                       {race.description}
                     </p>
 
                     {/* Ability Score Increases */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <h4 className="text-xs font-medium text-foreground">
                         Ability Score Increases
                       </h4>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {race.ability_score_increases.map((asi, index) => (
                           <AbilityTooltip
                             key={index}
@@ -269,11 +269,11 @@ export function RaceSelector({
 
                     {/* Racial Traits (first 3) */}
                     {race.traits.length > 0 && (
-                      <div className="space-y-2 mt-3 pt-3 border-t border-muted">
+                      <div className="space-y-3 mt-4 pt-4 border-t border-muted">
                         <h4 className="text-xs font-medium text-foreground">
                           Racial Traits
                         </h4>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {race.traits.slice(0, 3).map((trait, index) => (
                             <TraitTooltip
                               key={index}
@@ -299,7 +299,7 @@ export function RaceSelector({
                     )}
 
                     {/* Languages and Proficiencies Summary */}
-                    <div className="mt-3 pt-3 border-t border-muted">
+                    <div className="mt-4 pt-4 border-t border-muted">
                       <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
                         {race.languages.length > 0 && (
                           <div>

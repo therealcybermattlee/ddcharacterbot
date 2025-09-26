@@ -180,7 +180,7 @@ export function ClassSelector({
       </div>
 
       {/* Class Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredClasses.map((cls) => {
           const isSelected = selectedClass?.id === cls.id
           const isComparing = state.comparisonClass?.id === cls.id
@@ -197,7 +197,7 @@ export function ClassSelector({
               )}
               onClick={() => onClassSelect(cls)}
             >
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex gap-4">
                   {/* Class Icon */}
                   <div className={cn(
@@ -248,16 +248,16 @@ export function ClassSelector({
                       </Button>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                       {cls.description}
                     </p>
 
                     {/* Primary Abilities */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <h4 className="text-xs font-medium text-foreground">
                         Key Abilities
                       </h4>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {Array.isArray(cls?.primary_abilities) && cls.primary_abilities.map((ability, index) => (
                           <Badge
                             key={index}
@@ -271,11 +271,11 @@ export function ClassSelector({
                     </div>
 
                     {/* Saving Throws */}
-                    <div className="space-y-2 mt-3">
+                    <div className="space-y-3 mt-4">
                       <h4 className="text-xs font-medium text-foreground">
                         Saving Throw Proficiencies
                       </h4>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {Array.isArray(cls?.saving_throw_proficiencies) && cls.saving_throw_proficiencies.map((save, index) => (
                           <Badge
                             key={index}
@@ -290,11 +290,11 @@ export function ClassSelector({
 
                     {/* Starting Features */}
                     {level1Features.length > 0 && (
-                      <div className="space-y-2 mt-3 pt-3 border-t border-muted">
+                      <div className="space-y-3 mt-4 pt-4 border-t border-muted">
                         <h4 className="text-xs font-medium text-foreground">
                           Level 1 Features
                         </h4>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {level1Features.slice(0, 3).map((feature, index) => (
                             <ClassFeatureTooltip
                               key={index}
@@ -321,7 +321,7 @@ export function ClassSelector({
 
                     {/* Spellcasting Info */}
                     {cls.spellcasting && (
-                      <div className="mt-3 pt-3 border-t border-muted">
+                      <div className="mt-4 pt-4 border-t border-muted">
                         <div className="grid grid-cols-2 gap-4 text-xs">
                           <div>
                             <span className="font-medium text-foreground">Spell Ability:</span>
@@ -342,7 +342,7 @@ export function ClassSelector({
                     )}
 
                     {/* Combat Stats Preview */}
-                    <div className="mt-3 pt-3 border-t border-muted">
+                    <div className="mt-4 pt-4 border-t border-muted">
                       <div className="grid grid-cols-3 gap-4 text-xs text-center">
                         <div>
                           <div className="font-medium text-foreground">Hit Points</div>
