@@ -285,7 +285,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: dnd-character-manager
           directory: frontend/dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
       - name: Health check Frontend
