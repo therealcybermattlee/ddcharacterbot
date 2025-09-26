@@ -446,6 +446,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <CharacterPreview
             characterConcept={getCharacterConcept()}
             baseAbilityScores={baseAbilityScores}
+            compact={true}
           />
         </div>
       </div>
