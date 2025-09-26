@@ -180,7 +180,7 @@ export function ClassSelector({
       </div>
 
       {/* Class Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {filteredClasses.map((cls) => {
           const isSelected = selectedClass?.id === cls.id
           const isComparing = state.comparisonClass?.id === cls.id
@@ -197,7 +197,7 @@ export function ClassSelector({
               )}
               onClick={() => onClassSelect(cls)}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className="flex gap-4">
                   {/* Class Icon */}
                   <div className={cn(

@@ -163,7 +163,7 @@ export function RaceSelector({
       </div>
 
       {/* Race Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {filteredRaces.map((race) => {
           const isSelected = selectedRace?.id === race.id
           const isComparing = state.comparisonRace?.id === race.id
@@ -179,7 +179,7 @@ export function RaceSelector({
               )}
               onClick={() => onRaceSelect(race)}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className="flex gap-4">
                   {/* Race Artwork Placeholder */}
                   <div className={cn(
