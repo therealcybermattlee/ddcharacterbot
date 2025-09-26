@@ -35,9 +35,25 @@ const ALL_SKILLS: { name: SkillName; ability: AbilityName }[] = [
   { name: 'Survival', ability: 'wisdom' }
 ]
 
-// Mock data - in real app these would come from API
-const getMockClassData = (className: string) => {
-  const classData: Record<string, { skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] }> = {
+// Get real class data from API instead of mock data
+const getClassData = async (className: string) => {
+  try {
+    const response = await fetch(`https://dnd-character-manager-api.cybermattlee-llc.workers.dev/api/classes/${className.toLowerCase()}`)
+    const result = await response.json()
+    if (result.success && result.data?.class) {
+      const classData = result.data.class
+      return {
+        skillChoices: classData.skillChoices,
+        availableSkills: classData.skillProficiencies,
+        savingThrows: classData.savingThrowProficiencies
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch class data:', error)
+  }
+
+  // Fallback to mock data if API fails
+  const fallbackData: Record<string, { skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] }> = {
     'barbarian': {
       skillChoices: 2,
       availableSkills: ['Animal Handling', 'Athletics', 'Intimidation', 'Nature', 'Perception', 'Survival'],
@@ -64,7 +80,7 @@ const getMockClassData = (className: string) => {
       savingThrows: ['strength', 'dexterity']
     }
   }
-  return classData[className.toLowerCase()] || { skillChoices: 2, availableSkills: [], savingThrows: [] }
+  return fallbackData[className.toLowerCase()] || { skillChoices: 2, availableSkills: [], savingThrows: [] }
 }
 
 const getMockBackgroundData = (backgroundName: string) => {
@@ -106,12 +122,29 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   const { characterData } = useCharacterCreation()
   const [selectedClassSkills, setSelectedClassSkills] = useState<Set<SkillName>>(new Set())
   const [selectedRaceSkills, setSelectedRaceSkills] = useState<Set<SkillName>>(new Set())
-  
+  const [classData, setClassData] = useState<{ skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] } | null>(null)
+  const [isLoadingClassData, setIsLoadingClassData] = useState(false)
+
   // Get current proficiency bonus based on level
   const proficiencyBonus = PROFICIENCY_BONUS_BY_LEVEL[characterData.level as keyof typeof PROFICIENCY_BONUS_BY_LEVEL] || 2
 
-  // Get class, background, and race data
-  const classData = getMockClassData(characterData.class)
+  // Load real class data from API
+  useEffect(() => {
+    if (characterData.class) {
+      setIsLoadingClassData(true)
+      getClassData(characterData.class)
+        .then((data) => {
+          setClassData(data)
+          setIsLoadingClassData(false)
+        })
+        .catch((error) => {
+          console.error('Failed to load class data:', error)
+          setIsLoadingClassData(false)
+        })
+    }
+  }, [characterData.class])
+
+  // Get background and race data (keeping mock for now)
   const backgroundSkills = getMockBackgroundData(characterData.background)
   const raceSkillChoices = getMockRaceData(characterData.race)
 
@@ -128,7 +161,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     // Class proficiencies (choices)
-    if (classData.skillChoices > 0) {
+    if (classData && classData.skillChoices > 0) {
       sources.push({
         source: 'class',
         skills: [],
@@ -172,15 +205,15 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
   // Calculate saving throw proficiencies
   const savingThrowProficiencies = useMemo(() => {
-    return new Set(classData.savingThrows)
-  }, [classData.savingThrows])
+    return new Set(classData?.savingThrows || [])
+  }, [classData?.savingThrows])
 
   // Handle class skill selection
   const handleClassSkillToggle = (skill: SkillName) => {
     const newSelected = new Set(selectedClassSkills)
     if (newSelected.has(skill)) {
       newSelected.delete(skill)
-    } else if (newSelected.size < classData.skillChoices) {
+    } else if (newSelected.size < (classData?.skillChoices || 0)) {
       newSelected.add(skill)
     }
     setSelectedClassSkills(newSelected)
@@ -223,7 +256,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     const errors: string[] = []
     
     // Check if all class skill choices are made
-    if (selectedClassSkills.size !== classData.skillChoices) {
+    if (classData && selectedClassSkills.size !== classData.skillChoices) {
       errors.push(`Select ${classData.skillChoices} skills from your class`)
     }
 
@@ -233,7 +266,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     onValidationChange(errors.length === 0, errors)
-  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData.skillChoices, raceSkillChoices.length, proficiencyBonus, onChange, onValidationChange])
+  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillChoices.length, proficiencyBonus, onChange, onValidationChange])
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {
@@ -248,15 +281,27 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
   // Get suggestions for optimal skill choices
   const getOptimalSuggestions = () => {
-    if (!characterData.class) return []
-    
-    const classData = getMockClassData(characterData.class)
+    if (!characterData.class || !classData) return []
+
     const primaryAbilities = ['strength', 'dexterity'] // This would come from class data
-    
-    return classData.availableSkills.filter(skill => {
+
+    return (classData.availableSkills || []).filter(skill => {
       const skillInfo = ALL_SKILLS.find(s => s.name === skill)
       return skillInfo && primaryAbilities.includes(skillInfo.ability)
-    }).slice(0, classData.skillChoices)
+    }).slice(0, classData.skillChoices || 0)
+  }
+
+  // Show loading state while fetching class data
+  if (isLoadingClassData) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+          <div className="h-32 bg-muted rounded mb-4"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -374,23 +419,23 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       )}
 
       {/* Class Skill Choices */}
-      {classData.skillChoices > 0 && (
+      {classData && classData.skillChoices > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Class Skill Choices</span>
               <Badge className={PROFICIENCY_COLORS.class}>
-                {selectedClassSkills.size}/{classData.skillChoices} selected
+                {selectedClassSkills.size}/{classData?.skillChoices || 0} selected
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Choose <strong>{classData.skillChoices}</strong> skills from your <strong>{characterData.class}</strong> class options:
+              Choose <strong>{classData?.skillChoices || 0}</strong> skills from your <strong>{characterData.class}</strong> class options:
             </p>
             
             <div className="grid grid-cols-1 gap-2">
-              {classData.availableSkills.map((skill) => {
+              {(classData?.availableSkills || []).map((skill) => {
                 const skillInfo = ALL_SKILLS.find(s => s.name === skill)!
                 const isSelected = selectedClassSkills.has(skill)
                 const isAlreadyProficient = finalSkillProficiencies.has(skill) && !isSelected
@@ -402,7 +447,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
                     key={skill}
                     type="button"
                     onClick={() => handleClassSkillToggle(skill)}
-                    disabled={isAlreadyProficient || (selectedClassSkills.size >= classData.skillChoices && !isSelected)}
+                    disabled={isAlreadyProficient || (selectedClassSkills.size >= (classData?.skillChoices || 0) && !isSelected)}
                     className={`p-3 border rounded-lg text-left transition-all ${
                       isSelected
                         ? 'border-blue-300 bg-blue-50 text-blue-900'
@@ -449,7 +494,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
             </div>
 
             {/* Optimization suggestions */}
-            {selectedClassSkills.size < classData.skillChoices && (
+            {selectedClassSkills.size < (classData?.skillChoices || 0) && (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <h4 className="text-sm font-medium text-amber-800 mb-2">💡 Optimization Suggestion</h4>
                 <p className="text-sm text-amber-700 mb-2">
