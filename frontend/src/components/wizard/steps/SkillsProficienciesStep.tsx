@@ -38,6 +38,11 @@ const ALL_SKILLS: { name: SkillName; ability: AbilityName }[] = [
 // Mock data - in real app these would come from API
 const getMockClassData = (className: string) => {
   const classData: Record<string, { skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] }> = {
+    'barbarian': {
+      skillChoices: 2,
+      availableSkills: ['Animal Handling', 'Athletics', 'Intimidation', 'Nature', 'Perception', 'Survival'],
+      savingThrows: ['strength', 'constitution']
+    },
     'fighter': {
       skillChoices: 2,
       availableSkills: ['Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Perception', 'Survival'],
