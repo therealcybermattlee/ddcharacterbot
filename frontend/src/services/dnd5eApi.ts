@@ -117,13 +117,37 @@ function transformClassData(apiClass: any): Class {
     armor_proficiencies: Array.isArray(apiClass.armorProficiencies) ? apiClass.armorProficiencies : [],
     weapon_proficiencies: Array.isArray(apiClass.weaponProficiencies) ? apiClass.weaponProficiencies : [],
     tool_proficiencies: Array.isArray(apiClass.toolProficiencies) ? apiClass.toolProficiencies : [],
-    starting_equipment: Array.isArray(apiClass.startingEquipment?.items) ?
-      apiClass.startingEquipment.items.map((item: string) => ({
-        id: item.toLowerCase().replace(/\s+/g, '-'),
-        name: item,
-        type: 'equipment',
-        quantity: 1
-      })) : [],
+    starting_equipment: (() => {
+      const equipment = [];
+      if (apiClass.startingEquipment) {
+        const se = apiClass.startingEquipment;
+        if (Array.isArray(se.weapons)) {
+          equipment.push(...se.weapons.map((item: string) => ({
+            id: String(item).toLowerCase().replace(/\s+/g, '-'),
+            name: String(item),
+            type: 'weapon',
+            quantity: 1
+          })));
+        }
+        if (Array.isArray(se.armor)) {
+          equipment.push(...se.armor.map((item: string) => ({
+            id: String(item).toLowerCase().replace(/\s+/g, '-'),
+            name: String(item),
+            type: 'armor',
+            quantity: 1
+          })));
+        }
+        if (Array.isArray(se.equipment)) {
+          equipment.push(...se.equipment.map((item: string) => ({
+            id: String(item).toLowerCase().replace(/\s+/g, '-'),
+            name: String(item),
+            type: 'equipment',
+            quantity: 1
+          })));
+        }
+      }
+      return equipment;
+    })(),
     class_features: [], // Features would need separate API call - set empty for now
     spellcasting: apiClass.spellcastingAbility ? {
       ability: apiClass.spellcastingAbility,
