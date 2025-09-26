@@ -149,7 +149,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       <Card className="border-destructive/20 bg-destructive/5">
         <CardContent className="p-6 text-center">
           <h3 className="font-semibold text-destructive mb-2">Unable to Load Character Data</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-foreground/70 mb-4">
             {error || 'Failed to load D&D 5e reference data'}
           </p>
           <Button 
@@ -195,7 +195,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <Card className="ring-2 ring-primary/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">What's your character's name?</CardTitle>
-              <p className="text-muted-foreground">This is the first step in creating your D&D character</p>
+              <p className="text-foreground/70">This is the first step in creating your D&D character</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex gap-3 max-w-md mx-auto">
@@ -217,7 +217,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               </div>
               {data.name && (
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">Great! Now let's choose a race for {data.name}</p>
+                  <p className="text-sm text-foreground/70 mb-4">Great! Now let's choose a race for {data.name}</p>
                   <Button onClick={() => setCurrentStep('race')} className="px-8">
                     Continue to Race Selection
                   </Button>
@@ -232,7 +232,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <Card className="ring-2 ring-primary/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Choose {data.name}'s Race</CardTitle>
-              <p className="text-muted-foreground">Your race determines your character's physical traits and abilities</p>
+              <p className="text-foreground/70">Your race determines your character's physical traits and abilities</p>
             </CardHeader>
             <CardContent>
               {referenceData?.races ? (
@@ -247,7 +247,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               )}
               {data.race && (
                 <div className="text-center mt-6">
-                  <p className="text-sm text-muted-foreground mb-4">Excellent! {data.name} the {data.race}. Now choose a class.</p>
+                  <p className="text-sm text-foreground/70 mb-4">Excellent! {data.name} the {data.race}. Now choose a class.</p>
                   <Button onClick={() => setCurrentStep('class')} className="px-8">
                     Continue to Class Selection
                   </Button>
@@ -262,7 +262,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <Card className="ring-2 ring-primary/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Choose {data.name}'s Class</CardTitle>
-              <p className="text-muted-foreground">Your class determines your character's abilities and role in the party</p>
+              <p className="text-foreground/70">Your class determines your character's abilities and role in the party</p>
             </CardHeader>
             <CardContent>
               {referenceData?.classes ? (
@@ -277,7 +277,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               )}
               {data.class && (
                 <div className="text-center mt-6">
-                  <p className="text-sm text-muted-foreground mb-4">{data.name} the {data.race} {data.class}! Now choose a background.</p>
+                  <p className="text-sm text-foreground/70 mb-4">{data.name} the {data.race} {data.class}! Now choose a background.</p>
                   <Button onClick={() => setCurrentStep('background')} className="px-8">
                     Continue to Background Selection
                   </Button>
@@ -292,7 +292,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <Card className="ring-2 ring-primary/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Choose {data.name}'s Background</CardTitle>
-              <p className="text-muted-foreground">Your background represents your character's life before becoming an adventurer</p>
+              <p className="text-foreground/70">Your background represents your character's life before becoming an adventurer</p>
             </CardHeader>
             <CardContent>
               {referenceData?.backgrounds ? (
@@ -307,7 +307,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               )}
               {data.background && (
                 <div className="text-center mt-6">
-                  <p className="text-sm text-muted-foreground mb-4">Perfect! Now set {data.name}'s alignment and level.</p>
+                  <p className="text-sm text-foreground/70 mb-4">Perfect! Now set {data.name}'s alignment and level.</p>
                   <Button onClick={() => setCurrentStep('alignment')} className="px-8">
                     Continue to Final Details
                   </Button>
@@ -322,7 +322,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
           <Card className="ring-2 ring-primary/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Final Details for {data.name}</CardTitle>
-              <p className="text-muted-foreground">Set your character's starting level and moral alignment</p>
+              <p className="text-foreground/70">Set your character's starting level and moral alignment</p>
             </CardHeader>
             <CardContent className="space-y-8 max-w-md mx-auto">
               {/* Level */}
@@ -384,7 +384,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
 
               {data.alignment && (
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-foreground/70 mb-4">
                     Perfect! {data.name} the {data.alignment} {data.race} {data.class} is ready!
                   </p>
                   <Button onClick={() => setCurrentStep('complete')} size="lg" className="px-8">
@@ -407,13 +407,13 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               <div className="text-lg font-semibold">
                 {data.name} - Level {data.level || 1} {data.alignment} {data.race} {data.class}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-foreground/70">
                 Background: {data.background}
               </div>
 
               {/* Action Buttons */}
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   Choose what to do next:
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -431,7 +431,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
                     Continue Building
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-foreground/60">
                   Continue to customize ability scores, skills, and equipment before saving
                 </p>
               </div>

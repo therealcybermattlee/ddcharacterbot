@@ -93,7 +93,7 @@ export function ProgressIndicator({
                       {
                         "text-primary": isActive,
                         "text-foreground": isCompleted,
-                        "text-muted-foreground": !isCompleted && !isActive
+                        "text-foreground/60": !isCompleted && !isActive
                       }
                     )}
                   >
@@ -111,14 +111,14 @@ export function ProgressIndicator({
         <h2 className="text-lg font-semibold text-foreground">
           {steps[currentStep]?.title}
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-foreground/70 mt-1">
           {steps[currentStep]?.description}
         </p>
       </div>
 
       {/* Progress percentage */}
       <div className="mt-4 text-center">
-        <div className="text-xs text-muted-foreground">
+        <div className="text-xs text-foreground/60 font-medium">
           Step {currentStep + 1} of {steps.length}
         </div>
         <div className="w-full bg-muted rounded-full h-1 mt-2">
@@ -127,7 +127,7 @@ export function ProgressIndicator({
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           ></div>
         </div>
-        <div className="text-xs text-muted-foreground mt-1">
+        <div className="text-xs text-foreground/60 font-medium mt-1">
           {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
         </div>
       </div>
@@ -149,11 +149,11 @@ export function CompactProgressIndicator({
           <h3 className="text-sm font-medium text-foreground">
             {steps[currentStep]?.title}
           </h3>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground/60 font-medium">
             Step {currentStep + 1} of {steps.length}
           </p>
         </div>
-        <div className="text-xs text-muted-foreground">
+        <div className="text-xs text-foreground/60 font-medium">
           {Math.round(((currentStep + 1) / steps.length) * 100)}%
         </div>
       </div>
