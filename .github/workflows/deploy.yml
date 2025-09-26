@@ -11,6 +11,11 @@ on:
       - main
       - staging
 
+# Permissions for GitHub Actions
+permissions:
+  contents: write  # Allow pushing tags and commits
+  deployments: write  # Allow creating deployment records
+
 # Environment variables
 env:
   NODE_VERSION: '20'
