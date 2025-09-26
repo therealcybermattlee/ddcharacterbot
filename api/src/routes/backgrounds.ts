@@ -59,14 +59,19 @@ function transformBackground(dbBackground: any): Background {
   return {
     id: dbBackground.id,
     name: dbBackground.name,
-    description: dbBackground.description,
+    description: `${dbBackground.feature_name}: ${dbBackground.feature_description}`,
     skillProficiencies: JSON.parse(dbBackground.skill_proficiencies || '[]'),
-    languageChoices: dbBackground.language_choices || 0,
+    languageChoices: 0, // Will be derived from language_proficiencies
     toolProficiencies: JSON.parse(dbBackground.tool_proficiencies || '[]'),
-    startingEquipment: JSON.parse(dbBackground.starting_equipment || '{"items": [], "gp": 0}'),
+    startingEquipment: JSON.parse(dbBackground.equipment || '{"items": [], "gp": 0}'),
     featureName: dbBackground.feature_name,
     featureDescription: dbBackground.feature_description,
-    suggestedCharacteristics: JSON.parse(dbBackground.suggested_characteristics || '{"personalityTraits": [], "ideals": [], "bonds": [], "flaws": []}'),
+    suggestedCharacteristics: {
+      personalityTraits: JSON.parse(dbBackground.personality_traits || '[]'),
+      ideals: JSON.parse(dbBackground.ideals || '[]'),
+      bonds: JSON.parse(dbBackground.bonds || '[]'),
+      flaws: JSON.parse(dbBackground.flaws || '[]')
+    },
     source: dbBackground.source,
     isHomebrew: dbBackground.is_homebrew
   };
@@ -92,12 +97,12 @@ backgrounds.get('/', async (c) => {
 
     // Fetch from database
     const dbBackgrounds = await c.env.DB.prepare(
-      `SELECT 
-        id, name, description, skill_proficiencies, language_choices, 
-        tool_proficiencies, starting_equipment, feature_name, 
-        feature_description, suggested_characteristics, source, is_homebrew
-       FROM backgrounds 
-       WHERE is_homebrew = FALSE 
+      `SELECT
+        id, name, skill_proficiencies, language_proficiencies,
+        tool_proficiencies, equipment, feature_name,
+        feature_description, personality_traits, ideals, bonds, flaws, source, is_homebrew
+       FROM backgrounds
+       WHERE is_homebrew = FALSE
        ORDER BY name`
     ).all();
 
