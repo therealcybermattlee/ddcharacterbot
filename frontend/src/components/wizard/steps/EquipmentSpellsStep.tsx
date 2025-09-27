@@ -389,7 +389,8 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
     knownSpells: Set<string>
     preparedSpells?: Set<string>
   }>({ cantrips: new Set(), knownSpells: new Set(), preparedSpells: new Set() })
-  
+  const [backgroundData, setBackgroundData] = useState<any>(null)
+
   const currentData = data || {
     equipment: [],
     spells: [],
@@ -400,6 +401,26 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
       preparedSpells: []
     }
   }
+
+  // Fetch background data when background changes
+  useEffect(() => {
+    const fetchBackgroundData = async () => {
+      if (characterData.background) {
+        try {
+          const response = await fetch(`https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev/api/backgrounds`)
+          const result = await response.json()
+          if (result.success) {
+            const background = result.data.backgrounds.find((bg: any) => bg.id === characterData.background)
+            setBackgroundData(background)
+          }
+        } catch (error) {
+          console.error('Failed to fetch background data:', error)
+        }
+      }
+    }
+
+    fetchBackgroundData()
+  }, [characterData.background])
 
   // Get current class data
   const classData = CLASS_EQUIPMENT_DATA[characterData.class?.toLowerCase()]
@@ -420,7 +441,22 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
   // Calculate final equipment list
   const finalEquipment = useMemo(() => {
     const equipment: EquipmentItem[] = []
-    
+
+    // Add background equipment
+    if (backgroundData?.startingEquipment?.items) {
+      backgroundData.startingEquipment.items.forEach((itemName: string) => {
+        equipment.push({
+          id: itemName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''),
+          name: itemName,
+          type: 'gear' as const,
+          quantity: 1,
+          weight: 1, // Default weight for background items
+          value: 0, // Background items are free
+          description: `Background equipment from ${backgroundData.name}`
+        })
+      })
+    }
+
     if (!classData) return equipment
 
     // Add equipment pack items
@@ -440,7 +476,7 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
     })
 
     return equipment
-  }, [classData, selectedEquipmentChoices])
+  }, [classData, selectedEquipmentChoices, backgroundData])
 
   // Calculate total encumbrance
   const totalWeight = finalEquipment.reduce((total, item) => total + (item.weight || 0) * item.quantity, 0)
@@ -586,7 +622,7 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Equipment & Spells</h2>
         <p className="text-muted-foreground">
-          Configure your starting equipment and spells based on your {characterData.class} class.
+          Configure your starting equipment and spells based on your {characterData.class} class and {characterData.background || 'selected'} background.
         </p>
       </div>
 
@@ -598,6 +634,45 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
             {finalEquipment.length} items • {totalWeight.toFixed(1)} lbs
           </Badge>
         </div>
+
+        {/* Background Equipment */}
+        {backgroundData?.startingEquipment?.items && (
+          <Card className="border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-blue-800">
+                <span>Background Equipment ({backgroundData.name})</span>
+                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                  {backgroundData.startingEquipment.items.length} items
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Equipment provided by your {backgroundData.name} background.
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {backgroundData.startingEquipment.items.map((itemName: string, index: number) => (
+                  <div key={index} className="flex items-center p-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm text-blue-900">{itemName}</div>
+                      <div className="text-xs text-blue-600">Background item</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {backgroundData.startingEquipment.money && (
+                <div className="pt-3 border-t border-blue-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-blue-700 font-medium">Starting Money</span>
+                    <span className="text-blue-900 font-semibold">{backgroundData.startingEquipment.money}</span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Equipment Pack */}
         {classData && (
