@@ -47,8 +47,8 @@ const getRacialBonuses = (race: string) => {
 export function AbilityScoresStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
   
-  // Extract ability score state from data or use defaults
-  const abilityScoreState = characterData.abilityScoreState || {
+  // Extract ability score state from data prop first, then context, then defaults
+  const abilityScoreState = data?.abilityScoreState || characterData.abilityScoreState || {
     method: 'standard' as const,
     baseScores: {
       strength: 10,
@@ -119,9 +119,12 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
     onValidationChange(errors.length === 0, errors)
   }
 
-  // Validate on mount
+  // Validate on mount - only if state is incomplete to avoid overwriting saved progress
   useEffect(() => {
-    handleStateChange(abilityScoreState)
+    // Only call handleStateChange if this is a fresh state or explicitly incomplete
+    if (!abilityScoreState.isComplete || Object.values(abilityScoreState.baseScores).every(score => score === 10)) {
+      handleStateChange(abilityScoreState)
+    }
   }, [])
 
   return (

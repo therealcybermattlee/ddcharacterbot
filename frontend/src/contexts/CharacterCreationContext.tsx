@@ -254,7 +254,10 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
           }
           break
         case 'ability-scores':
-          stepData = state.characterData.stats
+          stepData = {
+            stats: state.characterData.stats,
+            abilityScoreState: state.characterData.abilityScoreState
+          }
           break
         case 'skills-proficiencies':
           stepData = {
@@ -387,7 +390,10 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
           alignment: state.characterData.alignment,
         }
       case 'ability-scores':
-        return state.characterData.stats
+        return {
+          stats: state.characterData.stats,
+          abilityScoreState: state.characterData.abilityScoreState
+        }
       case 'skills-proficiencies':
         return {
           proficiencyBonus: state.characterData.proficiencyBonus,
