@@ -46,7 +46,8 @@ const getRacialBonuses = (race: string) => {
 
 export function AbilityScoresStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
-  
+
+
   // Extract ability score state from data prop first, then context, then defaults
   const abilityScoreState = data?.abilityScoreState || characterData.abilityScoreState || {
     method: 'standard' as const,
@@ -69,22 +70,17 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
 
   // Handle state changes from AbilityScoreGenerator
   const handleStateChange = (newState: AbilityScoreState) => {
-    // Update both the ability score state and the base stats
+    // Update only the specific fields that changed
     const updatedData = {
-      ...characterData,
       stats: newState.baseScores,
       abilityScoreState: newState
     }
-    
+
     onChange(updatedData)
     
     // Validate the state
     const errors: string[] = []
-    
-    if (!newState.isComplete) {
-      errors.push('Please complete ability score generation')
-    }
-    
+
     // Validate score ranges (base scores before racial bonuses)
     const scores = Object.values(newState.baseScores)
     if (scores.some(score => score < 3)) {
@@ -93,36 +89,107 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
     if (scores.some(score => score > 20)) {
       errors.push('No base ability score can exceed 20')
     }
-    
+
     // Method-specific validation
+    let methodValid = true
     if (newState.method === 'pointBuy') {
       if (newState.pointsUsed !== 27) {
         errors.push('You must use exactly 27 points in point buy')
+        methodValid = false
       }
       if (scores.some(score => score < 8 || score > 15)) {
         errors.push('Point buy scores must be between 8 and 15')
+        methodValid = false
       }
     } else if (newState.method === 'standard') {
       const standardArray = [15, 14, 13, 12, 10, 8]
       const sortedScores = [...scores].sort((a, b) => b - a)
       const sortedStandard = [...standardArray].sort((a, b) => b - a)
-      
+
       if (JSON.stringify(sortedScores) !== JSON.stringify(sortedStandard)) {
         errors.push('Must use exactly the standard array values: 15, 14, 13, 12, 10, 8')
+        methodValid = false
+      } else {
+        // For standard array, if scores match, consider it valid regardless of isComplete flag
+        // This fixes sync issues between AbilityScoreGenerator and AbilityScoresStep
+        methodValid = true
       }
     } else if (newState.method === 'rolled') {
       if (scores.some(score => score < 3)) {
         errors.push('Rolled scores that are too low should be rerolled')
+        methodValid = false
       }
+    }
+
+    // For standard array, skip the isComplete check if scores are valid
+    // For other methods, check isComplete only if method validation passed
+    if (newState.method === 'standard') {
+      // For standard array, methodValid already accounts for everything we need
+    } else if (methodValid && !newState.isComplete) {
+      errors.push('Please complete ability score generation')
     }
     
     onValidationChange(errors.length === 0, errors)
   }
 
-  // Validate on mount - only if state is incomplete to avoid overwriting saved progress
+  // Validate on mount - but only for truly fresh states
   useEffect(() => {
-    // Only call handleStateChange if this is a fresh state or explicitly incomplete
-    if (!abilityScoreState.isComplete || Object.values(abilityScoreState.baseScores).every(score => score === 10)) {
+    // Don't trigger validation automatically if we have saved data in the data prop
+    // This prevents overwriting valid saved progress when returning to the step
+    if (data?.abilityScoreState) {
+      // We have saved data, run full validation on it (using same logic as handleStateChange)
+      const errors: string[] = []
+
+      // Validate score ranges (base scores before racial bonuses)
+      const scores = Object.values(data.abilityScoreState.baseScores)
+      if (scores.some(score => score < 3)) {
+        errors.push('All ability scores must be at least 3')
+      }
+      if (scores.some(score => score > 20)) {
+        errors.push('No base ability score can exceed 20')
+      }
+
+      // Method-specific validation
+      let methodValid = true
+      if (data.abilityScoreState.method === 'pointBuy') {
+        if (data.abilityScoreState.pointsUsed !== 27) {
+          errors.push('You must use exactly 27 points in point buy')
+          methodValid = false
+        }
+        if (scores.some(score => score < 8 || score > 15)) {
+          errors.push('Point buy scores must be between 8 and 15')
+          methodValid = false
+        }
+      } else if (data.abilityScoreState.method === 'standard') {
+        const standardArray = [15, 14, 13, 12, 10, 8]
+        const sortedScores = [...scores].sort((a, b) => b - a)
+        const sortedStandard = [...standardArray].sort((a, b) => b - a)
+
+        if (JSON.stringify(sortedScores) !== JSON.stringify(sortedStandard)) {
+          errors.push('Must use exactly the standard array values: 15, 14, 13, 12, 10, 8')
+          methodValid = false
+        } else {
+          // For standard array, if scores match, consider it valid regardless of isComplete flag
+          methodValid = true
+        }
+      } else if (data.abilityScoreState.method === 'rolled') {
+        if (scores.some(score => score < 3)) {
+          errors.push('Rolled scores that are too low should be rerolled')
+          methodValid = false
+        }
+      }
+
+      // For standard array, skip the isComplete check if scores are valid
+      // For other methods, check isComplete only if method validation passed
+      if (data.abilityScoreState.method === 'standard') {
+        // For standard array, methodValid already accounts for everything we need
+      } else if (methodValid && !data.abilityScoreState.isComplete) {
+        errors.push('Please complete ability score generation')
+      }
+
+      onValidationChange(errors.length === 0, errors)
+    } else {
+      // No saved data, initialize with fresh state
       handleStateChange(abilityScoreState)
     }
   }, [])
