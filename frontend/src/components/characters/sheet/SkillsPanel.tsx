@@ -47,7 +47,13 @@ export default function SkillsPanel({ character, onUpdate, onRoll }: SkillsPanel
   }
 
   const getSkillModifier = (skillName: string) => {
-    return character.skills[skillName] || getAbilityModifier(character.stats[SKILLS[skillName]])
+    const governingAbility = SKILLS[skillName]
+    const abilityModifier = getAbilityModifier(character.stats[governingAbility])
+    const skillBonus = character.skills[skillName] || 0
+
+    // If character has proficiency/expertise, skillBonus contains the full modifier
+    // If no proficiency, use just the ability modifier
+    return skillBonus > 0 ? skillBonus : abilityModifier
   }
 
   return (

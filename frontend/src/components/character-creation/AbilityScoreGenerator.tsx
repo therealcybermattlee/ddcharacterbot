@@ -141,8 +141,13 @@ export function AbilityScoreGenerator({
 
   // Update parent component when state changes
   useEffect(() => {
-    const isComplete = method === 'standard' ? 
-      Object.values(baseScores).every(score => score >= 8) :
+    const isComplete = method === 'standard' ?
+      (() => {
+        const standardArray = [15, 14, 13, 12, 10, 8]
+        const sortedScores = [...Object.values(baseScores)].sort((a, b) => b - a)
+        const sortedStandard = [...standardArray].sort((a, b) => b - a)
+        return JSON.stringify(sortedScores) === JSON.stringify(sortedStandard)
+      })() :
       method === 'pointBuy' ?
       pointsUsed === 27 :
       Object.values(baseScores).every(score => score >= 8)

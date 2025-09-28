@@ -1,5 +1,6 @@
 import { api } from './api'
 import { Race, Class, Background, RacesResponse, ClassesResponse, BackgroundsResponse } from '../types/dnd5e'
+import { CLASS_FEATURES } from '../data/classFeatures'
 
 // Cache for reference data to avoid repeated API calls
 interface CacheData<T> {
@@ -148,7 +149,7 @@ function transformClassData(apiClass: any): Class {
       }
       return equipment;
     })(),
-    class_features: [], // Features would need separate API call - set empty for now
+    class_features: CLASS_FEATURES[apiClass.id?.toLowerCase()] || [], // Load static class features data
     spellcasting: apiClass.spellcastingAbility ? {
       ability: apiClass.spellcastingAbility,
       spells_known: undefined,

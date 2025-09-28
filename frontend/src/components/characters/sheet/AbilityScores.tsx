@@ -90,7 +90,7 @@ export default function AbilityScores({ character, onUpdate, onRoll }: AbilitySc
                       : 'text-gray-700 bg-gray-50 border-gray-300 hover:bg-gray-100 hover:border-gray-400'
                   }`}
                 >
-                  Save {formatAbilityModifier(savingThrowBonus)}
+                  Save {formatAbilityModifier(isProficient ? savingThrowBonus : modifier)}
                   {isProficient && (
                     <span className="ml-1 text-blue-500">●</span>
                   )}
