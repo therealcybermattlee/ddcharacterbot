@@ -123,8 +123,10 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
 
     // For standard array, skip the isComplete check if scores are valid
     // For other methods, check isComplete only if method validation passed
+    // Trust the AbilityScoreGenerator's isComplete calculation
     if (newState.method === 'standard') {
-      // For standard array, methodValid already accounts for everything we need
+      // For standard array, if methodValid is true, we're good regardless of isComplete
+      // This fixes sync issues between components
     } else if (methodValid && !newState.isComplete) {
       errors.push('Please complete ability score generation')
     }
@@ -189,8 +191,8 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
 
       onValidationChange(errors.length === 0, errors)
     } else {
-      // No saved data, initialize with fresh state
-      handleStateChange(abilityScoreState)
+      // No saved data, start with valid empty state to avoid "Required" errors on initial load
+      onValidationChange(false, ['Please generate ability scores'])
     }
   }, [])
 
