@@ -59,19 +59,31 @@ jobs:
       - name: Lint API code
         run: |
           cd api
-          npm run lint || echo "Linting not configured"
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+            npm run lint || echo "Linting failed but allowing deployment"
+          else
+            echo "Linting not configured, skipping"
+          fi
 
       - name: Lint Frontend code
         run: |
           cd frontend
-          npm run lint || echo "Frontend linting not configured, skipping"
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+            npm run lint || echo "Linting failed but allowing deployment"
+          else
+            echo "Frontend linting not configured, skipping"
+          fi
 
       - name: Type check
         run: |
           cd api
           npm run build || echo "API build issues noted, allowing deployment"
           cd ../frontend
-          npm run type-check || echo "Frontend type checking not configured, skipping"
+          if grep -q "\"type-check\"" package.json; then
+            npm run type-check || echo "Type checking failed but allowing deployment"
+          else
+            echo "Frontend type checking not configured, skipping"
+          fi
 
   # Test suite
   test:
