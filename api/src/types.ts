@@ -4,15 +4,18 @@ export interface Env {
   DB: D1Database;
   KV: KVNamespace;
   ASSETS?: R2Bucket;
-  
+
   // Environment variables
   ENVIRONMENT: string;
   CORS_ORIGIN: string;
   RATE_LIMIT_REQUESTS: string;
   RATE_LIMIT_WINDOW: string;
-  
+
   // Secrets (set via wrangler secret put)
   JWT_SECRET: string;
+
+  // Index signature for Hono compatibility
+  [key: string]: any;
 }
 
 // Authentication types
