@@ -143,7 +143,7 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
       const errors: string[] = []
 
       // Validate score ranges (base scores before racial bonuses)
-      const scores = Object.values(data.abilityScoreState.baseScores)
+      const scores = Object.values(data.abilityScoreState.baseScores) as number[]
       if (scores.some(score => score < 3)) {
         errors.push('All ability scores must be at least 3')
       }
