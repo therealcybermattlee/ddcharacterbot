@@ -214,6 +214,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           subclass: 'Purple Dragon Knight'
         }
       ]
+    },
+    {
+      id: 'fighter-brute',
+      name: 'Brute (UA)',
+      description: '[UA] A simple and straightforward fighter focused on raw physical power and durability.',
+      features: [
+        {
+          name: 'Brute Force',
+          level: 3,
+          description: 'You deal additional damage with weapon attacks based on your level.',
+          type: 'subclass_feature',
+          subclass: 'Brute (UA)'
+        },
+        {
+          name: 'Brutish Durability',
+          level: 7,
+          description: 'Your hit point maximum increases and you can add a d6 to death saving throws.',
+          type: 'subclass_feature',
+          subclass: 'Brute (UA)'
+        }
+      ]
     }
   ],
 
@@ -490,6 +511,69 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           subclass: 'Graviturgy Magic'
         }
       ]
+    },
+    {
+      id: 'wizard-lore-mastery',
+      name: 'Lore Mastery (UA)',
+      description: '[UA] Masters of arcane lore who can manipulate the fundamental properties of spells.',
+      features: [
+        {
+          name: 'Lore Master',
+          level: 2,
+          description: 'You can change the damage type of spells and alter saving throws.',
+          type: 'subclass_feature',
+          subclass: 'Lore Mastery (UA)'
+        },
+        {
+          name: 'Spell Secrets',
+          level: 6,
+          description: 'You can increase spell save DC or attack bonus.',
+          type: 'subclass_feature',
+          subclass: 'Lore Mastery (UA)'
+        }
+      ]
+    },
+    {
+      id: 'wizard-onomancy',
+      name: 'Onomancy (UA)',
+      description: '[UA] Practitioners of naming magic who wield power through true names.',
+      features: [
+        {
+          name: 'True Names',
+          level: 2,
+          description: 'You learn the true names of creatures to gain power over them.',
+          type: 'subclass_feature',
+          subclass: 'Onomancy (UA)'
+        },
+        {
+          name: 'Resonant Utterance',
+          level: 6,
+          description: 'You can speak a creature\'s true name to enhance your spells.',
+          type: 'subclass_feature',
+          subclass: 'Onomancy (UA)'
+        }
+      ]
+    },
+    {
+      id: 'wizard-theurgy',
+      name: 'Theurgy (UA)',
+      description: '[UA] Wizards who blend arcane and divine magic, gaining access to cleric domains.',
+      features: [
+        {
+          name: 'Divine Inspiration',
+          level: 2,
+          description: 'You choose a cleric domain and gain access to its spells.',
+          type: 'subclass_feature',
+          subclass: 'Theurgy (UA)'
+        },
+        {
+          name: 'Channel Arcana',
+          level: 2,
+          description: 'You can channel divine energy like a cleric.',
+          type: 'subclass_feature',
+          subclass: 'Theurgy (UA)'
+        }
+      ]
     }
   ],
 
@@ -680,6 +764,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You can manifest psychic blades to make attacks.',
           type: 'subclass_feature',
           subclass: 'Soulknife'
+        }
+      ]
+    },
+    {
+      id: 'rogue-revived',
+      name: 'The Revived (UA)',
+      description: '[UA] Rogues who have experienced death and returned with undead-like traits.',
+      features: [
+        {
+          name: 'Tokens of Past Lives',
+          level: 3,
+          description: 'You gain proficiencies from your past lives that change after a long rest.',
+          type: 'subclass_feature',
+          subclass: 'The Revived (UA)'
+        },
+        {
+          name: 'Revived Nature',
+          level: 3,
+          description: 'You have advantage on death saves and don\'t need food, water, or sleep.',
+          type: 'subclass_feature',
+          subclass: 'The Revived (UA)'
         }
       ]
     }
@@ -977,6 +1082,48 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You learn one necromancy cantrip and can target two creatures with it.',
           type: 'subclass_feature',
           subclass: 'Death Domain'
+        }
+      ]
+    },
+    {
+      id: 'cleric-city',
+      name: 'City Domain (UA)',
+      description: '[UA] Clerics who channel the power of civilization and urban environments.',
+      features: [
+        {
+          name: 'Heart of the City',
+          level: 1,
+          description: 'You gain proficiency with firearms and can cast spells while wielding them.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        },
+        {
+          name: 'Bonus Proficiencies',
+          level: 1,
+          description: 'You gain proficiency with heavy armor and your choice of Intimidation or Persuasion.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        }
+      ]
+    },
+    {
+      id: 'cleric-unity',
+      name: 'Unity Domain (UA)',
+      description: '[UA] Clerics who foster cooperation and unity among allies.',
+      features: [
+        {
+          name: 'Emboldening Bond',
+          level: 1,
+          description: 'You can forge a bond between allies that allows them to grant each other benefits.',
+          type: 'subclass_feature',
+          subclass: 'Unity Domain (UA)'
+        },
+        {
+          name: 'Channel Divinity: Shared Burden',
+          level: 2,
+          description: 'You can distribute damage taken by one creature among bonded allies.',
+          type: 'subclass_feature',
+          subclass: 'Unity Domain (UA)'
         }
       ]
     }
@@ -1293,6 +1440,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           subclass: 'College of Spirits'
         }
       ]
+    },
+    {
+      id: 'bard-satire',
+      name: 'College of Satire (UA)',
+      description: '[UA] Court jesters and acrobatic performers who use humor and agility.',
+      features: [
+        {
+          name: 'Bonus Proficiencies',
+          level: 3,
+          description: 'You gain proficiency with thieves\' tools and Acrobatics or Sleight of Hand.',
+          type: 'subclass_feature',
+          subclass: 'College of Satire (UA)'
+        },
+        {
+          name: 'Tumbling Fool',
+          level: 3,
+          description: 'You master acrobatic techniques to evade danger as a bonus action.',
+          type: 'subclass_feature',
+          subclass: 'College of Satire (UA)'
+        }
+      ]
     }
   ],
 
@@ -1427,6 +1595,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You learn additional spells.',
           type: 'subclass_feature',
           subclass: 'Swarmkeeper'
+        }
+      ]
+    },
+    {
+      id: 'ranger-primeval-guardian',
+      name: 'Primeval Guardian (UA)',
+      description: '[UA] Rangers who can transform into powerful tree-like guardians of nature.',
+      features: [
+        {
+          name: 'Guardian Soul',
+          level: 3,
+          description: 'You can transform into a powerful guardian form as a bonus action.',
+          type: 'subclass_feature',
+          subclass: 'Primeval Guardian (UA)'
+        },
+        {
+          name: 'Piercing Thorns',
+          level: 3,
+          description: 'While in guardian form, you can deal additional damage to nearby creatures.',
+          type: 'subclass_feature',
+          subclass: 'Primeval Guardian (UA)'
         }
       ]
     }
@@ -1579,6 +1768,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           subclass: 'Oath of the Watchers'
         }
       ]
+    },
+    {
+      id: 'paladin-treachery',
+      name: 'Oath of Treachery (UA)',
+      description: '[UA] Evil paladins who embrace betrayal, deception, and self-interest.',
+      features: [
+        {
+          name: 'Channel Divinity: Conjure Duplicate',
+          level: 3,
+          description: 'You can create an illusory duplicate of yourself to confuse enemies.',
+          type: 'subclass_feature',
+          subclass: 'Oath of Treachery (UA)'
+        },
+        {
+          name: 'Channel Divinity: Poison Strike',
+          level: 3,
+          description: 'You can use your Channel Divinity to deal extra poison damage.',
+          type: 'subclass_feature',
+          subclass: 'Oath of Treachery (UA)'
+        }
+      ]
     }
   ],
 
@@ -1727,6 +1937,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You can use your wildfire spirit to teleport and heal.',
           type: 'subclass_feature',
           subclass: 'Circle of Wildfire'
+        }
+      ]
+    },
+    {
+      id: 'druid-twilight',
+      name: 'Circle of Twilight (UA)',
+      description: '[UA] Druids who guard the boundary between life and death, facing undead threats.',
+      features: [
+        {
+          name: 'Harvest\'s Scythe',
+          level: 2,
+          description: 'You can harvest the life force of creatures you kill to heal yourself.',
+          type: 'subclass_feature',
+          subclass: 'Circle of Twilight (UA)'
+        },
+        {
+          name: 'Speech Beyond the Grave',
+          level: 6,
+          description: 'You can cast speak with dead without using a spell slot.',
+          type: 'subclass_feature',
+          subclass: 'Circle of Twilight (UA)'
         }
       ]
     }
@@ -1886,6 +2117,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           subclass: 'Way of the Astral Self'
         }
       ]
+    },
+    {
+      id: 'monk-tranquility',
+      name: 'Way of Tranquility (UA)',
+      description: '[UA] Monks who seek peace and try to avoid combat through diplomacy and healing.',
+      features: [
+        {
+          name: 'Path of Tranquility',
+          level: 3,
+          description: 'You can cast sanctuary on yourself without a spell slot or material components.',
+          type: 'subclass_feature',
+          subclass: 'Way of Tranquility (UA)'
+        },
+        {
+          name: 'Healing Hands',
+          level: 3,
+          description: 'You gain the ability to heal wounds through touch.',
+          type: 'subclass_feature',
+          subclass: 'Way of Tranquility (UA)'
+        }
+      ]
     }
   ],
 
@@ -2034,6 +2286,69 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You can nullify advantage or disadvantage.',
           type: 'subclass_feature',
           subclass: 'Clockwork Soul'
+        }
+      ]
+    },
+    {
+      id: 'sorcerer-stone',
+      name: 'Stone Sorcery (UA)',
+      description: '[UA] Your magic comes from the Elemental Plane of Earth, granting durability and martial prowess.',
+      features: [
+        {
+          name: 'Bonus Proficiencies',
+          level: 1,
+          description: 'You gain proficiency with shields, simple weapons, and martial weapons.',
+          type: 'subclass_feature',
+          subclass: 'Stone Sorcery (UA)'
+        },
+        {
+          name: 'Stone\'s Durability',
+          level: 1,
+          description: 'Your hit point maximum increases and you gain AC bonus when not wearing armor.',
+          type: 'subclass_feature',
+          subclass: 'Stone Sorcery (UA)'
+        }
+      ]
+    },
+    {
+      id: 'sorcerer-phoenix',
+      name: 'Phoenix Sorcery (UA)',
+      description: '[UA] Your power draws from the immortal flame of a phoenix.',
+      features: [
+        {
+          name: 'Ignite',
+          level: 1,
+          description: 'You can set yourself ablaze as a bonus action to deal fire damage to nearby creatures.',
+          type: 'subclass_feature',
+          subclass: 'Phoenix Sorcery (UA)'
+        },
+        {
+          name: 'Mantle of Flame',
+          level: 1,
+          description: 'You can wreath yourself in fire as a bonus action.',
+          type: 'subclass_feature',
+          subclass: 'Phoenix Sorcery (UA)'
+        }
+      ]
+    },
+    {
+      id: 'sorcerer-giant-soul',
+      name: 'Giant Soul (UA)',
+      description: '[UA] Your innate magic comes from the power of giants.',
+      features: [
+        {
+          name: 'Jotun Resilience',
+          level: 1,
+          description: 'Your hit point maximum increases and you gain advantage on Strength saves.',
+          type: 'subclass_feature',
+          subclass: 'Giant Soul (UA)'
+        },
+        {
+          name: 'Mark of the Ordning',
+          level: 1,
+          description: 'You can cast a bonus spell based on your giant type.',
+          type: 'subclass_feature',
+          subclass: 'Giant Soul (UA)'
         }
       ]
     }
