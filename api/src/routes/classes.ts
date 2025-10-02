@@ -465,11 +465,14 @@ classes.delete('/cache', async (c) => {
   try {
     // This would typically require admin authentication in production
     // For now, we'll just clear the main cache keys
+    const classNames = ['fighter', 'wizard', 'rogue', 'cleric', 'barbarian', 'bard', 'ranger', 'paladin', 'druid', 'monk', 'sorcerer', 'warlock'];
     const cacheKeys = [
       `${CACHE_KEY_PREFIX}all`,
       `${CACHE_KEY_PREFIX}spellcasters`,
       `${CACHE_KEY_PREFIX}source:phb`,
-      `${CACHE_KEY_PREFIX}source:homebrew`
+      `${CACHE_KEY_PREFIX}source:homebrew`,
+      ...classNames.map(name => `${CACHE_KEY_PREFIX}${name}`),
+      ...classNames.map(name => `${CACHE_KEY_PREFIX}${name}:proficiencies`)
     ];
 
     await Promise.all(cacheKeys.map(key => c.env.KV.delete(key)));
