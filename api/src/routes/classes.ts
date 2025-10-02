@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import type { Env, CharacterClass, CachedReferenceData } from '../types';
+import { getClassFeatures } from '../lib/classFeatures';
+import { getSubclasses } from '../lib/subclasses';
 
 // Create classes router (no auth required for reference data)
 const classes = new Hono<{ Bindings: Env }>();
@@ -56,9 +58,13 @@ async function setCachedData<T>(
 
 // Helper function to transform database class to API class
 function transformClass(dbClass: any): CharacterClass {
+  const className = dbClass.name;
+  const features = getClassFeatures(className, 20); // Get all features up to level 20
+  const subclasses = getSubclasses(className); // Get all subclasses for this class
+
   return {
     id: dbClass.id,
-    name: dbClass.name,
+    name: className,
     hitDie: dbClass.hit_die,
     primaryAbility: JSON.parse(dbClass.primary_ability || '[]'),
     savingThrowProficiencies: JSON.parse(dbClass.saving_throw_proficiencies || '[]'),
@@ -70,7 +76,9 @@ function transformClass(dbClass: any): CharacterClass {
     startingEquipment: JSON.parse(dbClass.starting_equipment || '{}'),
     spellcastingAbility: dbClass.spellcasting_ability || undefined,
     source: dbClass.source,
-    isHomebrew: dbClass.is_homebrew
+    isHomebrew: dbClass.is_homebrew,
+    features: features,
+    subclasses: subclasses
   };
 }
 
