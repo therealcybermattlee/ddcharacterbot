@@ -40,6 +40,102 @@ export const CLASS_FEATURES: Record<string, ClassFeature[]> = {
       level: 5,
       description: 'Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.',
       type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 6,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Martial Archetype Feature',
+      level: 7,
+      description: 'At 7th level, you gain a feature granted by your Martial Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 8,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Indomitable',
+      level: 9,
+      description: 'Beginning at 9th level, you can reroll a saving throw that you fail. You must use the new roll, and you can\'t use this feature again until you finish a long rest.',
+      type: 'feature'
+    },
+    {
+      name: 'Martial Archetype Feature',
+      level: 10,
+      description: 'At 10th level, you gain a feature granted by your Martial Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Extra Attack (2)',
+      level: 11,
+      description: 'At 11th level, you can attack three times whenever you take the Attack action on your turn.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 12,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Indomitable (two uses)',
+      level: 13,
+      description: 'At 13th level, you can use Indomitable twice between long rests.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 14,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Martial Archetype Feature',
+      level: 15,
+      description: 'At 15th level, you gain a feature granted by your Martial Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 16,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Action Surge (two uses)',
+      level: 17,
+      description: 'At 17th level, you can use Action Surge twice before a rest, but only once on the same turn.',
+      type: 'feature'
+    },
+    {
+      name: 'Indomitable (three uses)',
+      level: 17,
+      description: 'At 17th level, you can use Indomitable three times between long rests.',
+      type: 'feature'
+    },
+    {
+      name: 'Martial Archetype Feature',
+      level: 18,
+      description: 'At 18th level, you gain a feature granted by your Martial Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 19,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Extra Attack (3)',
+      level: 20,
+      description: 'At 20th level, you can attack four times whenever you take the Attack action on your turn.',
+      type: 'feature'
     }
   ],
 
@@ -63,9 +159,63 @@ export const CLASS_FEATURES: Record<string, ClassFeature[]> = {
       type: 'subclass_feature'
     },
     {
-      name: 'Cantrip Formulas',
-      level: 3,
-      description: 'At 3rd level, you have scribed a set of arcane formulas in your spellbook that you can cast as rituals.',
+      name: 'Ability Score Improvement',
+      level: 4,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Arcane Tradition Feature',
+      level: 6,
+      description: 'At 6th level, you gain a feature granted by your Arcane Tradition.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 8,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Arcane Tradition Feature',
+      level: 10,
+      description: 'At 10th level, you gain a feature granted by your Arcane Tradition.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 12,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Arcane Tradition Feature',
+      level: 14,
+      description: 'At 14th level, you gain a feature granted by your Arcane Tradition.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 16,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Spell Mastery',
+      level: 18,
+      description: 'At 18th level, you have achieved such mastery over certain spells that you can cast them at will. Choose a 1st-level wizard spell and a 2nd-level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 19,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Signature Spells',
+      level: 20,
+      description: 'When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort. Choose two 3rd-level wizard spells in your spellbook as your signature spells. You can cast each of these spells once at 3rd level without expending a spell slot. When you do so, you can\'t do so again until you finish a short or long rest.',
       type: 'feature'
     }
   ],
