@@ -244,6 +244,114 @@ export const CLASS_FEATURES: Record<string, ClassFeature[]> = {
       level: 2,
       description: 'Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns to take the Dash, Disengage, or Hide action.',
       type: 'feature'
+    },
+    {
+      name: 'Roguish Archetype',
+      level: 3,
+      description: 'At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief, Assassin, or Arcane Trickster.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 4,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Uncanny Dodge',
+      level: 5,
+      description: 'Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack\'s damage against you.',
+      type: 'feature'
+    },
+    {
+      name: 'Expertise',
+      level: 6,
+      description: 'At 6th level, you can choose two more of your proficiencies to gain the benefits of Expertise.',
+      type: 'feature'
+    },
+    {
+      name: 'Evasion',
+      level: 7,
+      description: 'Beginning at 7th level, you can nimbly dodge out of the way of certain area effects. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 8,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Roguish Archetype Feature',
+      level: 9,
+      description: 'At 9th level, you gain a feature granted by your Roguish Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 10,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Reliable Talent',
+      level: 11,
+      description: 'By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 12,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Roguish Archetype Feature',
+      level: 13,
+      description: 'At 13th level, you gain a feature granted by your Roguish Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Blindsense',
+      level: 14,
+      description: 'Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you.',
+      type: 'feature'
+    },
+    {
+      name: 'Slippery Mind',
+      level: 15,
+      description: 'By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 16,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Roguish Archetype Feature',
+      level: 17,
+      description: 'At 17th level, you gain a feature granted by your Roguish Archetype.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Elusive',
+      level: 18,
+      description: 'Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren\'t incapacitated.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 19,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Stroke of Luck',
+      level: 20,
+      description: 'At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.',
+      type: 'feature'
     }
   ],
 
@@ -264,6 +372,78 @@ export const CLASS_FEATURES: Record<string, ClassFeature[]> = {
       name: 'Channel Divinity',
       level: 2,
       description: 'At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 4,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Destroy Undead',
+      level: 5,
+      description: 'Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold.',
+      type: 'feature'
+    },
+    {
+      name: 'Channel Divinity (2/rest)',
+      level: 6,
+      description: 'At 6th level, you can use your Channel Divinity twice between rests.',
+      type: 'feature'
+    },
+    {
+      name: 'Divine Domain Feature',
+      level: 6,
+      description: 'At 6th level, you gain a feature granted by your Divine Domain.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 8,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Divine Domain Feature',
+      level: 8,
+      description: 'At 8th level, you gain a feature granted by your Divine Domain.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 12,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 16,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Divine Domain Feature',
+      level: 17,
+      description: 'At 17th level, you gain a feature granted by your Divine Domain.',
+      type: 'subclass_feature'
+    },
+    {
+      name: 'Channel Divinity (3/rest)',
+      level: 18,
+      description: 'At 18th level, you can use your Channel Divinity three times between rests.',
+      type: 'feature'
+    },
+    {
+      name: 'Ability Score Improvement',
+      level: 19,
+      description: 'You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.',
+      type: 'asi'
+    },
+    {
+      name: 'Divine Intervention Improvement',
+      level: 20,
+      description: 'At 20th level, your call for divine intervention succeeds automatically, no roll required.',
       type: 'feature'
     }
   ],
