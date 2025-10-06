@@ -20,7 +20,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Remarkable Athlete',
           level: 7,
-          description: 'You can add half your proficiency bonus to any Strength, Dexterity, or Constitution check you make that doesn\'t already use your proficiency bonus.',
+          description: 'You can add half your proficiency bonus to any Strength, Dexterity, or Constitution check you make that doesn\'t already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier.',
+          type: 'subclass_feature',
+          subclass: 'Champion'
+        },
+        {
+          name: 'Additional Fighting Style',
+          level: 10,
+          description: 'You can choose a second option from the Fighting Style class feature.',
+          type: 'subclass_feature',
+          subclass: 'Champion'
+        },
+        {
+          name: 'Superior Critical',
+          level: 15,
+          description: 'Your weapon attacks score a critical hit on a roll of 18-20.',
+          type: 'subclass_feature',
+          subclass: 'Champion'
+        },
+        {
+          name: 'Survivor',
+          level: 18,
+          description: 'At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don\'t gain this benefit if you have 0 hit points.',
           type: 'subclass_feature',
           subclass: 'Champion'
         }
@@ -34,14 +55,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Combat Superiority',
           level: 3,
-          description: 'You learn maneuvers that are fueled by special dice called superiority dice.',
+          description: 'You learn maneuvers that are fueled by special dice called superiority dice. You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all expended superiority dice when you finish a short or long rest. You learn three maneuvers of your choice.',
+          type: 'subclass_feature',
+          subclass: 'Battle Master'
+        },
+        {
+          name: 'Student of War',
+          level: 3,
+          description: 'You gain proficiency with one type of artisan\'s tools of your choice.',
           type: 'subclass_feature',
           subclass: 'Battle Master'
         },
         {
           name: 'Know Your Enemy',
           level: 7,
-          description: 'If you spend at least 1 minute observing or interacting with another creature, you can learn certain information about its capabilities.',
+          description: 'If you spend at least 1 minute observing or interacting with another creature outside of combat, you can learn certain information about its capabilities compared to your own. The DM tells you if the creature is your equal, superior, or inferior in regard to two of the following characteristics of your choice: Strength score, Dexterity score, Constitution score, Armor Class, current hit points, total class levels (if any), or fighter class levels (if any).',
+          type: 'subclass_feature',
+          subclass: 'Battle Master'
+        },
+        {
+          name: 'Improved Combat Superiority',
+          level: 10,
+          description: 'Your superiority dice turn into d10s. At 18th level, they turn into d12s.',
+          type: 'subclass_feature',
+          subclass: 'Battle Master'
+        },
+        {
+          name: 'Relentless',
+          level: 15,
+          description: 'When you roll initiative and have no superiority dice remaining, you regain 1 superiority die.',
           type: 'subclass_feature',
           subclass: 'Battle Master'
         }
@@ -55,14 +97,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Spellcasting',
           level: 3,
-          description: 'You learn to cast spells from the wizard spell list.',
+          description: 'You learn to cast spells from the wizard spell list. You learn two cantrips of your choice from the wizard spell list. You learn an additional wizard cantrip of your choice at 10th level.',
           type: 'subclass_feature',
           subclass: 'Eldritch Knight'
         },
         {
           name: 'Weapon Bond',
           level: 3,
-          description: 'You can bond with up to two weapons and summon them as a bonus action.',
+          description: 'You learn a ritual that creates a magical bond between yourself and one weapon. Once bonded, you can\'t be disarmed of that weapon unless you are incapacitated. You can summon that weapon as a bonus action, causing it to teleport instantly to your hand. You can bond with up to two weapons.',
+          type: 'subclass_feature',
+          subclass: 'Eldritch Knight'
+        },
+        {
+          name: 'War Magic',
+          level: 7,
+          description: 'When you use your action to cast a cantrip, you can make one weapon attack as a bonus action.',
+          type: 'subclass_feature',
+          subclass: 'Eldritch Knight'
+        },
+        {
+          name: 'Eldritch Strike',
+          level: 10,
+          description: 'When you hit a creature with a weapon attack, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn.',
+          type: 'subclass_feature',
+          subclass: 'Eldritch Knight'
+        },
+        {
+          name: 'Arcane Charge',
+          level: 15,
+          description: 'When you use your Action Surge, you can teleport up to 30 feet to an unoccupied space you can see. You can teleport before or after the additional action.',
+          type: 'subclass_feature',
+          subclass: 'Eldritch Knight'
+        },
+        {
+          name: 'Improved War Magic',
+          level: 18,
+          description: 'When you use your action to cast a spell, you can make one weapon attack as a bonus action.',
           type: 'subclass_feature',
           subclass: 'Eldritch Knight'
         }
@@ -74,16 +144,37 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
       description: 'Arcane Archers imbue their arrows with magical effects.',
       features: [
         {
+          name: 'Arcane Archer Lore',
+          level: 3,
+          description: 'You learn either the Druidcraft or Prestidigitation cantrip, and you gain proficiency in either the Arcana or Nature skill.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Archer'
+        },
+        {
           name: 'Arcane Shot',
           level: 3,
-          description: 'You learn to unleash special magical effects with your arrows.',
+          description: 'You learn to unleash special magical effects with your arrows. You learn two Arcane Shot options of your choice. Once per turn when you fire an arrow from a shortbow or longbow as part of the Attack action, you can apply one of your Arcane Shot options to that arrow. You have two uses of this ability and regain all expended uses when you finish a short or long rest.',
           type: 'subclass_feature',
           subclass: 'Arcane Archer'
         },
         {
           name: 'Magic Arrow',
           level: 7,
-          description: 'Your arrows count as magical for overcoming resistance.',
+          description: 'Whenever you fire a nonmagical arrow from a shortbow or longbow, you can make it magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. The magic fades from the arrow immediately after it hits or misses its target.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Archer'
+        },
+        {
+          name: 'Curving Shot',
+          level: 7,
+          description: 'When you make an attack roll with a magic arrow and miss, you can use a bonus action to reroll the attack roll against a different target within 60 feet of the original target.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Archer'
+        },
+        {
+          name: 'Ever-Ready Shot',
+          level: 15,
+          description: 'Your magical archery is always ready. If you roll initiative and have no uses of Arcane Shot remaining, you regain one use of it.',
           type: 'subclass_feature',
           subclass: 'Arcane Archer'
         }
@@ -95,16 +186,51 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
       description: 'Cavaliers are expert mounted combatants and defenders.',
       features: [
         {
+          name: 'Bonus Proficiency',
+          level: 3,
+          description: 'You gain proficiency in one of the following skills of your choice: Animal Handling, History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice.',
+          type: 'subclass_feature',
+          subclass: 'Cavalier'
+        },
+        {
           name: 'Born to the Saddle',
           level: 3,
-          description: 'You have advantage on saving throws to avoid falling off your mount.',
+          description: 'You have advantage on saving throws made to avoid falling off your mount. If you fall off your mount and descend no more than 10 feet, you can land on your feet if you\'re not incapacitated. Mounting or dismounting a creature costs you only 5 feet of movement, rather than half your speed.',
           type: 'subclass_feature',
           subclass: 'Cavalier'
         },
         {
           name: 'Unwavering Mark',
           level: 3,
-          description: 'You excel at foiling attacks and protecting allies.',
+          description: 'When you hit a creature with a melee weapon attack, you can mark the creature until the end of your next turn. A marked creature has disadvantage on any attack roll that doesn\'t target you. If a marked creature deals damage to anyone other than you, you can make a special melee weapon attack against it on your next turn as a bonus action. You can use this ability a number of times equal to your Strength modifier (minimum of once), and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Cavalier'
+        },
+        {
+          name: 'Warding Maneuver',
+          level: 7,
+          description: 'When you or a creature you can see within 5 feet of you is hit by an attack, you can use your reaction to add 1d8 to the target\'s AC against that attack. If the attack still hits, the target has resistance against the attack\'s damage. You can use this feature a number of times equal to your Constitution modifier (minimum of once), and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Cavalier'
+        },
+        {
+          name: 'Hold the Line',
+          level: 10,
+          description: 'Creatures provoke an opportunity attack from you when they move 5 feet or more while within your reach, and if you hit a creature with an opportunity attack, the target\'s speed is reduced to 0 until the end of the current turn.',
+          type: 'subclass_feature',
+          subclass: 'Cavalier'
+        },
+        {
+          name: 'Ferocious Charger',
+          level: 15,
+          description: 'If you move at least 10 feet in a straight line right before attacking a creature and you hit it with the attack, that target must succeed on a Strength saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be knocked prone. You can use this feature only once on each of your turns.',
+          type: 'subclass_feature',
+          subclass: 'Cavalier'
+        },
+        {
+          name: 'Vigilant Defender',
+          level: 18,
+          description: 'You respond to danger with extraordinary vigilance. In combat, you get a special reaction that you can take once on every creature\'s turn, except your turn. You can use this special reaction only to make an opportunity attack, and you can\'t use it on the same turn that you take your normal reaction.',
           type: 'subclass_feature',
           subclass: 'Cavalier'
         }
@@ -116,16 +242,44 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
       description: 'Samurai are disciplined warriors who channel their fighting spirit.',
       features: [
         {
+          name: 'Bonus Proficiency',
+          level: 3,
+          description: 'You gain proficiency in one of the following skills of your choice: History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice.',
+          type: 'subclass_feature',
+          subclass: 'Samurai'
+        },
+        {
           name: 'Fighting Spirit',
           level: 3,
-          description: 'You can give yourself advantage on weapon attacks and gain temporary hit points.',
+          description: 'As a bonus action, you can give yourself advantage on weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points. The number of temporary hit points increases when you reach certain levels in this class: to 10 at 10th level and to 15 at 15th level. You can use this feature three times, and you regain all expended uses when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Samurai'
         },
         {
           name: 'Elegant Courtier',
           level: 7,
-          description: 'You gain proficiency in Wisdom saving throws and add your Wisdom modifier to Charisma checks.',
+          description: 'You gain proficiency in the Wisdom saving throw. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice). In addition, you add your Wisdom modifier to any Charisma (Persuasion) checks you make.',
+          type: 'subclass_feature',
+          subclass: 'Samurai'
+        },
+        {
+          name: 'Tireless Spirit',
+          level: 10,
+          description: 'When you roll initiative and have no uses of Fighting Spirit remaining, you regain one use.',
+          type: 'subclass_feature',
+          subclass: 'Samurai'
+        },
+        {
+          name: 'Rapid Strike',
+          level: 15,
+          description: 'If you take the Attack action on your turn and have advantage on an attack roll against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action. You can do so no more than once per turn.',
+          type: 'subclass_feature',
+          subclass: 'Samurai'
+        },
+        {
+          name: 'Strength Before Death',
+          level: 18,
+          description: 'If you take damage that reduces you to 0 hit points but doesn\'t kill you outright, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn. While you have 0 hit points, taking damage causes death saving throw failures as normal, and three death saving throw failures can still kill you. When the extra turn ends, you fall unconscious if you still have 0 hit points. Once you use this feature, you can\'t use it again until you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Samurai'
         }
@@ -139,14 +293,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Psionic Power',
           level: 3,
-          description: 'You harbor a wellspring of psionic energy within yourself.',
+          description: 'You harbor a wellspring of psionic energy within yourself. This energy is represented by your Psionic Energy dice, which are d6s. You have a number of these dice equal to twice your proficiency bonus. You can use these dice to fuel various psionic powers: Protective Field (reduce damage), Psionic Strike (add force damage), or Telekinetic Movement (move objects or creatures). You regain all expended Psionic Energy dice when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Psi Warrior'
         },
         {
           name: 'Telekinetic Adept',
           level: 7,
-          description: 'You can use your psionic energy to move objects and creatures.',
+          description: 'You have mastered new ways to use your psionic energy. You can cast the Telekinesis spell, requiring no components, and your spellcasting ability is Intelligence. On each of your turns while you concentrate on this spell, including the turn when you cast it, you can make one weapon attack as a bonus action. Once you cast this spell, you can\'t do so again until you finish a long rest, unless you expend a Psionic Energy die to cast it again.',
+          type: 'subclass_feature',
+          subclass: 'Psi Warrior'
+        },
+        {
+          name: 'Psi-Powered Leap',
+          level: 7,
+          description: 'As a bonus action, you can propel your body with your mind. You gain a flying speed equal to twice your walking speed until the end of the current turn. Once you take this bonus action, you can\'t do so again until you finish a short or long rest, unless you expend a Psionic Energy die to take it again.',
+          type: 'subclass_feature',
+          subclass: 'Psi Warrior'
+        },
+        {
+          name: 'Guarded Mind',
+          level: 10,
+          description: 'The psionic energy flowing through you has bolstered your mind. You have resistance to psychic damage. Moreover, if you start your turn charmed or frightened, you can expend a Psionic Energy die and end every effect on yourself subjecting you to those conditions.',
+          type: 'subclass_feature',
+          subclass: 'Psi Warrior'
+        },
+        {
+          name: 'Bulwark of Force',
+          level: 15,
+          description: 'You can shield yourself and others with telekinetic force. As a bonus action, you can choose creatures, which can include you, that you can see within 30 feet of you, up to a number of creatures equal to your Intelligence modifier (minimum of one creature). Each of the chosen creatures is protected by half cover for 1 minute or until you\'re incapacitated. Once you take this bonus action, you can\'t do so again until you finish a long rest, unless you expend a Psionic Energy die to take it again.',
+          type: 'subclass_feature',
+          subclass: 'Psi Warrior'
+        },
+        {
+          name: 'Telekinetic Master',
+          level: 18,
+          description: 'Your ability to move creatures and objects with your mind is matched by few. You can cast the Telekinesis spell, requiring no components, and your spellcasting ability for the spell is Intelligence. On each of your turns while you concentrate on the spell, including the turn when you cast it, you can make one attack with a weapon as a bonus action. Once you cast the spell with this feature, you can\'t do so again until you finish a long rest, unless you expend a Psionic Energy die to cast it again.',
           type: 'subclass_feature',
           subclass: 'Psi Warrior'
         }
@@ -158,16 +340,51 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
       description: 'Rune Knights use ancient giant runes to enhance their martial abilities.',
       features: [
         {
+          name: 'Bonus Proficiencies',
+          level: 3,
+          description: 'You gain proficiency with smith\'s tools, and you learn to speak, read, and write Giant.',
+          type: 'subclass_feature',
+          subclass: 'Rune Knight'
+        },
+        {
           name: 'Rune Carver',
           level: 3,
-          description: 'You learn to inscribe runes on your equipment that grant magical benefits.',
+          description: 'You learn to inscribe runes on your equipment that grant magical benefits. You learn two runes of your choice from the rune options presented below, and you learn an additional rune at 7th, 10th, and 15th level. Whenever you gain a level in this class, you can replace one rune you know with a different one.',
           type: 'subclass_feature',
           subclass: 'Rune Knight'
         },
         {
           name: 'Giant\'s Might',
           level: 3,
-          description: 'You can grow larger using giant magic.',
+          description: 'As a bonus action, you magically gain the following benefits for 1 minute: you become Large if you are smaller, you have advantage on Strength checks and Strength saving throws, and once on each of your turns, one of your attacks with a weapon or unarmed strike can deal an extra 1d6 damage to a target on a hit. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Rune Knight'
+        },
+        {
+          name: 'Runic Shield',
+          level: 7,
+          description: 'When another creature you can see within 60 feet of you is hit by an attack roll, you can use your reaction to force the attacker to reroll the d20 and use the new roll. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Rune Knight'
+        },
+        {
+          name: 'Great Stature',
+          level: 10,
+          description: 'The magic of your runes permanently alters you. When you gain this feature, you grow 3d4 inches in height, and the extra damage from your Giant\'s Might feature increases to 1d8.',
+          type: 'subclass_feature',
+          subclass: 'Rune Knight'
+        },
+        {
+          name: 'Master of Runes',
+          level: 15,
+          description: 'You can invoke each rune you know from your Rune Carver feature twice, rather than once, and you regain all expended uses when you finish a short or long rest.',
+          type: 'subclass_feature',
+          subclass: 'Rune Knight'
+        },
+        {
+          name: 'Runic Juggernaut',
+          level: 18,
+          description: 'You learn how to amplify your rune-powered transformation. As a result, the extra damage from your Giant\'s Might feature increases to 1d10. Moreover, when you use that feature, your size can increase to Huge, and while you are that size, your reach increases by 5 feet.',
           type: 'subclass_feature',
           subclass: 'Rune Knight'
         }
@@ -181,14 +398,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Manifest Echo',
           level: 3,
-          description: 'You can summon an echo of yourself from an unrealized timeline.',
+          description: 'You can use a bonus action to magically manifest an echo of yourself in an unoccupied space you can see within 15 feet of you. The echo is a magical, translucent, gray image of you that lasts until it is destroyed, until you dismiss it, or until you manifest another echo. Your echo has AC 14 + your proficiency bonus, 1 hit point, and immunity to all conditions. When you take the Attack action, you can make any attack from the echo\'s position. You can make opportunity attacks from the echo\'s position.',
           type: 'subclass_feature',
           subclass: 'Echo Knight'
         },
         {
           name: 'Unleash Incarnation',
           level: 3,
-          description: 'You can make additional attacks from your echo\'s position.',
+          description: 'You can heighten your echo\'s fury. Whenever you take the Attack action, you can make one additional melee attack from the echo\'s position. You can use this feature a number of times equal to your Constitution modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Echo Knight'
+        },
+        {
+          name: 'Echo Avatar',
+          level: 7,
+          description: 'You can temporarily transfer your consciousness to your echo. As an action, you can see through your echo\'s eyes and hear through its ears. During this time, you are deafened and blinded. You can sustain this effect for up to 10 minutes, and you can end it at any time (no action required). While your echo is being used this way, it can be up to 1,000 feet away from you without being destroyed.',
+          type: 'subclass_feature',
+          subclass: 'Echo Knight'
+        },
+        {
+          name: 'Shadow Martyr',
+          level: 10,
+          description: 'You can make your echo throw itself in front of an attack directed at another creature. Before the attack roll is made, you can use your reaction to teleport the echo to an unoccupied space within 5 feet of the targeted creature. The attack roll that triggered the reaction is instead made against your echo. Once you use this feature, you can\'t use it again until you finish a short or long rest.',
+          type: 'subclass_feature',
+          subclass: 'Echo Knight'
+        },
+        {
+          name: 'Reclaim Potential',
+          level: 15,
+          description: 'When your echo is destroyed by taking damage, you can gain a number of temporary hit points equal to 2d6 + your Constitution modifier, provided you don\'t already have temporary hit points. You can use this feature a number of times equal to your Constitution modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Echo Knight'
+        },
+        {
+          name: 'Legion of One',
+          level: 18,
+          description: 'You can create two echoes with your Manifest Echo feature, and these echoes can coexist. If you try to create a third echo, the previous two echoes are destroyed. Anything you can do from one echo\'s position can be done from the other\'s instead. In addition, when you roll initiative and have no uses of your Unleash Incarnation feature left, you regain one use of that feature.',
           type: 'subclass_feature',
           subclass: 'Echo Knight'
         }
@@ -202,14 +447,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Rallying Cry',
           level: 3,
-          description: 'When you use Second Wind, allies regain hit points.',
+          description: 'When you use your Second Wind feature, you can choose up to three creatures within 60 feet of you that are allied with you. Each one regains hit points equal to your fighter level, provided that the creature can see or hear you.',
           type: 'subclass_feature',
           subclass: 'Purple Dragon Knight'
         },
         {
           name: 'Royal Envoy',
           level: 7,
-          description: 'You gain proficiency in Persuasion and expertise if already proficient.',
+          description: 'You gain proficiency in the Persuasion skill. If you are already proficient in it, you gain proficiency in one of the following skills of your choice: Animal Handling, Insight, Intimidation, or Performance. Your proficiency bonus is doubled for any ability check you make that uses Persuasion. You receive this benefit regardless of the skill proficiency you gain from this feature.',
+          type: 'subclass_feature',
+          subclass: 'Purple Dragon Knight'
+        },
+        {
+          name: 'Inspiring Surge',
+          level: 10,
+          description: 'When you use your Action Surge feature, you can choose one creature within 60 feet of you that is allied with you. That creature can make one melee or ranged weapon attack with its reaction, provided that it can see or hear you. Starting at 18th level, you can choose two allies within 60 feet of you, rather than one.',
+          type: 'subclass_feature',
+          subclass: 'Purple Dragon Knight'
+        },
+        {
+          name: 'Bulwark',
+          level: 15,
+          description: 'You can extend the benefit of your Indomitable feature to an ally. When you decide to use Indomitable to reroll an Intelligence, a Wisdom, or a Charisma saving throw and you aren\'t incapacitated, you can choose one ally within 60 feet of you that also failed its saving throw against the same effect. If that creature can see or hear you, it can reroll its saving throw and must use the new roll.',
           type: 'subclass_feature',
           subclass: 'Purple Dragon Knight'
         }
@@ -223,14 +482,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Brute Force',
           level: 3,
-          description: 'You deal additional damage with weapon attacks based on your level.',
+          description: 'You deal additional damage with weapon attacks. Whenever you hit with a weapon that you\'re proficient with and deal damage, the weapon\'s damage increases by an amount based on your level in this class: 1d4 at 3rd level, 1d6 at 10th level, and 1d8 at 16th level.',
           type: 'subclass_feature',
           subclass: 'Brute (UA)'
         },
         {
           name: 'Brutish Durability',
           level: 7,
-          description: 'Your hit point maximum increases and you can add a d6 to death saving throws.',
+          description: 'Your toughness allows you to shrug off assaults that would devastate others. Whenever you make a saving throw, roll 1d6 and add the die to your saving throw total. If applying this bonus to a death saving throw increases the total to 20 or higher, you gain the benefits of rolling a 20 on the d20.',
+          type: 'subclass_feature',
+          subclass: 'Brute (UA)'
+        },
+        {
+          name: 'Additional Fighting Style',
+          level: 10,
+          description: 'You can choose a second option from the Fighting Style class feature.',
+          type: 'subclass_feature',
+          subclass: 'Brute (UA)'
+        },
+        {
+          name: 'Devastating Critical',
+          level: 15,
+          description: 'When you score a critical hit with a weapon attack, you gain a bonus to that weapon\'s damage roll equal to your level in this class.',
+          type: 'subclass_feature',
+          subclass: 'Brute (UA)'
+        },
+        {
+          name: 'Survivor',
+          level: 18,
+          description: 'At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don\'t gain this benefit if you have 0 hit points.',
           type: 'subclass_feature',
           subclass: 'Brute (UA)'
         }
@@ -254,7 +534,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Sculpt Spells',
           level: 2,
-          description: 'You can create pockets of relative safety within the effects of your evocation spells.',
+          description: 'When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell\'s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save.',
+          type: 'subclass_feature',
+          subclass: 'School of Evocation'
+        },
+        {
+          name: 'Potent Cantrip',
+          level: 6,
+          description: 'When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip\'s damage (if any) but suffers no additional effect from the cantrip.',
+          type: 'subclass_feature',
+          subclass: 'School of Evocation'
+        },
+        {
+          name: 'Empowered Evocation',
+          level: 10,
+          description: 'You can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast.',
+          type: 'subclass_feature',
+          subclass: 'School of Evocation'
+        },
+        {
+          name: 'Overchannel',
+          level: 14,
+          description: 'When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity.',
           type: 'subclass_feature',
           subclass: 'School of Evocation'
         }
@@ -596,6 +897,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You gain the ability to climb faster than normal; climbing no longer costs you extra movement.',
           type: 'subclass_feature',
           subclass: 'Thief'
+        },
+        {
+          name: 'Supreme Sneak',
+          level: 9,
+          description: 'You have advantage on Dexterity (Stealth) checks if you move no more than half your speed on the same turn.',
+          type: 'subclass_feature',
+          subclass: 'Thief'
+        },
+        {
+          name: 'Use Magic Device',
+          level: 13,
+          description: 'You can ignore all class, race, and level requirements on the use of magic items.',
+          type: 'subclass_feature',
+          subclass: 'Thief'
+        },
+        {
+          name: 'Thief\'s Reflexes',
+          level: 17,
+          description: 'You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10.',
+          type: 'subclass_feature',
+          subclass: 'Thief'
         }
       ]
     },
@@ -614,7 +936,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Assassinate',
           level: 3,
-          description: 'You have advantage on attack rolls against any creature that hasn\'t taken a turn in the combat yet.',
+          description: 'You have advantage on attack rolls against any creature that hasn\'t taken a turn in the combat yet. In addition, any hit you score against a creature that is surprised is a critical hit.',
+          type: 'subclass_feature',
+          subclass: 'Assassin'
+        },
+        {
+          name: 'Infiltration Expertise',
+          level: 9,
+          description: 'You can unfailingly create false identities for yourself. You must spend seven days and 25 gp to establish the history, profession, and affiliations for an identity. You can\'t establish an identity that belongs to someone else.',
+          type: 'subclass_feature',
+          subclass: 'Assassin'
+        },
+        {
+          name: 'Impostor',
+          level: 13,
+          description: 'You gain the ability to unerringly mimic another person\'s speech, writing, and behavior. You must spend at least three hours studying these three components of the person\'s behavior, listening to speech, examining handwriting, and observing mannerisms.',
+          type: 'subclass_feature',
+          subclass: 'Assassin'
+        },
+        {
+          name: 'Death Strike',
+          level: 17,
+          description: 'You become a master of instant death. When you attack and hit a creature that is surprised, it must make a Constitution saving throw (DC 8 + your Dexterity modifier + your proficiency bonus). On a failed save, double the damage of your attack against the creature.',
           type: 'subclass_feature',
           subclass: 'Assassin'
         }
@@ -628,14 +971,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Spellcasting',
           level: 3,
-          description: 'You learn to cast spells from the wizard spell list, focusing on enchantment and illusion.',
+          description: 'You learn to cast spells from the wizard spell list, focusing on enchantment and illusion. You learn three cantrips: Mage Hand and two other cantrips of your choice from the wizard spell list. You learn additional wizard spells of your choice at higher levels.',
           type: 'subclass_feature',
           subclass: 'Arcane Trickster'
         },
         {
           name: 'Mage Hand Legerdemain',
           level: 3,
-          description: 'You can use your Mage Hand to pick locks and disarm traps at range.',
+          description: 'When you cast Mage Hand, you can make the spectral hand invisible, and you can perform the following additional tasks with it: you can stow one object the hand is holding in a container worn or carried by another creature, retrieve an object in a container worn or carried by another creature, or use thieves\' tools to pick locks and disarm traps at range.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Trickster'
+        },
+        {
+          name: 'Magical Ambush',
+          level: 9,
+          description: 'If you are hidden from a creature when you cast a spell on it, the creature has disadvantage on any saving throw it makes against the spell this turn.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Trickster'
+        },
+        {
+          name: 'Versatile Trickster',
+          level: 13,
+          description: 'You gain the ability to distract targets with your Mage Hand. As a bonus action on your turn, you can designate a creature within 5 feet of the spectral hand created by the spell. Doing so gives you advantage on attack rolls against that creature until the end of the turn.',
+          type: 'subclass_feature',
+          subclass: 'Arcane Trickster'
+        },
+        {
+          name: 'Spell Thief',
+          level: 17,
+          description: 'You gain the ability to magically steal the knowledge of how to cast a spell from another spellcaster. Immediately after a creature casts a spell that targets you or includes you in its area of effect, you can use your reaction to force the creature to make a saving throw with its spellcasting ability modifier. On a failed save, you negate the spell\'s effect against you, and you steal the knowledge of the spell if it is at least 1st level and of a level you can cast. For the next 8 hours, you know the spell and can cast it using your spell slots. The creature can\'t cast that spell until the 8 hours have passed. Once you use this feature, you can\'t use it again until you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Arcane Trickster'
         }
@@ -649,14 +1013,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Ear for Deceit',
           level: 3,
-          description: 'You develop a talent for picking out lies.',
+          description: 'You develop a keen ear for picking out lies. Whenever you make a Wisdom (Insight) check to determine whether a creature is lying, treat a roll of 7 or lower on the d20 as an 8.',
           type: 'subclass_feature',
           subclass: 'Inquisitive'
         },
         {
           name: 'Eye for Detail',
           level: 3,
-          description: 'You can use a bonus action to make a Wisdom (Perception) or Intelligence (Investigation) check.',
+          description: 'You can use a bonus action to make a Wisdom (Perception) check to spot a hidden creature or object or to make an Intelligence (Investigation) check to uncover or decipher clues.',
+          type: 'subclass_feature',
+          subclass: 'Inquisitive'
+        },
+        {
+          name: 'Insightful Fighting',
+          level: 3,
+          description: 'As a bonus action, you can make a Wisdom (Insight) check against a creature you can see that isn\'t incapacitated, contested by the target\'s Charisma (Deception) check. If you succeed, you can use your Sneak Attack against that target even if you don\'t have advantage on the attack roll, but not if you have disadvantage on it. This benefit lasts for 1 minute or until you successfully use this feature against a different target.',
+          type: 'subclass_feature',
+          subclass: 'Inquisitive'
+        },
+        {
+          name: 'Steady Eye',
+          level: 9,
+          description: 'You have advantage on any Wisdom (Perception) or Intelligence (Investigation) check if you move no more than half your speed on the same turn.',
+          type: 'subclass_feature',
+          subclass: 'Inquisitive'
+        },
+        {
+          name: 'Unerring Eye',
+          level: 13,
+          description: 'Your senses are almost impossible to foil. As an action, you sense the presence of illusions, shapechangers not in their original form, and other magic designed to deceive the senses within 30 feet of you, provided you aren\'t blinded or deafened. You sense that an effect is attempting to trick you, but you gain no insight into what is hidden or into its true nature. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses of it when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Inquisitive'
+        },
+        {
+          name: 'Eye for Weakness',
+          level: 17,
+          description: 'You learn to exploit a creature\'s weaknesses by carefully studying its tactics and movement. While your Insightful Fighting feature applies to a creature, your Sneak Attack damage against that creature increases by 3d6.',
           type: 'subclass_feature',
           subclass: 'Inquisitive'
         }
@@ -670,14 +1062,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Master of Intrigue',
           level: 3,
-          description: 'You gain proficiency with disguise kit, forgery kit, and one gaming set.',
+          description: 'You gain proficiency with the disguise kit, the forgery kit, and one gaming set of your choice. You also learn two languages of your choice. Additionally, you can unerringly mimic the speech patterns and accent of a creature that you hear speak for at least 1 minute, enabling you to pass yourself off as a native speaker of a particular land, provided that you know the language.',
           type: 'subclass_feature',
           subclass: 'Mastermind'
         },
         {
           name: 'Master of Tactics',
           level: 3,
-          description: 'You can use the Help action as a bonus action.',
+          description: 'You can use the Help action as a bonus action. Additionally, when you use the Help action to aid an ally in attacking a creature, the target of that attack can be within 30 feet of you, rather than within 5 feet of you, if the target can see or hear you.',
+          type: 'subclass_feature',
+          subclass: 'Mastermind'
+        },
+        {
+          name: 'Insightful Manipulator',
+          level: 9,
+          description: 'If you spend at least 1 minute observing or interacting with another creature outside combat, you can learn certain information about its capabilities compared to your own. The DM tells you if the creature is your equal, superior, or inferior in regard to two of the following characteristics of your choice: Intelligence score, Wisdom score, Charisma score, or class levels (if any).',
+          type: 'subclass_feature',
+          subclass: 'Mastermind'
+        },
+        {
+          name: 'Misdirection',
+          level: 13,
+          description: 'You can sometimes cause another creature to suffer an attack meant for you. When you are targeted by an attack while a creature within 5 feet of you is granting you cover against that attack, you can use your reaction to have the attack target that creature instead of you.',
+          type: 'subclass_feature',
+          subclass: 'Mastermind'
+        },
+        {
+          name: 'Soul of Deceit',
+          level: 17,
+          description: 'Your thoughts can\'t be read by telepathy or other means, unless you allow it. You can present false thoughts by succeeding on a Charisma (Deception) check contested by the mind reader\'s Wisdom (Insight) check. Additionally, no matter what you say, magic that would determine if you are telling the truth indicates you are being truthful if you so choose, and you can\'t be compelled to tell the truth by magic.',
           type: 'subclass_feature',
           subclass: 'Mastermind'
         }
@@ -691,14 +1104,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Skirmisher',
           level: 3,
-          description: 'You can move up to half your speed as a reaction when an enemy ends its turn within 5 feet.',
+          description: 'You can move up to half your speed as a reaction when an enemy ends its turn within 5 feet of you. This movement doesn\'t provoke opportunity attacks.',
           type: 'subclass_feature',
           subclass: 'Scout'
         },
         {
           name: 'Survivalist',
           level: 3,
-          description: 'You gain proficiency in Nature and Survival skills.',
+          description: 'You gain proficiency in the Nature and Survival skills if you don\'t already have it. Your proficiency bonus is doubled for any ability check you make that uses either of those proficiencies.',
+          type: 'subclass_feature',
+          subclass: 'Scout'
+        },
+        {
+          name: 'Superior Mobility',
+          level: 9,
+          description: 'Your walking speed increases by 10 feet. If you have a climbing or swimming speed, this increase applies to that speed as well.',
+          type: 'subclass_feature',
+          subclass: 'Scout'
+        },
+        {
+          name: 'Ambush Master',
+          level: 13,
+          description: 'You excel at leading ambushes and acting first in a fight. You have advantage on initiative rolls. In addition, the first creature you hit during the first round of a combat becomes easier for you and others to strike; attack rolls against that target have advantage until the start of your next turn.',
+          type: 'subclass_feature',
+          subclass: 'Scout'
+        },
+        {
+          name: 'Sudden Strike',
+          level: 17,
+          description: 'You can strike with deadly speed. If you take the Attack action on your turn, you can make one additional attack as a bonus action. This attack can benefit from your Sneak Attack even if you have already used it this turn, but you can\'t use your Sneak Attack against the same target more than once in a turn.',
           type: 'subclass_feature',
           subclass: 'Scout'
         }
@@ -712,14 +1146,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Fancy Footwork',
           level: 3,
-          description: 'During your turn, if you make a melee attack, that creature can\'t make opportunity attacks against you.',
+          description: 'During your turn, if you make a melee attack against a creature, that creature can\'t make opportunity attacks against you for the rest of your turn.',
           type: 'subclass_feature',
           subclass: 'Swashbuckler'
         },
         {
           name: 'Rakish Audacity',
           level: 3,
-          description: 'You add your Charisma modifier to your initiative rolls.',
+          description: 'You add your Charisma modifier to your initiative rolls. In addition, you don\'t need advantage on your attack roll to use your Sneak Attack if no creature other than your target is within 5 feet of you. All the other rules for the Sneak Attack class feature still apply to you.',
+          type: 'subclass_feature',
+          subclass: 'Swashbuckler'
+        },
+        {
+          name: 'Panache',
+          level: 9,
+          description: 'You can make a Charisma (Persuasion) check contested by a creature\'s Wisdom (Insight) check. If you succeed and the creature is hostile, it has disadvantage on attack rolls against targets other than you and can\'t make opportunity attacks against targets other than you. If you succeed and the creature isn\'t hostile, it is charmed by you for 1 minute.',
+          type: 'subclass_feature',
+          subclass: 'Swashbuckler'
+        },
+        {
+          name: 'Elegant Maneuver',
+          level: 13,
+          description: 'You can use a bonus action on your turn to gain advantage on the next Dexterity (Acrobatics) or Strength (Athletics) check you make during the same turn.',
+          type: 'subclass_feature',
+          subclass: 'Swashbuckler'
+        },
+        {
+          name: 'Master Duelist',
+          level: 17,
+          description: 'If you miss with an attack roll, you can roll it again with advantage. Once you do so, you can\'t use this feature again until you finish a short or long rest.',
           type: 'subclass_feature',
           subclass: 'Swashbuckler'
         }
@@ -733,14 +1188,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Whispers of the Dead',
           level: 3,
-          description: 'You can gain a skill or tool proficiency for a short time from spirits.',
+          description: 'Echoes of those who have died cling to you. Whenever you finish a short or long rest, you can gain one skill or tool proficiency of your choice, as a ghostly presence shares its knowledge with you. You lose this proficiency when you use this feature to choose a different proficiency that you lack.',
           type: 'subclass_feature',
           subclass: 'Phantom'
         },
         {
           name: 'Wails from the Grave',
           level: 3,
-          description: 'When you deal Sneak Attack damage, you can harm another creature within 30 feet.',
+          description: 'As you nudge someone closer to the grave, you can channel the power of death to harm someone else as well. Immediately after you deal your Sneak Attack damage to a creature on your turn, you can target a second creature that you can see within 30 feet of the first creature. Roll half the number of Sneak Attack dice for your level (round up), and the second creature takes necrotic damage equal to the roll\'s total, as wails of the dead sound around them for a moment. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Phantom'
+        },
+        {
+          name: 'Tokens of the Departed',
+          level: 9,
+          description: 'When a life ends in your presence, you\'re able to snatch a token from the departing soul, a sliver of its life essence that takes physical form: as a reaction when a creature you can see dies within 30 feet of you, you can open your free hand and cause a Tiny trinket to appear there, a soul trinket. You can have a maximum number of soul trinkets equal to your proficiency bonus, and you can\'t create one while at your maximum. You can use soul trinkets in the following ways: While a soul trinket is on your person, you have advantage on death saving throws and Constitution saving throws. When you deal Sneak Attack damage on your turn, you can destroy one of your soul trinkets that\'s on your person and then immediately use Wails from the Grave, without expending a use of that feature. As an action, you can destroy one of your soul trinkets, no matter where it\'s located. When you do so, you can ask the spirit associated with the trinket one question. The spirit appears to you and answers in a language it knew in life.',
+          type: 'subclass_feature',
+          subclass: 'Phantom'
+        },
+        {
+          name: 'Ghost Walk',
+          level: 13,
+          description: 'You can phase partially into the realm of the dead, becoming like a ghost. As a bonus action, you assume a spectral form. While in this form, you have a flying speed of 10 feet, you can hover, and attack rolls have disadvantage against you. You can also move through creatures and objects as if they were difficult terrain, but you take 1d10 force damage if you end your turn inside a creature or an object. You stay in this form for 10 minutes or until you end it as a bonus action. To use this feature again, you must finish a long rest or destroy one of your soul trinkets as part of the bonus action you use to activate Ghost Walk.',
+          type: 'subclass_feature',
+          subclass: 'Phantom'
+        },
+        {
+          name: 'Death\'s Friend',
+          level: 17,
+          description: 'Your association with death has become so close that you gain the following benefits: When you use your Wails from the Grave, you can deal the necrotic damage to both the first and the second creature. You can use Wails from the Grave unlimited times without expending uses of the feature.',
           type: 'subclass_feature',
           subclass: 'Phantom'
         }
@@ -754,14 +1230,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Psionic Power',
           level: 3,
-          description: 'You harbor a wellspring of psionic energy within yourself.',
+          description: 'You harbor a wellspring of psionic energy within yourself. This energy is represented by your Psionic Energy dice, which are each a d6. You have a number of these dice equal to twice your proficiency bonus, and they fuel various psionic powers you have, which are detailed below. Some of your powers expend the Psionic Energy die they use, and you regain all your expended Psionic Energy dice when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Soulknife'
         },
         {
           name: 'Psychic Blades',
           level: 3,
-          description: 'You can manifest psychic blades to make attacks.',
+          description: 'You can manifest your psionic power as shimmering blades of psychic energy. Whenever you take the Attack action, you can manifest a psychic blade from your free hand and make the attack with that blade. This magic blade is a simple melee weapon with the finesse and thrown properties. It has a normal range of 60 feet and no long range, and on a hit, it deals psychic damage equal to 1d6 plus the ability modifier you used for the attack roll. The blade vanishes immediately after it hits or misses its target, and it leaves no mark on its target if it deals damage. After you attack with the blade, you can make a melee or ranged weapon attack with a second psychic blade as a bonus action on the same turn, provided your other hand is free to create it. The damage die of this bonus attack is 1d4, instead of 1d6.',
+          type: 'subclass_feature',
+          subclass: 'Soulknife'
+        },
+        {
+          name: 'Soul Blades',
+          level: 9,
+          description: 'Your Psychic Blades are now an expression of your psi-suffused soul, giving you these powers that use your Psionic Energy dice: Homing Strikes - If you make an attack roll with your Psychic Blades and miss the target, you can roll one Psionic Energy die and add the number rolled to the attack roll. If this causes the attack to hit, you expend the Psionic Energy die. Psychic Teleportation - As a bonus action, you manifest one of your Psychic Blades, expend one Psionic Energy die and roll it, and throw the blade at an unoccupied space you can see, up to a number of feet away equal to 10 times the number rolled. You then teleport to that space, and the blade vanishes.',
+          type: 'subclass_feature',
+          subclass: 'Soulknife'
+        },
+        {
+          name: 'Psychic Veil',
+          level: 13,
+          description: 'You can weave a veil of psychic static to mask yourself. As an action, you can magically become invisible, along with anything you are wearing or carrying, for 1 hour or until you dismiss this effect (no action required). This invisibility ends early immediately after you deal damage to a creature or you force a creature to make a saving throw. Once you use this feature, you can\'t do so again until you finish a long rest, unless you expend a Psionic Energy die to use this feature again.',
+          type: 'subclass_feature',
+          subclass: 'Soulknife'
+        },
+        {
+          name: 'Rend Mind',
+          level: 17,
+          description: 'You can sweep your Psychic Blade directly through a creature\'s mind. When you use your Psychic Blades to deal Sneak Attack damage to a creature, you can force that target to make a Wisdom saving throw (DC equal to 8 + your proficiency bonus + your Dexterity modifier). If the save fails, the target is stunned for 1 minute. The stunned target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once you use this feature, you can\'t do so again until you finish a long rest, unless you expend three Psionic Energy dice to use it again.',
           type: 'subclass_feature',
           subclass: 'Soulknife'
         }
@@ -775,14 +1272,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Tokens of Past Lives',
           level: 3,
-          description: 'You gain proficiencies from your past lives that change after a long rest.',
+          description: 'You remember talents from your past lives. When you finish a long rest, you gain one skill or tool proficiency of your choice. You can replace this proficiency with another when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'The Revived (UA)'
         },
         {
           name: 'Revived Nature',
           level: 3,
-          description: 'You have advantage on death saves and don\'t need food, water, or sleep.',
+          description: 'Your brush with death has altered you. You have advantage on saving throws against disease and being poisoned, and you have resistance to poison damage. You don\'t need to eat, drink, or breathe. You don\'t need to sleep, and magic can\'t put you to sleep. You can finish a long rest in 4 hours if you spend those hours in an inactive, motionless state, during which you retain consciousness.',
+          type: 'subclass_feature',
+          subclass: 'The Revived (UA)'
+        },
+        {
+          name: 'Bolts from the Grave',
+          level: 9,
+          description: 'You can channel your life force into deadly ethereal bolts. Immediately after you use your Cunning Action, you can make a ranged spell attack against a creature within 30 feet of you, provided you haven\'t used your Sneak Attack this turn. You are proficient with it, and you add your Dexterity modifier to its attack and damage rolls. A hit deals necrotic damage equal to your Sneak Attack. If you hit, you can\'t use your Sneak Attack this turn, unless you use it with a different attack. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'The Revived (UA)'
+        },
+        {
+          name: 'Connect with the Dead',
+          level: 13,
+          description: 'You can create a link with a spirit through their corpse. When you do so, you cast Speak with Dead without using a spell slot and without material components. The corpse you target doesn\'t need to have a mouth and isn\'t under the 10-day limit of the spell. Intelligence is your spellcasting ability for this spell. Using this feature doesn\'t prevent a corpse from being the target of the spell again. When you use this feature, you can also ask the spirit to possess you, provided the spirit is willing. When you do so, you gain the ability to speak and understand a language the spirit knew in life. This benefit lasts for 1 hour or until you end it as a bonus action. Once you use this feature, you must finish a short or long rest before you can use it again.',
+          type: 'subclass_feature',
+          subclass: 'The Revived (UA)'
+        },
+        {
+          name: 'Audience with Death',
+          level: 17,
+          description: 'You have an audience with death itself when you are dying. Whenever you are reduced to 0 hit points but not killed outright, you can choose to have a vision from the realm of death. You see visions of events from your past, future, or the present. The DM chooses the nature of the vision. After the vision, you regain hit points equal to half your hit point maximum, and you stand up if you so choose. Once you use this feature, you can\'t use it again until you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'The Revived (UA)'
         }
@@ -806,7 +1324,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Disciple of Life',
           level: 1,
-          description: 'Your healing spells are more effective.',
+          description: 'Your healing spells are more effective. Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell\'s level.',
+          type: 'subclass_feature',
+          subclass: 'Life Domain'
+        },
+        {
+          name: 'Channel Divinity: Preserve Life',
+          level: 2,
+          description: 'As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum.',
+          type: 'subclass_feature',
+          subclass: 'Life Domain'
+        },
+        {
+          name: 'Blessed Healer',
+          level: 6,
+          description: 'The healing spells you cast on others heal you as well. When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you regain hit points equal to 2 + the spell\'s level.',
+          type: 'subclass_feature',
+          subclass: 'Life Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Life Domain'
+        },
+        {
+          name: 'Supreme Healing',
+          level: 17,
+          description: 'When you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12.',
           type: 'subclass_feature',
           subclass: 'Life Domain'
         }
@@ -827,7 +1373,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'War Priest',
           level: 1,
-          description: 'When you use the Attack action, you can make one weapon attack as a bonus action.',
+          description: 'When you use the Attack action, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'War Domain'
+        },
+        {
+          name: 'Channel Divinity: Guided Strike',
+          level: 2,
+          description: 'When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses.',
+          type: 'subclass_feature',
+          subclass: 'War Domain'
+        },
+        {
+          name: 'Channel Divinity: War God\'s Blessing',
+          level: 6,
+          description: 'When a creature within 30 feet of you makes an attack roll, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the attack hits or misses.',
+          type: 'subclass_feature',
+          subclass: 'War Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'War Domain'
+        },
+        {
+          name: 'Avatar of Battle',
+          level: 17,
+          description: 'You gain resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons.',
           type: 'subclass_feature',
           subclass: 'War Domain'
         }
@@ -841,14 +1415,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Blessings of Knowledge',
           level: 1,
-          description: 'You gain proficiency in two skills and expertise with them.',
+          description: 'You learn two languages of your choice. You also become proficient in your choice of two of the following skills: Arcana, History, Nature, or Religion. Your proficiency bonus is doubled for any ability check you make that uses either of those skills.',
           type: 'subclass_feature',
           subclass: 'Knowledge Domain'
         },
         {
           name: 'Channel Divinity: Knowledge of the Ages',
           level: 2,
-          description: 'You can gain proficiency with a skill or tool for 10 minutes.',
+          description: 'You can use your Channel Divinity to tap into a divine well of knowledge. As an action, you choose one skill or tool. For 10 minutes, you have proficiency with the chosen skill or tool.',
+          type: 'subclass_feature',
+          subclass: 'Knowledge Domain'
+        },
+        {
+          name: 'Channel Divinity: Read Thoughts',
+          level: 6,
+          description: 'You can use your Channel Divinity to read a creature\'s thoughts. You can then use your access to the creature\'s mind to command it. As an action, choose one creature that you can see within 60 feet of you. That creature must make a Wisdom saving throw. If the creature succeeds on the saving throw, you can\'t use this feature on it again until you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Knowledge Domain'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Knowledge Domain'
+        },
+        {
+          name: 'Visions of the Past',
+          level: 17,
+          description: 'You can call up visions of the past that relate to an object you hold or your immediate surroundings. You spend at least 1 minute in meditation and prayer, then receive dreamlike, shadowy visions of recent events. You can meditate in this way for a number of minutes equal to your Wisdom score and must maintain concentration during that time, as if you were casting a spell.',
           type: 'subclass_feature',
           subclass: 'Knowledge Domain'
         }
@@ -862,14 +1457,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Bonus Cantrip',
           level: 1,
-          description: 'You gain the light cantrip.',
+          description: 'You gain the light cantrip if you don\'t already know it.',
           type: 'subclass_feature',
           subclass: 'Light Domain'
         },
         {
           name: 'Warding Flare',
           level: 1,
-          description: 'You can impose disadvantage on an attack roll against you.',
+          description: 'When you are attacked by a creature within 30 feet of you that you can see, you can use your reaction to impose disadvantage on the attack roll, causing light to flare before the attacker before it hits or misses. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Light Domain'
+        },
+        {
+          name: 'Channel Divinity: Radiance of the Dawn',
+          level: 2,
+          description: 'You can use your Channel Divinity to harness sunlight, banishing darkness and dealing radiant damage to your foes. As an action, you present your holy symbol, and any magical darkness within 30 feet of you is dispelled. Additionally, each hostile creature within 30 feet of you must make a Constitution saving throw. A creature takes radiant damage equal to 2d10 + your cleric level on a failed saving throw, and half as much damage on a successful one.',
+          type: 'subclass_feature',
+          subclass: 'Light Domain'
+        },
+        {
+          name: 'Improved Flare',
+          level: 6,
+          description: 'You can also use your Warding Flare feature when a creature that you can see within 30 feet of you attacks a creature other than you.',
+          type: 'subclass_feature',
+          subclass: 'Light Domain'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Light Domain'
+        },
+        {
+          name: 'Corona of Light',
+          level: 17,
+          description: 'You can use your action to activate an aura of sunlight that lasts for 1 minute or until you dismiss it using another action. You emit bright light in a 60-foot radius and dim light 30 feet beyond that. Your enemies in the bright light have disadvantage on saving throws against any spell that deals fire or radiant damage.',
           type: 'subclass_feature',
           subclass: 'Light Domain'
         }
@@ -883,7 +1506,7 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Acolyte of Nature',
           level: 1,
-          description: 'You learn one druid cantrip and gain proficiency in Animal Handling, Nature, or Survival.',
+          description: 'You learn one druid cantrip of your choice. You also gain proficiency in one of the following skills of your choice: Animal Handling, Nature, or Survival.',
           type: 'subclass_feature',
           subclass: 'Nature Domain'
         },
@@ -891,6 +1514,34 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           name: 'Bonus Proficiency',
           level: 1,
           description: 'You gain proficiency with heavy armor.',
+          type: 'subclass_feature',
+          subclass: 'Nature Domain'
+        },
+        {
+          name: 'Channel Divinity: Charm Animals and Plants',
+          level: 2,
+          description: 'You can use your Channel Divinity to charm animals and plants. As an action, you present your holy symbol and invoke the name of your deity. Each beast or plant creature that can see you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is charmed by you for 1 minute or until it takes damage.',
+          type: 'subclass_feature',
+          subclass: 'Nature Domain'
+        },
+        {
+          name: 'Dampen Elements',
+          level: 6,
+          description: 'When you or a creature within 30 feet of you takes acid, cold, fire, lightning, or thunder damage, you can use your reaction to grant resistance to the creature against that instance of the damage.',
+          type: 'subclass_feature',
+          subclass: 'Nature Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 cold, fire, or lightning damage (your choice) to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Nature Domain'
+        },
+        {
+          name: 'Master of Nature',
+          level: 17,
+          description: 'You gain the ability to command animals and plant creatures. While creatures are charmed by your Charm Animals and Plants feature, you can take a bonus action on your turn to verbally command what each of those creatures will do on its next turn.',
           type: 'subclass_feature',
           subclass: 'Nature Domain'
         }
@@ -911,7 +1562,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Wrath of the Storm',
           level: 1,
-          description: 'You can strike back with divine power when hit by an attack.',
+          description: 'When a creature within 5 feet of you that you can see hits you with an attack, you can use your reaction to cause the creature to make a Dexterity saving throw. The creature takes 2d8 lightning or thunder damage (your choice) on a failed saving throw, and half as much damage on a successful one. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Tempest Domain'
+        },
+        {
+          name: 'Channel Divinity: Destructive Wrath',
+          level: 2,
+          description: 'You can use your Channel Divinity to wield the power of the storm with unchecked ferocity. When you roll lightning or thunder damage, you can use your Channel Divinity to deal maximum damage, instead of rolling.',
+          type: 'subclass_feature',
+          subclass: 'Tempest Domain'
+        },
+        {
+          name: 'Thunderbolt Strike',
+          level: 6,
+          description: 'When you deal lightning damage to a Large or smaller creature, you can also push it up to 10 feet away from you.',
+          type: 'subclass_feature',
+          subclass: 'Tempest Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 thunder damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Tempest Domain'
+        },
+        {
+          name: 'Stormborn',
+          level: 17,
+          description: 'You have a flying speed equal to your current walking speed whenever you are not underground or indoors.',
           type: 'subclass_feature',
           subclass: 'Tempest Domain'
         }
@@ -925,14 +1604,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Blessing of the Trickster',
           level: 1,
-          description: 'You can give a creature advantage on Dexterity (Stealth) checks.',
+          description: 'You can use your action to touch a willing creature other than yourself to give it advantage on Dexterity (Stealth) checks. This blessing lasts for 1 hour or until you use this feature again.',
           type: 'subclass_feature',
           subclass: 'Trickery Domain'
         },
         {
           name: 'Channel Divinity: Invoke Duplicity',
           level: 2,
-          description: 'You can create an illusory duplicate of yourself.',
+          description: 'You can use your Channel Divinity to create an illusory duplicate of yourself. As an action, you create a perfect illusion of yourself that lasts for 1 minute, or until you lose your concentration. The illusion appears in an unoccupied space that you can see within 30 feet of you. You can use your action to move this illusion up to twice your speed and make it gesture, speak, and behave in whatever way you choose.',
+          type: 'subclass_feature',
+          subclass: 'Trickery Domain'
+        },
+        {
+          name: 'Channel Divinity: Cloak of Shadows',
+          level: 6,
+          description: 'You can use your Channel Divinity to vanish. As an action, you become invisible until the end of your next turn. You become visible if you attack or cast a spell.',
+          type: 'subclass_feature',
+          subclass: 'Trickery Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with poison. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 poison damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Trickery Domain'
+        },
+        {
+          name: 'Improved Duplicity',
+          level: 17,
+          description: 'You can create up to four duplicates of yourself, instead of one, when you use Invoke Duplicity. As a bonus action on your turn, you can move any number of them up to 30 feet, to a maximum range of 120 feet.',
           type: 'subclass_feature',
           subclass: 'Trickery Domain'
         }
@@ -946,14 +1646,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Arcane Initiate',
           level: 1,
-          description: 'You gain proficiency in Arcana and learn two wizard cantrips.',
+          description: 'You gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the wizard spell list. For you, these cantrips count as cleric cantrips.',
           type: 'subclass_feature',
           subclass: 'Arcana Domain'
         },
         {
           name: 'Channel Divinity: Arcane Abjuration',
           level: 2,
-          description: 'You can turn aberrations, celestials, elementals, fey, or fiends.',
+          description: 'As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.',
+          type: 'subclass_feature',
+          subclass: 'Arcana Domain'
+        },
+        {
+          name: 'Spell Breaker',
+          level: 6,
+          description: 'When you restore hit points to an ally with a spell of 1st level or higher, you can also end one spell of your choice on that creature. The level of the spell you end must be equal to or lower than the level of the spell slot you use to cast the healing spell.',
+          type: 'subclass_feature',
+          subclass: 'Arcana Domain'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Arcana Domain'
+        },
+        {
+          name: 'Arcane Mastery',
+          level: 17,
+          description: 'You choose four spells from the wizard spell list, one from each of the following levels: 6th, 7th, 8th, and 9th. You add them to your list of domain spells. Like your other domain spells, they are always prepared and count as cleric spells for you.',
           type: 'subclass_feature',
           subclass: 'Arcana Domain'
         }
@@ -974,7 +1695,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Blessing of the Forge',
           level: 1,
-          description: 'You can magically enhance a piece of armor or a weapon.',
+          description: 'At the end of a long rest, you can touch one nonmagical object that is a suit of armor or a simple or martial weapon. Until the end of your next long rest or until you die, the object becomes a magic item, granting a +1 bonus to AC if it\'s armor or a +1 bonus to attack and damage rolls if it\'s a weapon.',
+          type: 'subclass_feature',
+          subclass: 'Forge Domain'
+        },
+        {
+          name: 'Channel Divinity: Artisan\'s Blessing',
+          level: 2,
+          description: 'You can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object. The creation is completed at the end of the hour, coalescing in an unoccupied space of your choice on a surface within 5 feet of you.',
+          type: 'subclass_feature',
+          subclass: 'Forge Domain'
+        },
+        {
+          name: 'Soul of the Forge',
+          level: 6,
+          description: 'Your mastery of the forge grants you special abilities. You gain resistance to fire damage. While wearing heavy armor, you gain a +1 bonus to AC.',
+          type: 'subclass_feature',
+          subclass: 'Forge Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with the fiery power of the forge. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 fire damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Forge Domain'
+        },
+        {
+          name: 'Saint of Forge and Fire',
+          level: 17,
+          description: 'Your blessed affinity with fire and metal becomes more powerful. You gain immunity to fire damage. While wearing heavy armor, you have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks.',
           type: 'subclass_feature',
           subclass: 'Forge Domain'
         }
@@ -988,14 +1737,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Circle of Mortality',
           level: 1,
-          description: 'Your healing spells are more potent when healing creatures at 0 hit points.',
+          description: 'You gain the ability to manipulate the line between life and death. When you would normally roll one or more dice to restore hit points with a spell to a creature at 0 hit points, you instead use the highest number possible for each die. In addition, you learn the spare the dying cantrip, which doesn\'t count against the number of cleric cantrips you know. For you, it has a range of 30 feet, and you can cast it as a bonus action.',
           type: 'subclass_feature',
           subclass: 'Grave Domain'
         },
         {
           name: 'Eyes of the Grave',
           level: 1,
-          description: 'You can detect the presence of undead.',
+          description: 'You gain the ability to occasionally sense the presence of the undead, whose existence is an insult to the natural cycle of life. As an action, you can open your awareness to magically detect undead. Until the end of your next turn, you know the location of any undead within 60 feet of you that isn\'t behind total cover and that isn\'t protected from divination magic. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Grave Domain'
+        },
+        {
+          name: 'Channel Divinity: Path to the Grave',
+          level: 2,
+          description: 'You can use your Channel Divinity to mark another creature\'s life force for termination. As an action, you choose one creature you can see within 30 feet of you, cursing it until the end of your next turn. The next time you or an ally of yours hits the cursed creature with an attack, the creature has vulnerability to all of that attack\'s damage, and then the curse ends.',
+          type: 'subclass_feature',
+          subclass: 'Grave Domain'
+        },
+        {
+          name: 'Sentinel at Death\'s Door',
+          level: 6,
+          description: 'You gain the ability to impede death\'s progress. As a reaction when you or a creature you can see within 30 feet of you suffers a critical hit, you can turn that hit into a normal hit. Any effects triggered by a critical hit are canceled. You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Grave Domain'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Grave Domain'
+        },
+        {
+          name: 'Keeper of Souls',
+          level: 17,
+          description: 'You can seize a trace of vitality from a parting soul and use it to heal the living. When an enemy you can see dies within 60 feet of you, you or one creature of your choice that is within 60 feet of you regains hit points equal to the enemy\'s number of Hit Dice. You can use this feature only if you aren\'t incapacitated. Once you use it, you can\'t do so again until the start of your next turn.',
           type: 'subclass_feature',
           subclass: 'Grave Domain'
         }
@@ -1009,14 +1786,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Bonus Proficiencies',
           level: 1,
-          description: 'You gain proficiency with heavy armor and either Intimidation or Persuasion.',
+          description: 'You gain proficiency with heavy armor. You also gain proficiency in the Intimidation or Persuasion skill (your choice).',
           type: 'subclass_feature',
           subclass: 'Order Domain'
         },
         {
           name: 'Voice of Authority',
           level: 1,
-          description: 'When you cast a spell on an ally, they can use their reaction to make a weapon attack.',
+          description: 'If you cast a spell with a spell slot of 1st level or higher and target an ally with the spell, that ally can use their reaction immediately after the spell to make one weapon attack against a creature of your choice that you can see.',
+          type: 'subclass_feature',
+          subclass: 'Order Domain'
+        },
+        {
+          name: 'Channel Divinity: Order\'s Demand',
+          level: 2,
+          description: 'You can use your Channel Divinity to exert an intimidating presence over others. As an action, you present your holy symbol, and each creature of your choice that can see or hear you within 30 feet of you must succeed on a Wisdom saving throw or be charmed by you until the end of your next turn or until the charmed creature takes any damage. You can also cause any of the charmed creatures to drop what they are holding when they fail the saving throw.',
+          type: 'subclass_feature',
+          subclass: 'Order Domain'
+        },
+        {
+          name: 'Embodiment of the Law',
+          level: 6,
+          description: 'You become remarkably adept at channeling magical energy to compel others. If you cast an enchantment spell of 1st level or higher, you can change the spell\'s casting time to 1 bonus action for this casting, provided the spell\'s casting time is normally 1 action. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses of it when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Order Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 psychic damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Order Domain'
+        },
+        {
+          name: 'Order\'s Wrath',
+          level: 17,
+          description: 'Enemies you designate for destruction wilt under the combined efforts of you and your allies. If you deal your Divine Strike damage to a creature on your turn, you can curse that creature until the start of your next turn. The next time one of your allies hits the cursed creature with an attack, the target also takes 2d8 psychic damage, and the curse ends. You can curse a creature in this way only once per turn.',
           type: 'subclass_feature',
           subclass: 'Order Domain'
         }
@@ -1030,14 +1835,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Implement of Peace',
           level: 1,
-          description: 'You gain proficiency in Insight, Performance, or Persuasion.',
+          description: 'You gain proficiency in the Insight, Performance, or Persuasion skill (your choice).',
           type: 'subclass_feature',
           subclass: 'Peace Domain'
         },
         {
           name: 'Emboldening Bond',
           level: 1,
-          description: 'You can forge an empowering bond between allies.',
+          description: 'You can forge an empowering bond among people who are at peace with one another. As an action, you choose a number of willing creatures within 30 feet of you (this can include yourself) equal to your proficiency bonus. You create a magical bond among them for 10 minutes or until you use this feature again. While any bonded creature is within 30 feet of another, the creature can roll a d4 and add the number rolled to an attack roll, an ability check, or a saving throw it makes. Each creature can add the d4 no more than once per turn. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Peace Domain'
+        },
+        {
+          name: 'Channel Divinity: Balm of Peace',
+          level: 2,
+          description: 'You can use your Channel Divinity to make your very presence a soothing balm. As an action, you can move up to your speed, without provoking opportunity attacks, and when you move within 5 feet of any other creature during this action, you can restore a number of hit points to that creature equal to 2d6 + your Wisdom modifier (minimum of 1 hit point). A creature can receive this healing only once whenever you take this action.',
+          type: 'subclass_feature',
+          subclass: 'Peace Domain'
+        },
+        {
+          name: 'Protective Bond',
+          level: 6,
+          description: 'The bond you forge between people helps them protect each other. When a creature affected by your Emboldening Bond feature is about to take damage, a second bonded creature within 30 feet of the first can use its reaction to teleport to an unoccupied space within 5 feet of the first creature. The second creature then takes all the damage instead.',
+          type: 'subclass_feature',
+          subclass: 'Peace Domain'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Peace Domain'
+        },
+        {
+          name: 'Expansive Bond',
+          level: 17,
+          description: 'The benefits of your Emboldening Bond and Protective Bond features now work when the creatures are within 60 feet of each other. Moreover, when a creature uses Protective Bond to take someone else\'s damage, the creature has resistance to that damage.',
           type: 'subclass_feature',
           subclass: 'Peace Domain'
         }
@@ -1058,7 +1891,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Eyes of Night',
           level: 1,
-          description: 'You gain darkvision with no maximum range.',
+          description: 'You can see through the deepest gloom. You have darkvision out to a range of 300 feet. In that radius, you can see in dim light as if it were bright light and in darkness as if it were dim light. As an action, you can magically share the darkvision of this feature with willing creatures you can see within 10 feet of you, up to a number of creatures equal to your Wisdom modifier (minimum of one creature). The shared darkvision lasts for 1 hour. Once you share it, you can\'t do so again until you finish a long rest, unless you expend a spell slot of any level to share it again.',
+          type: 'subclass_feature',
+          subclass: 'Twilight Domain'
+        },
+        {
+          name: 'Vigilant Blessing',
+          level: 1,
+          description: 'The night has taught you to be vigilant. As an action, you give one creature you touch (including possibly yourself) advantage on the next initiative roll the creature makes. This benefit ends immediately after the roll or if you use this feature again.',
+          type: 'subclass_feature',
+          subclass: 'Twilight Domain'
+        },
+        {
+          name: 'Channel Divinity: Twilight Sanctuary',
+          level: 2,
+          description: 'You can use your Channel Divinity to refresh your allies with soothing twilight. As an action, you present your holy symbol, and a sphere of twilight emanates from you. The sphere is centered on you, has a 30-foot radius, and is filled with dim light. The sphere moves with you, and it lasts for 1 minute or until you are incapacitated or die. Whenever a creature (including you) ends its turn in the sphere, you can grant that creature one of these benefits: You grant it temporary hit points equal to 1d6 plus your cleric level, or you end one effect on it causing it to be charmed or frightened.',
+          type: 'subclass_feature',
+          subclass: 'Twilight Domain'
+        },
+        {
+          name: 'Steps of Night',
+          level: 6,
+          description: 'You can draw on the mystical power of night to rise into the air. As a bonus action when you are in dim light or darkness, you can magically give yourself a flying speed equal to your walking speed for 1 minute. You can use this bonus action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Twilight Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Twilight Domain'
+        },
+        {
+          name: 'Twilight Shroud',
+          level: 17,
+          description: 'The twilight that you summon offers a protective embrace: you and your allies have half cover while in the sphere created by your Twilight Sanctuary.',
           type: 'subclass_feature',
           subclass: 'Twilight Domain'
         }
@@ -1079,7 +1947,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Reaper',
           level: 1,
-          description: 'You learn one necromancy cantrip and can target two creatures with it.',
+          description: 'You learn one necromancy cantrip of your choice from any spell list. When you cast a necromancy cantrip that normally targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other.',
+          type: 'subclass_feature',
+          subclass: 'Death Domain'
+        },
+        {
+          name: 'Channel Divinity: Touch of Death',
+          level: 2,
+          description: 'You can use Channel Divinity to destroy another creature\'s life force by touch. When you hit a creature with a melee attack, you can use Channel Divinity to deal extra necrotic damage to the target. The damage equals 5 + twice your cleric level.',
+          type: 'subclass_feature',
+          subclass: 'Death Domain'
+        },
+        {
+          name: 'Inescapable Destruction',
+          level: 6,
+          description: 'Your ability to channel negative energy becomes more potent. Necrotic damage dealt by your cleric spells and Channel Divinity options ignores resistance to necrotic damage.',
+          type: 'subclass_feature',
+          subclass: 'Death Domain'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with necrotic energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 necrotic damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'Death Domain'
+        },
+        {
+          name: 'Improved Reaper',
+          level: 17,
+          description: 'When you cast a necromancy spell of 1st through 5th level that targets only one creature, the spell can instead target two creatures within range and within 5 feet of each other. If the spell consumes its material components, you must provide them for each target.',
           type: 'subclass_feature',
           subclass: 'Death Domain'
         }
@@ -1093,14 +1989,42 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Heart of the City',
           level: 1,
-          description: 'You gain proficiency with firearms and can cast spells while wielding them.',
+          description: 'You gain proficiency with martial weapons and heavy armor. Additionally, you treat urban environments as difficult terrain only when you choose to.',
           type: 'subclass_feature',
           subclass: 'City Domain (UA)'
         },
         {
           name: 'Bonus Proficiencies',
           level: 1,
-          description: 'You gain proficiency with heavy armor and your choice of Intimidation or Persuasion.',
+          description: 'You gain proficiency in one of the following skills of your choice: Insight, Persuasion, or Deception.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        },
+        {
+          name: 'Channel Divinity: Spirits of the City',
+          level: 2,
+          description: 'You can use your Channel Divinity to call upon the spirits of the city for aid. As an action, you present your holy symbol and evoke spectral city guardians. Each hostile creature within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature is restrained for 1 minute. A restrained creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        },
+        {
+          name: 'Block Watch',
+          level: 6,
+          description: 'Your awareness of your surroundings becomes supernaturally keen. You and allies within 10 feet of you have advantage on Wisdom (Perception) checks. At 17th level, the range of this aura increases to 30 feet.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        },
+        {
+          name: 'Divine Strike',
+          level: 8,
+          description: 'You gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 psychic damage to the target. When you reach 14th level, the extra damage increases to 2d8.',
+          type: 'subclass_feature',
+          subclass: 'City Domain (UA)'
+        },
+        {
+          name: 'Express Transit',
+          level: 17,
+          description: 'You can use a bonus action to teleport to an unoccupied space you can see within 60 feet. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'City Domain (UA)'
         }
@@ -1114,14 +2038,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Emboldening Bond',
           level: 1,
-          description: 'You can forge a bond between allies that allows them to grant each other benefits.',
+          description: 'You can forge an empowering bond among allies. As an action, you choose a number of willing creatures within 30 feet of you (this can include yourself) equal to your proficiency bonus. You create a magical bond among them for 10 minutes. While any bonded creature is within 30 feet of another, the creature can roll a d4 and add the number rolled to an attack roll, ability check, or saving throw it makes. Each creature can add the d4 no more than once per turn.',
           type: 'subclass_feature',
           subclass: 'Unity Domain (UA)'
         },
         {
           name: 'Channel Divinity: Shared Burden',
           level: 2,
-          description: 'You can distribute damage taken by one creature among bonded allies.',
+          description: 'You can use your Channel Divinity to protect your allies through unity. When a creature you can see within 30 feet of you takes damage, you can use your reaction to choose a number of other willing creatures you can see, up to a number equal to your Wisdom modifier (minimum of one creature). The damage is divided equally among the original target and chosen creatures.',
+          type: 'subclass_feature',
+          subclass: 'Unity Domain (UA)'
+        },
+        {
+          name: 'Protective Bond',
+          level: 6,
+          description: 'When a creature affected by your Emboldening Bond is about to take damage, a second bonded creature within 30 feet of the first can use its reaction to teleport to an unoccupied space within 5 feet of the first creature. The second creature then takes all the damage instead.',
+          type: 'subclass_feature',
+          subclass: 'Unity Domain (UA)'
+        },
+        {
+          name: 'Potent Spellcasting',
+          level: 8,
+          description: 'You add your Wisdom modifier to the damage you deal with any cleric cantrip.',
+          type: 'subclass_feature',
+          subclass: 'Unity Domain (UA)'
+        },
+        {
+          name: 'Expansive Bond',
+          level: 17,
+          description: 'The benefits of your Emboldening Bond and Protective Bond features now work when the creatures are within 60 feet of each other. When a creature uses Protective Bond to take someone else\'s damage, the creature has resistance to that damage.',
           type: 'subclass_feature',
           subclass: 'Unity Domain (UA)'
         }
@@ -1138,7 +2083,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Frenzy',
           level: 3,
-          description: 'You can go into a frenzy when you rage, making a single melee weapon attack as a bonus action on each of your turns after this one.',
+          description: 'You can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Berserker'
+        },
+        {
+          name: 'Mindless Rage',
+          level: 6,
+          description: 'You can\'t be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Berserker'
+        },
+        {
+          name: 'Intimidating Presence',
+          level: 10,
+          description: 'You can use your action to frighten someone with your menacing presence. When you do so, choose one creature that you can see within 30 feet of you. If the creature can see or hear you, it must succeed on a Wisdom saving throw (DC equal to 8 + your proficiency bonus + your Charisma modifier) or be frightened of you until the end of your next turn. On subsequent turns, you can use your action to extend the duration of this effect on the frightened creature until the end of your next turn. This effect ends if the creature ends its turn out of line of sight or more than 60 feet away from you. If the creature succeeds on its saving throw, you can\'t use this feature on that creature again for 24 hours.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Berserker'
+        },
+        {
+          name: 'Retaliation',
+          level: 14,
+          description: 'When you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature.',
           type: 'subclass_feature',
           subclass: 'Path of the Berserker'
         }
@@ -1152,14 +2118,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Spirit Seeker',
           level: 3,
-          description: 'You can cast the beast sense and speak with animals spells as rituals.',
+          description: 'Yours is a path that seeks attunement with the natural world, giving you a kinship with beasts. You gain the ability to cast the beast sense and speak with animals spells, but only as rituals.',
           type: 'subclass_feature',
           subclass: 'Path of the Totem Warrior'
         },
         {
           name: 'Totem Spirit',
           level: 3,
-          description: 'You choose a totem spirit and gain its feature.',
+          description: 'You choose a totem animal and gain its feature. You must make or acquire a physical totem object that incorporates fur or feathers, claws, teeth, or bones of the totem animal. You can choose Bear (resistance to all damage except psychic while raging), Eagle (opportunity attacks against you have disadvantage while raging and you can use Dash as a bonus action), Wolf (your allies have advantage on melee attack rolls against creatures within 5 feet of you while you\'re raging), or other totems.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Totem Warrior'
+        },
+        {
+          name: 'Aspect of the Beast',
+          level: 6,
+          description: 'You gain a magical benefit based on the totem animal of your choice. You can choose the same animal you selected for Totem Spirit or a different one. Bear: You gain the might of a bear, doubling your carrying capacity and advantage on Strength checks to push, pull, lift, or break objects. Eagle: You can see up to 1 mile away with no difficulty and discern fine details. Dim light doesn\'t impose disadvantage on your Wisdom (Perception) checks. Wolf: You can track creatures while traveling at a fast pace, and you can move stealthily while traveling at a normal pace.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Totem Warrior'
+        },
+        {
+          name: 'Spirit Walker',
+          level: 10,
+          description: 'You can cast the commune with nature spell, but only as a ritual. When you do so, a spiritual version of one of the animals you chose for Totem Spirit or Aspect of the Beast appears to you to convey the information you seek.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Totem Warrior'
+        },
+        {
+          name: 'Totemic Attunement',
+          level: 14,
+          description: 'You gain a magical benefit based on a totem animal of your choice. You can choose the same animal you selected previously or a different one. Bear: While raging, any creature within 5 feet of you that\'s hostile to you has disadvantage on attack rolls against targets other than you or another character with this feature. Eagle: While raging, you have a flying speed equal to your current walking speed. Wolf: While raging, you can use a bonus action on your turn to knock a Large or smaller creature prone when you hit it with a melee weapon attack.',
           type: 'subclass_feature',
           subclass: 'Path of the Totem Warrior'
         }
@@ -1173,14 +2160,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Ancestral Protectors',
           level: 3,
-          description: 'Spectral warriors appear when you rage and hinder enemies.',
+          description: 'Spectral warriors appear when you enter your rage. While you\'re raging, the first creature you hit with an attack on your turn becomes the target of the warriors, which hinder its attacks. Until the start of your next turn, that target has disadvantage on any attack roll that isn\'t against you, and when the target hits a creature other than you with an attack, that creature has resistance to the damage dealt by the attack.',
           type: 'subclass_feature',
           subclass: 'Path of the Ancestral Guardian'
         },
         {
           name: 'Spirit Shield',
           level: 6,
-          description: 'Your ancestral spirits can shield your allies from harm.',
+          description: 'The guardian spirits that aid you can provide supernatural protection to those you defend. If you are raging and another creature you can see within 30 feet of you takes damage, you can use your reaction to reduce that damage by 2d6. When you reach certain levels in this class, you can reduce the damage by more: by 3d6 at 10th level and by 4d6 at 14th level.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Ancestral Guardian'
+        },
+        {
+          name: 'Consult the Spirits',
+          level: 10,
+          description: 'You gain the ability to consult with your ancestral spirits. When you do so, you cast the augury or clairvoyance spell, without using a spell slot or material components. Rather than creating a spherical sensor, this use of clairvoyance invisibly summons one of your ancestral spirits to the chosen location. Wisdom is your spellcasting ability for these spells. After you cast either spell in this way, you can\'t use this feature again until you finish a short or long rest.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Ancestral Guardian'
+        },
+        {
+          name: 'Vengeful Ancestors',
+          level: 14,
+          description: 'Your ancestral spirits grow powerful enough to retaliate. When you use your Spirit Shield to reduce the damage of an attack, the attacker takes an amount of force damage equal to the damage that your Spirit Shield prevents.',
           type: 'subclass_feature',
           subclass: 'Path of the Ancestral Guardian'
         }
@@ -1194,14 +2195,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Storm Aura',
           level: 3,
-          description: 'You emanate a stormy aura while you rage.',
+          description: 'You emanate a stormy, magical aura while you rage. The aura extends 10 feet from you in every direction, but not through total cover. Your aura has an effect that activates when you enter your rage, and you can activate the effect again on each of your turns as a bonus action. Choose desert, sea, or tundra. Desert: When this effect is activated, all other creatures in your aura take 2 fire damage each. Sea: When this effect is activated, you can choose one other creature you can see in your aura. The target must make a Dexterity saving throw (DC 8 + your proficiency bonus + your Constitution modifier), taking 1d6 lightning damage on a failed save. Tundra: When this effect is activated, each creature of your choice in your aura gains 2 temporary hit points.',
           type: 'subclass_feature',
           subclass: 'Path of the Storm Herald'
         },
         {
           name: 'Storm Soul',
           level: 6,
-          description: 'You gain resistance to your chosen storm type.',
+          description: 'The storm grants you benefits even when your aura isn\'t active. Desert: You gain resistance to fire damage, and you don\'t suffer the effects of extreme heat. Sea: You gain resistance to lightning damage, and you can breathe underwater. You also gain a swimming speed of 30 feet. Tundra: You gain resistance to cold damage, and you don\'t suffer the effects of extreme cold.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Storm Herald'
+        },
+        {
+          name: 'Shielding Storm',
+          level: 10,
+          description: 'You learn to use your mastery of the storm to protect others. Each creature of your choice has the damage resistance you gained from the Storm Soul feature while the creature is in your Storm Aura.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Storm Herald'
+        },
+        {
+          name: 'Raging Storm',
+          level: 14,
+          description: 'The power of the storm you channel grows mightier, lashing out at your foes. Desert: Immediately after a creature in your aura hits you with an attack, you can use your reaction to force that creature to make a Dexterity saving throw. On a failed save, the creature takes fire damage equal to half your barbarian level. Sea: When you hit a creature in your aura with an attack, you can use your reaction to force that creature to make a Strength saving throw. On a failed save, the creature is knocked prone, as if struck by a wave. Tundra: Whenever the effect of your Storm Aura is activated, you can choose one creature you can see in the aura. That creature must succeed on a Strength saving throw, or its speed is reduced to 0 until the start of your next turn, as magical frost covers it.',
           type: 'subclass_feature',
           subclass: 'Path of the Storm Herald'
         }
@@ -1215,14 +2230,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Divine Fury',
           level: 3,
-          description: 'You deal extra radiant or necrotic damage when you rage.',
+          description: 'You can channel divine fury into your weapon strikes. While you\'re raging, the first creature you hit on each of your turns with a weapon attack takes extra damage equal to 1d6 + half your barbarian level. The extra damage is necrotic or radiant; you choose the type of damage when you gain this feature.',
           type: 'subclass_feature',
           subclass: 'Path of the Zealot'
         },
         {
           name: 'Warrior of the Gods',
           level: 3,
-          description: 'Spells that return you to life don\'t require material components.',
+          description: 'Your soul is marked for endless battle. If a spell, such as raise dead, has the sole effect of restoring you to life (but not undeath), the caster doesn\'t need material components to cast the spell on you.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Zealot'
+        },
+        {
+          name: 'Fanatical Focus',
+          level: 6,
+          description: 'The divine power that fuels your rage can protect you. If you fail a saving throw while you\'re raging, you can reroll it, and you must use the new roll. You can use this ability only once per rage.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Zealot'
+        },
+        {
+          name: 'Zealous Presence',
+          level: 10,
+          description: 'You learn to channel divine power to inspire zealotry in others. As a bonus action, you unleash a battle cry infused with divine energy. Up to ten other creatures of your choice within 60 feet of you that can hear you gain advantage on attack rolls and saving throws until the start of your next turn. Once you use this feature, you can\'t use it again until you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Zealot'
+        },
+        {
+          name: 'Rage beyond Death',
+          level: 14,
+          description: 'The divine power that fuels your rage allows you to shrug off fatal blows. While you\'re raging, having 0 hit points doesn\'t knock you unconscious. You still must make death saving throws, and you suffer the normal effects of taking damage while at 0 hit points. However, if you would die due to failing death saving throws, you don\'t die until your rage ends, and you die then only if you still have 0 hit points.',
           type: 'subclass_feature',
           subclass: 'Path of the Zealot'
         }
@@ -1236,14 +2272,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Form of the Beast',
           level: 3,
-          description: 'When you rage, you can transform, gaining natural weapons.',
+          description: 'When you enter your rage, you can transform, revealing the bestial power within you. Until the rage ends, you manifest a natural weapon. It counts as a simple melee weapon for you, and you add your Strength modifier to the attack and damage rolls when you attack with it. You choose the weapon\'s form each time you rage: Bite (1d8 piercing damage, heal hit points equal to your proficiency bonus when you hit), Claws (1d6 slashing damage, one extra attack with them as a bonus action), or Tail (1d8 piercing damage, reach of 10 feet, reaction to add 1d8 to AC against one attack).',
           type: 'subclass_feature',
           subclass: 'Path of the Beast'
         },
         {
           name: 'Bestial Soul',
           level: 6,
-          description: 'Your bestial nature grants you enhanced senses and mobility.',
+          description: 'The feral power within you increases, causing the natural weapons of your Form of the Beast to count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. You can also alter your form to help you adapt to your surroundings. When you finish a short or long rest, choose one of the following benefits, which lasts until you finish your next short or long rest: Swimming speed equal to your walking speed and you can breathe underwater, Climbing speed equal to your walking speed and no check needed to climb difficult surfaces or upside down on ceilings, or Jump distance increased by the result of an Athletics check when you jump.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Beast'
+        },
+        {
+          name: 'Infectious Fury',
+          level: 10,
+          description: 'When you hit a creature with your natural weapons while you\'re raging, the beast within you can curse your target with rabid fury. The target must succeed on a Wisdom saving throw (DC equal to 8 + your Constitution modifier + your proficiency bonus) or suffer one of the following effects (your choice): The target must use its reaction to make a melee attack against another creature of your choice that you can see, or the target takes 2d12 psychic damage. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Path of the Beast'
+        },
+        {
+          name: 'Call the Hunt',
+          level: 14,
+          description: 'The beast within you grows so powerful that you can spread its ferocity to others and gain resilience from them joining your hunt. When you enter your rage, you can choose a number of other willing creatures you can see within 30 feet of you equal to your Constitution modifier (minimum of one creature). You gain 5 temporary hit points for each creature that accepts this feature. Until the rage ends, the chosen creatures can each use the following benefit once on each of their turns: when the creature hits a target with an attack roll and deals damage to it, the creature can roll a d6 and gain a bonus to the damage equal to the number rolled. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Path of the Beast'
         }
@@ -1257,14 +2307,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Magic Awareness',
           level: 3,
-          description: 'You can sense the presence of magic around you.',
+          description: 'As an action, you can open your awareness to the presence of concentrated magic. Until the end of your next turn, you know the location of any spell or magic item within 60 feet of you that isn\'t behind total cover. When you sense a spell, you learn which school of magic it belongs to. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'Path of Wild Magic'
         },
         {
           name: 'Wild Surge',
           level: 3,
-          description: 'When you rage, roll on the Wild Magic table for random effects.',
+          description: 'The magical energy roiling inside you sometimes erupts from you. When you enter your rage, roll on the Wild Magic table to determine the magical effect produced. If the effect requires a saving throw, the DC equals 8 + your proficiency bonus + your Constitution modifier.',
+          type: 'subclass_feature',
+          subclass: 'Path of Wild Magic'
+        },
+        {
+          name: 'Bolstering Magic',
+          level: 6,
+          description: 'You can harness your wild magic to bolster yourself or a companion. As an action, you can touch one creature (which can be yourself) and confer one of the following benefits of your choice to that creature: For 10 minutes, the creature can roll a d3 whenever making an attack roll or an ability check and add the number rolled to the d20 roll, or roll a d3. The creature can add the number rolled to one damage roll of its choice the next time it hits a target with an attack roll. You can take this action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'Path of Wild Magic'
+        },
+        {
+          name: 'Unstable Backlash',
+          level: 10,
+          description: 'When you are imperiled during your rage, the magic within you can lash out; immediately after you take damage or fail a saving throw while raging, you can use your reaction to roll on the Wild Magic table and immediately produce the effect rolled. This effect replaces your current Wild Surge effect.',
+          type: 'subclass_feature',
+          subclass: 'Path of Wild Magic'
+        },
+        {
+          name: 'Controlled Surge',
+          level: 14,
+          description: 'Whenever you roll on the Wild Magic table, you can roll the die twice and choose which of the two effects to unleash. If you roll the same number on both dice, you can ignore the number and choose any effect on the table.',
           type: 'subclass_feature',
           subclass: 'Path of Wild Magic'
         }
@@ -1288,7 +2359,21 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Cutting Words',
           level: 3,
-          description: 'You learn how to use your wit to distract, confuse, and otherwise sap the confidence of others.',
+          description: 'You learn how to use your wit to distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature\'s roll. You can choose to use this feature after the creature makes its roll, but before the DM determines whether the attack roll or ability check succeeds or fails, or before the creature deals its damage.',
+          type: 'subclass_feature',
+          subclass: 'College of Lore'
+        },
+        {
+          name: 'Additional Magical Secrets',
+          level: 6,
+          description: 'You learn two spells of your choice from any class. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip. The chosen spells count as bard spells for you but don\'t count against the number of bard spells you know.',
+          type: 'subclass_feature',
+          subclass: 'College of Lore'
+        },
+        {
+          name: 'Peerless Skill',
+          level: 14,
+          description: 'When you make an ability check, you can expend one use of Bardic Inspiration. Roll a Bardic Inspiration die and add the number rolled to your ability check. You can choose to do so after you roll the die for the ability check, but before the DM tells you whether you succeed or fail.',
           type: 'subclass_feature',
           subclass: 'College of Lore'
         }
@@ -1309,7 +2394,21 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Combat Inspiration',
           level: 3,
-          description: 'A creature that has a Bardic Inspiration die can use it to add to a weapon damage roll or to their AC.',
+          description: 'You learn to inspire others in battle. A creature that has a Bardic Inspiration die from you can roll that die and add the number rolled to a weapon damage roll it just made. Alternatively, when an attack roll is made against the creature, it can use its reaction to roll the Bardic Inspiration die and add the number rolled to its AC against that attack, after seeing the roll but before knowing whether it hits or misses.',
+          type: 'subclass_feature',
+          subclass: 'College of Valor'
+        },
+        {
+          name: 'Extra Attack',
+          level: 6,
+          description: 'You can attack twice, instead of once, whenever you take the Attack action on your turn.',
+          type: 'subclass_feature',
+          subclass: 'College of Valor'
+        },
+        {
+          name: 'Battle Magic',
+          level: 14,
+          description: 'You have mastered the art of weaving spellcasting and weapon use into a single harmonious act. When you use your action to cast a bard spell, you can make one weapon attack as a bonus action.',
           type: 'subclass_feature',
           subclass: 'College of Valor'
         }
@@ -1323,14 +2422,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Mantle of Inspiration',
           level: 3,
-          description: 'You can use a bonus action to grant temporary hit points and movement to allies.',
+          description: 'As a bonus action, you can expend one use of your Bardic Inspiration to grant yourself a wondrous appearance. When you do so, choose a number of creatures you can see and that can see you within 60 feet of you, up to a number equal to your Charisma modifier (minimum of one). Each of them gains 5 temporary hit points. When a creature gains these temporary hit points, it can immediately use its reaction to move up to its speed, without provoking opportunity attacks. The number of temporary hit points increases when you reach certain levels in this class, increasing to 8 at 5th level, 11 at 10th level, and 14 at 15th level.',
           type: 'subclass_feature',
           subclass: 'College of Glamour'
         },
         {
           name: 'Enthralling Performance',
           level: 3,
-          description: 'You can charm creatures with your performance.',
+          description: 'If you perform for at least 1 minute, you can attempt to inspire wonder in your audience by singing, reciting a poem, or dancing. At the end of the performance, choose a number of humanoids within 60 feet of you who watched and listened to all of it, up to a number equal to your Charisma modifier (minimum of one). Each target must succeed on a Wisdom saving throw against your spell save DC or be charmed by you. While charmed in this way, the target idolizes you, it speaks glowingly of you to anyone who talks to it, and it hinders anyone who opposes you, although it avoids violence unless it was already inclined to fight on your behalf. This effect ends on a target after 1 hour, if it takes any damage, if you attack it, or if it witnesses you attacking or damaging any of its allies. If a target succeeds on its saving throw, the target has no hint that you tried to charm it. Once you use this feature, you can\'t use it again until you finish a short or long rest.',
+          type: 'subclass_feature',
+          subclass: 'College of Glamour'
+        },
+        {
+          name: 'Mantle of Majesty',
+          level: 6,
+          description: 'You gain the ability to cloak yourself in a fey magic that makes others want to serve you. As a bonus action, you cast command, without expending a spell slot, and you take on an appearance of unearthly beauty for 1 minute or until your concentration ends (as if you were concentrating on a spell). During this time, you can cast command as a bonus action on each of your turns, without expending a spell slot. Any creature charmed by you automatically fails its saving throw against the command you cast with this feature. Once you use this feature, you can\'t use it again until you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'College of Glamour'
+        },
+        {
+          name: 'Unbreakable Majesty',
+          level: 14,
+          description: 'Your appearance permanently gains an otherworldly aspect that makes you look more lovely and fierce. As a bonus action, you can assume a magically majestic presence for 1 minute or until you are incapacitated. For the duration, whenever any creature tries to attack you for the first time on a turn, the attacker must make a Charisma saving throw against your spell save DC. On a failed save, it can\'t attack you on this turn, and it must choose a new target for its attack or the attack is wasted. On a successful save, it can attack you on this turn, but it has disadvantage on any saving throw it makes against your spells on your next turn. Once you assume this majestic presence, you can\'t do so again until you finish a short or long rest.',
           type: 'subclass_feature',
           subclass: 'College of Glamour'
         }
@@ -1344,14 +2457,35 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Bonus Proficiencies',
           level: 3,
-          description: 'You gain proficiency with medium armor and scimitars.',
+          description: 'You gain proficiency with medium armor and the scimitar. If you\'re proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells.',
+          type: 'subclass_feature',
+          subclass: 'College of Swords'
+        },
+        {
+          name: 'Fighting Style',
+          level: 3,
+          description: 'You adopt a style of fighting as your specialty. Choose one of the following options: Dueling or Two-Weapon Fighting. You can\'t take a Fighting Style option more than once, even if something in the game lets you choose again.',
           type: 'subclass_feature',
           subclass: 'College of Swords'
         },
         {
           name: 'Blade Flourish',
           level: 3,
-          description: 'You can perform special flourishes with your weapon attacks.',
+          description: 'You learn to perform impressive displays of martial prowess and speed. Whenever you take the Attack action on your turn, your walking speed increases by 10 feet until the end of the turn, and if a weapon attack that you make as part of this action hits a creature, you can use one of the following Blade Flourish options of your choice. You can use only one Blade Flourish option per turn. Defensive Flourish: You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit. The damage equals the number you roll on the Bardic Inspiration die. You also add the number rolled to your AC until the start of your next turn. Slashing Flourish: You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit and to any other creature of your choice that you can see within 5 feet of you. The damage equals the number you roll on the Bardic Inspiration die. Mobile Flourish: You can expend one use of your Bardic Inspiration to cause the weapon to deal extra damage to the target you hit. The damage equals the number you roll on the Bardic Inspiration die. You can also push the target up to 5 feet away from you, plus a number of feet equal to the number you roll on that die. You can then immediately use your reaction to move up to your walking speed to an unoccupied space within 5 feet of the target.',
+          type: 'subclass_feature',
+          subclass: 'College of Swords'
+        },
+        {
+          name: 'Extra Attack',
+          level: 6,
+          description: 'You can attack twice, instead of once, whenever you take the Attack action on your turn.',
+          type: 'subclass_feature',
+          subclass: 'College of Swords'
+        },
+        {
+          name: 'Master\'s Flourish',
+          level: 14,
+          description: 'Whenever you use a Blade Flourish option, you can roll a d6 and use it instead of expending a Bardic Inspiration die.',
           type: 'subclass_feature',
           subclass: 'College of Swords'
         }
