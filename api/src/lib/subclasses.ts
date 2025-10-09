@@ -4445,6 +4445,27 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
           description: 'You can communicate telepathically with any creature you can see within 30 feet.',
           type: 'subclass_feature',
           subclass: 'The Great Old One'
+        },
+        {
+          name: 'Entropic Ward',
+          level: 6,
+          description: 'You learn to magically ward yourself against attack and to turn an enemy\'s failed strike into good luck for yourself. When a creature makes an attack roll against you, you can use your reaction to impose disadvantage on that roll. If the attack misses you, your next attack roll against the creature has advantage if you make it before the end of your next turn. Once you use this feature, you can\'t use it again until you finish a short or long rest.',
+          type: 'subclass_feature',
+          subclass: 'The Great Old One'
+        },
+        {
+          name: 'Thought Shield',
+          level: 10,
+          description: 'Your thoughts can\'t be read by telepathy or other means unless you allow it. You also have resistance to psychic damage, and whenever a creature deals psychic damage to you, that creature takes the same amount of damage that you do.',
+          type: 'subclass_feature',
+          subclass: 'The Great Old One'
+        },
+        {
+          name: 'Create Thrall',
+          level: 14,
+          description: 'You gain the ability to infect a humanoid\'s mind with the alien magic of your patron. You can use your action to touch an incapacitated humanoid. That creature is then charmed by you until a remove curse spell is cast on it, the charmed condition is removed from it, or you use this feature again. You can communicate telepathically with the charmed creature as long as the two of you are on the same plane of existence.',
+          type: 'subclass_feature',
+          subclass: 'The Great Old One'
         }
       ]
     },
@@ -4463,7 +4484,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Healing Light',
           level: 1,
-          description: 'You gain the ability to channel celestial energy to heal wounds.',
+          description: 'You gain the ability to channel celestial energy to heal wounds. You have a pool of d6s equal to 1 + your warlock level. As a bonus action, you can heal one creature you can see within 60 feet of you, spending dice from the pool. Roll the dice you spend, add them together, and restore that many hit points. This pool regains all expended dice when you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'The Celestial'
+        },
+        {
+          name: 'Radiant Soul',
+          level: 6,
+          description: 'Your link to the Celestial allows you to serve as a conduit for radiant energy. You have resistance to radiant damage, and when you cast a spell that deals radiant or fire damage, you can add your Charisma modifier to one radiant or fire damage roll of that spell against one of its targets.',
+          type: 'subclass_feature',
+          subclass: 'The Celestial'
+        },
+        {
+          name: 'Celestial Resistance',
+          level: 10,
+          description: 'You gain temporary hit points whenever you finish a short or long rest. These temporary hit points equal your warlock level + your Charisma modifier. Additionally, choose up to five creatures you can see at the end of the rest. Those creatures each gain temporary hit points equal to half your warlock level + your Charisma modifier.',
+          type: 'subclass_feature',
+          subclass: 'The Celestial'
+        },
+        {
+          name: 'Searing Vengeance',
+          level: 14,
+          description: 'The radiant energy you channel allows you to resist death. When you have to make a death saving throw at the start of your turn, you can instead spring back to your feet with a burst of radiant energy. You regain hit points equal to half your hit point maximum, and then you stand up if you so choose. Each creature of your choice that is within 30 feet of you takes radiant damage equal to 2d8 + your Charisma modifier, and it is blinded until the end of the current turn. Once you use this feature, you can\'t use it again until you finish a long rest.',
           type: 'subclass_feature',
           subclass: 'The Celestial'
         }
@@ -4484,7 +4526,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Hex Warrior',
           level: 1,
-          description: 'You gain proficiency with medium armor, shields, and martial weapons.',
+          description: 'You gain proficiency with medium armor, shields, and martial weapons. The influence of your patron also allows you to mystically channel your will through a particular weapon. Whenever you finish a long rest, you can touch one weapon that you are proficient with and that lacks the two-handed property. When you attack with that weapon, you can use your Charisma modifier, instead of Strength or Dexterity, for the attack and damage rolls.',
+          type: 'subclass_feature',
+          subclass: 'The Hexblade'
+        },
+        {
+          name: 'Accursed Specter',
+          level: 6,
+          description: 'You can curse the soul of a person you slay, temporarily binding it in your service. When you slay a humanoid, you can cause its spirit to rise from its corpse as a specter. When the specter appears, it gains temporary hit points equal to half your warlock level. Roll initiative for the specter, which has its own turns. The specter remains in your service until the end of your next long rest, at which point it vanishes to the afterlife. Once you bind a specter with this feature, you can\'t use the feature again until you finish a long rest.',
+          type: 'subclass_feature',
+          subclass: 'The Hexblade'
+        },
+        {
+          name: 'Armor of Hexes',
+          level: 10,
+          description: 'Your hex grows more powerful. If the target cursed by your Hexblade\'s Curse hits you with an attack roll, you can use your reaction to roll a d6. On a 4 or higher, the attack instead misses you, regardless of its roll.',
+          type: 'subclass_feature',
+          subclass: 'The Hexblade'
+        },
+        {
+          name: 'Master of Hexes',
+          level: 14,
+          description: 'You can spread your Hexblade\'s Curse from a slain creature to another creature. When the creature cursed by your Hexblade\'s Curse dies, you can apply the curse to a different creature you can see within 30 feet of you, provided you aren\'t incapacitated. When you apply the curse in this way, you don\'t regain hit points from the death of the previously cursed creature.',
           type: 'subclass_feature',
           subclass: 'The Hexblade'
         }
@@ -4505,7 +4568,28 @@ export const SUBCLASSES: Record<string, Subclass[]> = {
         {
           name: 'Gift of the Sea',
           level: 1,
-          description: 'You gain a swimming speed and can breathe underwater.',
+          description: 'You gain a swimming speed of 40 feet, and you can breathe underwater.',
+          type: 'subclass_feature',
+          subclass: 'The Fathomless'
+        },
+        {
+          name: 'Oceanic Soul',
+          level: 6,
+          description: 'You are now even more at home in the depths. You gain resistance to cold damage. In addition, when you are fully submerged, any creature that is also fully submerged can understand your speech, and you can understand theirs.',
+          type: 'subclass_feature',
+          subclass: 'The Fathomless'
+        },
+        {
+          name: 'Guardian Coil',
+          level: 10,
+          description: 'Your Tentacle of the Deeps can defend you and others, interposing itself between them and harm. When you or a creature you can see takes damage while within 10 feet of the tentacle, you can use your reaction to choose one of those creatures and reduce the damage to that creature by 1d8. When you reach certain levels in this class, the damage reduction increases: at 10th level (1d8) and at 17th level (2d8).',
+          type: 'subclass_feature',
+          subclass: 'The Fathomless'
+        },
+        {
+          name: 'Grasping Tentacles',
+          level: 14,
+          description: 'You learn the spell Evard\'s Black Tentacles. It counts as a warlock spell for you, but it doesn\'t count against the number of spells you know. You can also cast it once without a spell slot, and you regain the ability to do so when you finish a long rest. Whenever you cast this spell, your patron\'s magic bolsters you, granting you a number of temporary hit points equal to your warlock level. Moreover, damage can\'t break your concentration on this spell.',
           type: 'subclass_feature',
           subclass: 'The Fathomless'
         }
