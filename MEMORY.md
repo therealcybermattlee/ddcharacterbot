@@ -93,6 +93,23 @@ Based on PROJECT-PLAN.md analysis:
    - **Deployment**: Successfully deployed to production (Version ID: 5f61f540-2632-4bd0-8431-4f0603def910)
    - **Status**: ✅ **COMPLETED** - All 119 D&D 5e subclasses with complete feature progressions
    - **Verified**: Hexblade Warlock (levels 1, 6, 10, 14) confirmed working in production API
+9. ✅ Fix Ability Score Assignment Bug in Character Wizard
+   - **User Report**: Ability scores not registering when assigned to abilities in Standard Array interface
+   - **Symptoms**: UI showed "you have all six abilities to have scores assigned to" even after assignments
+   - **Investigation**: Located bug in StandardArrayInterface.tsx `assignScore` function (line 79)
+   - **Root Cause**: Incorrect guard condition `!availableScores.includes(score) && !assignments[ability]`
+     * Was blocking valid assignments when score was available AND ability had no prior assignment
+     * Logic was inverted - prevented assignments instead of allowing them
+   - **Fix**: Corrected guard condition to `!availableScores.includes(score) && assignments[ability] !== score`
+     * Now properly allows assignments when score is in available pool
+     * Only blocks when score is unavailable AND ability doesn't have that exact score
+   - **Files Changed**: `/frontend/src/components/character-creation/StandardArrayInterface.tsx`
+   - **Impact**:
+     * Users can now successfully assign scores from standard array to abilities
+     * "Assigned X/6" counter updates correctly
+     * Both drag-and-drop and click-to-assign work as intended
+   - **Deployment**: Successfully deployed to production (commit a23c943)
+   - **Status**: ✅ **COMPLETED** - Ability score assignment now functional in Standard Array interface
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev
