@@ -1,15 +1,37 @@
 // import { Character } from './character'
 import { z } from 'zod'
 
+// Helper function to determine subclass level requirement by class
+export function getSubclassLevel(className: string): number {
+  const lowerClass = className.toLowerCase()
+  if (lowerClass === 'cleric' || lowerClass === 'warlock') return 1
+  if (lowerClass === 'wizard') return 2
+  return 3 // All other classes get subclass at level 3
+}
+
 // Wizard step validation schemas
 export const BasicInfoSchema = z.object({
   name: z.string().min(1, 'Character name is required'),
   race: z.string().min(1, 'Race is required'),
   class: z.string().min(1, 'Class is required'),
+  subclass: z.string().optional(),
   level: z.number().min(1).max(20).default(1),
   background: z.string().min(1, 'Background is required'),
   alignment: z.string().min(1, 'Alignment is required'),
-})
+}).refine(
+  (data) => {
+    // If level meets subclass requirement, subclass must be selected
+    const requiredLevel = getSubclassLevel(data.class)
+    if (data.level >= requiredLevel) {
+      return data.subclass && data.subclass.length > 0
+    }
+    return true
+  },
+  {
+    message: 'Subclass selection is required for this level',
+    path: ['subclass'],
+  }
+)
 
 export const AbilityScoresSchema = z.object({
   strength: z.number().min(3).max(20),
@@ -90,12 +112,14 @@ export interface CharacterCreationData {
   name: string
   race: string
   class: string
+  subclass?: string
   level: number
   background: string
   alignment: string
   // Enhanced D&D reference data
   raceData?: import('./dnd5e').Race
   classData?: import('./dnd5e').Class
+  subclassData?: import('./dnd5e').Subclass
   backgroundData?: import('./dnd5e').Background
   
   // Ability Scores

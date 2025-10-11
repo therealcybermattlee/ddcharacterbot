@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Button, Badge, Card, CardContent, CardHeader, CardTitle } from '../../ui'
-import { WizardStepProps } from '../../../types/wizard'
-import { Race, Class, Background } from '../../../types/dnd5e'
+import { WizardStepProps, getSubclassLevel } from '../../../types/wizard'
+import { Race, Class, Background, Subclass } from '../../../types/dnd5e'
 import { fetchAllReferenceData } from '../../../services/dnd5eApi'
 import { RaceSelector } from '../../character-creation/RaceSelector'
 import { ClassSelector } from '../../character-creation/ClassSelector'
+import { SubclassSelector } from '../../character-creation/SubclassSelector'
 import { BackgroundSelector } from '../../character-creation/BackgroundSelector'
 import { CharacterPreview } from '../../character-creation/CharacterPreview'
 
@@ -22,7 +23,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [currentStep, setCurrentStep] = useState<'name' | 'race' | 'class' | 'background' | 'alignment' | 'complete'>('name')
+  const [currentStep, setCurrentStep] = useState<'name' | 'race' | 'class' | 'subclass' | 'background' | 'alignment' | 'complete'>('name')
 
   // Load D&D 5e reference data
   useEffect(() => {
@@ -54,6 +55,9 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       setCurrentStep('race')
     } else if (!data.class?.trim()) {
       setCurrentStep('class')
+    } else if (data.class && data.level && data.level >= getSubclassLevel(data.class) && !data.subclass?.trim()) {
+      // Show subclass selection if character level meets or exceeds subclass requirement
+      setCurrentStep('subclass')
     } else if (!data.background?.trim()) {
       setCurrentStep('background')
     } else if (!data.alignment) {
@@ -84,6 +88,16 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       ...data,
       class: cls.name,
       classData: cls
+    }
+    onChange(newData)
+    // Let the parent wizard handle validation timing
+  }
+
+  const handleSubclassSelect = (subclass: Subclass) => {
+    const newData = {
+      ...data,
+      subclass: subclass.name,
+      subclassData: subclass
     }
     onChange(newData)
     // Let the parent wizard handle validation timing
@@ -170,9 +184,9 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       <div className="lg:col-span-2 space-y-6">
         {/* Step Indicator */}
         <div className="flex items-center justify-center space-x-4 mb-8">
-          {['name', 'race', 'class', 'background', 'alignment'].map((step, index) => {
+          {['name', 'race', 'class', ...(data.class && data.level && data.level >= getSubclassLevel(data.class) ? ['subclass'] : []), 'background', 'alignment'].map((step, index, arr) => {
             const isActive = currentStep === step
-            const isCompleted = ['name', 'race', 'class', 'background', 'alignment'].indexOf(currentStep) > index
+            const isCompleted = arr.indexOf(currentStep) > index
             return (
               <div key={step} className="flex items-center">
                 <div className={`
@@ -182,7 +196,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
                 `}>
                   {index + 1}
                 </div>
-                {index < 4 && (
+                {index < arr.length - 1 && (
                   <div className={`w-12 h-0.5 mx-2 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
                 )}
               </div>
@@ -277,7 +291,49 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               )}
               {data.class && (
                 <div className="text-center mt-6">
-                  <p className="text-sm text-foreground/70 mb-4">{data.name} the {data.race} {data.class}! Now choose a background.</p>
+                  <p className="text-sm text-foreground/70 mb-4">
+                    {data.name} the {data.race} {data.class}!
+                    {data.level && data.level >= getSubclassLevel(data.class)
+                      ? ' Now choose a subclass.'
+                      : ' Now choose a background.'}
+                  </p>
+                  <Button
+                    onClick={() => setCurrentStep(
+                      data.level && data.level >= getSubclassLevel(data.class)
+                        ? 'subclass'
+                        : 'background'
+                    )}
+                    className="px-8"
+                  >
+                    Continue to {data.level && data.level >= getSubclassLevel(data.class) ? 'Subclass' : 'Background'} Selection
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Subclass Selection */}
+        {currentStep === 'subclass' && data.classData?.subclasses && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Choose {data.name}'s {data.class} Subclass</CardTitle>
+              <p className="text-foreground/70">
+                Your subclass specialization at level {data.level || 1}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <SubclassSelector
+                subclasses={data.classData.subclasses}
+                selectedSubclass={data.subclassData}
+                onSubclassSelect={handleSubclassSelect}
+                characterLevel={data.level || 1}
+              />
+              {data.subclass && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-foreground/70 mb-4">
+                    {data.name} the {data.race} {data.class} ({data.subclass})! Now choose a background.
+                  </p>
                   <Button onClick={() => setCurrentStep('background')} className="px-8">
                     Continue to Background Selection
                   </Button>
@@ -406,6 +462,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
             <CardContent className="text-center space-y-6">
               <div className="text-lg font-semibold">
                 {data.name} - Level {data.level || 1} {data.alignment} {data.race} {data.class}
+                {data.subclass && ` (${data.subclass})`}
               </div>
               <div className="text-sm text-foreground/70">
                 Background: {data.background}

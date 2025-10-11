@@ -58,7 +58,19 @@ export interface ClassFeature {
   name: string
   description: string
   level: number
-  type?: 'passive' | 'active' | 'reaction' | 'bonus'
+  type?: 'passive' | 'active' | 'reaction' | 'bonus' | 'subclass_feature'
+  subclass?: string
+}
+
+export interface Subclass {
+  id: string
+  name: string
+  description: string
+  features: ClassFeature[]
+  // UI-specific properties
+  imageUrl?: string
+  color?: string
+  playstyle?: string[]
 }
 
 export interface SpellcastingInfo {
@@ -86,6 +98,7 @@ export interface Class {
   tool_proficiencies?: string[]
   starting_equipment: Equipment[]
   class_features: ClassFeature[]
+  subclasses?: Subclass[]
   spellcasting?: SpellcastingInfo
   // UI-specific properties
   imageUrl?: string
