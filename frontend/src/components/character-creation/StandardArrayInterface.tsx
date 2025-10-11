@@ -76,21 +76,24 @@ export function StandardArrayInterface({
 
   // Handle score assignment to ability
   const assignScore = (ability: AbilityName, score: number) => {
-    if (!availableScores.includes(score) && !assignments[ability]) return
-    
+    // Prevent assignment if:
+    // 1. Score is not available in the pool, AND
+    // 2. This ability doesn't already have this specific score assigned (which would be a no-op)
+    if (!availableScores.includes(score) && assignments[ability] !== score) return
+
     const newScores = { ...scores }
     const newAssignments = { ...assignments }
-    
+
     // If ability already has a score, return it to available pool
     if (assignments[ability]) {
       // Don't change anything if assigning the same score
       if (assignments[ability] === score) return
     }
-    
+
     // Assign the new score
     newScores[ability] = score
     newAssignments[ability] = score
-    
+
     onScoresChange(newScores)
     setAssignments(newAssignments)
   }
