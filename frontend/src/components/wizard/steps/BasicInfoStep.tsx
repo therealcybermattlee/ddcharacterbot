@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Input, Button, Badge, Card, CardContent, CardHeader, CardTitle } from '../../ui'
 import { WizardStepProps, getSubclassLevel } from '../../../types/wizard'
 import { Race, Class, Background, Subclass } from '../../../types/dnd5e'
@@ -7,7 +7,9 @@ import { RaceSelector } from '../../character-creation/RaceSelector'
 import { ClassSelector } from '../../character-creation/ClassSelector'
 import { SubclassSelector } from '../../character-creation/SubclassSelector'
 import { BackgroundSelector } from '../../character-creation/BackgroundSelector'
+import { FeatSelector } from '../../character-creation/FeatSelector'
 import { CharacterPreview } from '../../character-creation/CharacterPreview'
+import { type Feat, getFeatById } from '../../../data/feats'
 
 const ALIGNMENTS = [
   'Lawful Good', 'Neutral Good', 'Chaotic Good',
@@ -23,7 +25,25 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [currentStep, setCurrentStep] = useState<'name' | 'race' | 'class' | 'subclass' | 'background' | 'alignment' | 'complete'>('name')
+  const [currentStep, setCurrentStep] = useState<'name' | 'race' | 'class' | 'subclass' | 'background' | 'feat' | 'alignment' | 'complete'>('name')
+
+  // Determine if background offers feat choices (2024 D&D rules)
+  const backgroundFeatChoices = useMemo(() => {
+    return data.backgroundData?.featChoices || []
+  }, [data.backgroundData])
+
+  const shouldShowFeatSelection = useMemo(() => {
+    return backgroundFeatChoices.length > 0
+  }, [backgroundFeatChoices])
+
+  // Get available feats for selection
+  const availableFeats = useMemo(() => {
+    if (!shouldShowFeatSelection) return []
+    const { getAllFeats } = require('../../../data/feats')
+    const allFeats = getAllFeats()
+    // Filter to only feats specified by background
+    return allFeats.filter((feat: Feat) => backgroundFeatChoices.includes(feat.id))
+  }, [shouldShowFeatSelection, backgroundFeatChoices])
 
   // Load D&D 5e reference data
   useEffect(() => {
@@ -60,12 +80,15 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       setCurrentStep('subclass')
     } else if (!data.background?.trim()) {
       setCurrentStep('background')
+    } else if (shouldShowFeatSelection && !data.selectedFeat) {
+      // Show feat selection if background offers feat choices
+      setCurrentStep('feat')
     } else if (!data.alignment) {
       setCurrentStep('alignment')
     } else {
       setCurrentStep('complete')
     }
-  }, [data, currentStep])
+  }, [data, currentStep, shouldShowFeatSelection])
 
   const handleInputChange = (field: string, value: string | number) => {
     const newData = { ...data, [field]: value }
@@ -107,10 +130,22 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
     const newData = {
       ...data,
       background: background.name,
-      backgroundData: background
+      backgroundData: background,
+      // Reset feat selection when background changes
+      selectedFeat: undefined,
+      selectedFeatData: undefined
     }
     onChange(newData)
     // Let the parent wizard handle validation timing
+  }
+
+  const handleFeatSelect = (feat: Feat | undefined) => {
+    const newData = {
+      ...data,
+      selectedFeat: feat?.id,
+      selectedFeatData: feat
+    }
+    onChange(newData)
   }
 
 
@@ -123,7 +158,6 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
     const randomName = randomNames[Math.floor(Math.random() * randomNames.length)]
     handleInputChange('name', randomName)
   }
-
 
   const getCharacterConcept = () => {
     return {
@@ -184,7 +218,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       <div className="lg:col-span-2 space-y-6">
         {/* Step Indicator */}
         <div className="flex items-center justify-center space-x-4 mb-8">
-          {['name', 'race', 'class', ...(data.class && data.level && data.level >= getSubclassLevel(data.class) ? ['subclass'] : []), 'background', 'alignment'].map((step, index, arr) => {
+          {['name', 'race', 'class', ...(data.class && data.level && data.level >= getSubclassLevel(data.class) ? ['subclass'] : []), 'background', ...(shouldShowFeatSelection ? ['feat'] : []), 'alignment'].map((step, index, arr) => {
             const isActive = currentStep === step
             const isCompleted = arr.indexOf(currentStep) > index
             return (
@@ -363,7 +397,45 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               )}
               {data.background && (
                 <div className="text-center mt-6">
-                  <p className="text-sm text-foreground/70 mb-4">Perfect! Now set {data.name}'s alignment and level.</p>
+                  <p className="text-sm text-foreground/70 mb-4">
+                    Perfect! {shouldShowFeatSelection ? 'Now choose a feat.' : "Now set " + data.name + "'s alignment and level."}
+                  </p>
+                  <Button onClick={() => setCurrentStep(shouldShowFeatSelection ? 'feat' : 'alignment')} className="px-8">
+                    Continue to {shouldShowFeatSelection ? 'Feat Selection' : 'Final Details'}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Feat Selection (if background offers feat choices) */}
+        {currentStep === 'feat' && shouldShowFeatSelection && (
+          <Card className="ring-2 ring-primary/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Choose a Feat for {data.name}</CardTitle>
+              <p className="text-foreground/70">
+                Your {data.background} background grants you a choice of feat
+              </p>
+            </CardHeader>
+            <CardContent>
+              <FeatSelector
+                availableFeats={availableFeats}
+                selectedFeat={data.selectedFeatData}
+                onFeatSelect={handleFeatSelect}
+                characterData={{
+                  abilityScores: data.stats,
+                  class: data.class,
+                  race: data.race,
+                  proficiencies: [],
+                  level: data.level || 1
+                }}
+              />
+              {data.selectedFeat && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-foreground/70 mb-4">
+                    Excellent choice! Now set {data.name}'s alignment and level.
+                  </p>
                   <Button onClick={() => setCurrentStep('alignment')} className="px-8">
                     Continue to Final Details
                   </Button>
@@ -467,6 +539,11 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
               <div className="text-sm text-foreground/70">
                 Background: {data.background}
               </div>
+              {data.selectedFeatData && (
+                <div className="text-sm text-foreground/70">
+                  Feat: {data.selectedFeatData.name}
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="space-y-4">

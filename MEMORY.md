@@ -110,6 +110,32 @@ Based on PROJECT-PLAN.md analysis:
      * Both drag-and-drop and click-to-assign work as intended
    - **Deployment**: Successfully deployed to production (commit a23c943)
    - **Status**: ✅ **COMPLETED** - Ability score assignment now functional in Standard Array interface
+10. ✅ Implement Subclass Selection in Character Wizard
+   - **User Request**: Enable subclass selection when characters reach appropriate level (1 for Cleric/Warlock, 2 for Wizard, 3 for all other classes)
+   - **Investigation**: No subclass selection existed in character wizard - BasicInfoStep had no subclass field
+   - **Analysis**: Evaluated 5 implementation options, selected Option 1 (Inline in BasicInfoStep) with 95% confidence
+   - **Implementation**:
+     * Created `SubclassSelector` component with search, filtering, and feature display (163 lines)
+     * Added `subclass` and `subclassData` fields to CharacterCreationData type
+     * Created `getSubclassLevel()` helper function for class-specific requirements
+     * Updated `BasicInfoSchema` with conditional validation using `.refine()`
+     * Integrated subclass selection into BasicInfoStep with progressive disclosure
+     * Added dynamic step indicator that shows/hides subclass step based on level
+   - **Files Created**:
+     * `/frontend/src/components/character-creation/SubclassSelector.tsx`
+   - **Files Modified**:
+     * `/frontend/src/components/wizard/steps/BasicInfoStep.tsx` - Added subclass selection step
+     * `/frontend/src/types/dnd5e.ts` - Added Subclass interface
+     * `/frontend/src/types/wizard.ts` - Added getSubclassLevel(), subclass fields, validation
+   - **Features**:
+     * Progressive disclosure - only shows when level requirement met
+     * Dynamic step count (5 steps for level 1-2, 6 steps for level 3+)
+     * Search and filter subclasses by name/description
+     * Display available features at current character level
+     * Subclass info included in character summary
+   - **Deployment**: Successfully deployed to production (commit 103f180)
+   - **Testing**: ✅ **VALIDATED** - Wizard correctly shows 6 steps for level 3 Fighter, 5 steps for level 1
+   - **Status**: ✅ **COMPLETED** - Subclass selection fully integrated with level-based progressive disclosure
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev

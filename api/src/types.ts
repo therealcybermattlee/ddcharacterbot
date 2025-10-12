@@ -204,6 +204,7 @@ export interface Background {
   featureName: string;
   featureDescription: string;
   suggestedCharacteristics: BackgroundCharacteristics;
+  featChoices?: string[]; // Array of feat IDs that the player can choose from (2024 D&D backgrounds)
   source: string;
   isHomebrew: boolean;
 }

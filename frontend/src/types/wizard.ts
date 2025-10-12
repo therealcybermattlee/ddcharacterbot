@@ -18,6 +18,7 @@ export const BasicInfoSchema = z.object({
   level: z.number().min(1).max(20).default(1),
   background: z.string().min(1, 'Background is required'),
   alignment: z.string().min(1, 'Alignment is required'),
+  selectedFeat: z.string().optional(),
 }).refine(
   (data) => {
     // If level meets subclass requirement, subclass must be selected
@@ -116,6 +117,9 @@ export interface CharacterCreationData {
   level: number
   background: string
   alignment: string
+  // Feat selection (from backgrounds with 2024 rules feat choices)
+  selectedFeat?: string
+  selectedFeatData?: import('../data/feats').Feat
   // Enhanced D&D reference data
   raceData?: import('./dnd5e').Race
   classData?: import('./dnd5e').Class
