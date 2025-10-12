@@ -11,25 +11,11 @@ import {
   type EquipmentPack,
   type ClassEquipmentConfig
 } from '../../../data/startingEquipment'
-
-// Using EquipmentItem interface from startingEquipment.ts
-
-// Spell Interface
-interface Spell {
-  id: string
-  name: string
-  level: number
-  school: 'Abjuration' | 'Conjuration' | 'Divination' | 'Enchantment' | 'Evocation' | 'Illusion' | 'Necromancy' | 'Transmutation'
-  castingTime: string
-  range: string
-  components: ('V' | 'S' | 'M')[]
-  materialComponent?: string
-  duration: string
-  description: string
-  classes: string[]
-  ritual?: boolean
-  concentration?: boolean
-}
+import {
+  type Spell,
+  getSpellsByClass,
+  getCantripsByClass
+} from '../../../data/spells'
 
 // Using EquipmentPack and ClassEquipmentConfig interfaces from startingEquipment.ts
 
@@ -129,38 +115,6 @@ const SPELLCASTING_CLASSES: Record<string, SpellcastingClassInfo> = {
   }
 }
 
-// Sample Spells by Class
-const SPELLS_BY_CLASS: Record<string, Spell[]> = {
-  wizard: [
-    // Cantrips
-    { id: 'fire_bolt', name: 'Fire Bolt', level: 0, school: 'Evocation', castingTime: '1 action', range: '120 feet', components: ['V', 'S'], duration: 'Instantaneous', description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack. On a hit, the target takes 1d10 fire damage.', classes: ['wizard'] },
-    { id: 'mage_hand', name: 'Mage Hand', level: 0, school: 'Conjuration', castingTime: '1 action', range: '30 feet', components: ['V', 'S'], duration: '1 minute', description: 'A spectral, floating hand appears at a point you choose within range.', classes: ['wizard'] },
-    { id: 'prestidigitation', name: 'Prestidigitation', level: 0, school: 'Transmutation', castingTime: '1 action', range: '10 feet', components: ['V', 'S'], duration: 'Up to 1 hour', description: 'This spell is a minor magical trick that novice spellcasters use for practice.', classes: ['wizard'] },
-    { id: 'light', name: 'Light', level: 0, school: 'Evocation', castingTime: '1 action', range: 'Touch', components: ['V', 'M'], materialComponent: 'a firefly or phosphorescent moss', duration: '1 hour', description: 'You touch one object that is no larger than 10 feet in any dimension.', classes: ['wizard'] },
-    // 1st Level
-    { id: 'magic_missile', name: 'Magic Missile', level: 1, school: 'Evocation', castingTime: '1 action', range: '120 feet', components: ['V', 'S'], duration: 'Instantaneous', description: 'You create three glowing darts of magical force.', classes: ['wizard'] },
-    { id: 'shield', name: 'Shield', level: 1, school: 'Abjuration', castingTime: '1 reaction', range: 'Self', components: ['V', 'S'], duration: '1 round', description: 'An invisible barrier of magical force appears and protects you.', classes: ['wizard'] },
-    { id: 'detect_magic', name: 'Detect Magic', level: 1, school: 'Divination', castingTime: '1 action', range: 'Self', components: ['V', 'S'], duration: 'Concentration, up to 10 minutes', concentration: true, ritual: true, description: 'For the duration, you sense the presence of magic within 30 feet of you.', classes: ['wizard'] },
-    { id: 'sleep', name: 'Sleep', level: 1, school: 'Enchantment', castingTime: '1 action', range: '90 feet', components: ['V', 'S', 'M'], materialComponent: 'a pinch of fine sand, rose petals, or a cricket', duration: '1 minute', description: 'This spell sends creatures into a magical slumber.', classes: ['wizard'] },
-    { id: 'burning_hands', name: 'Burning Hands', level: 1, school: 'Evocation', castingTime: '1 action', range: 'Self (15-foot cone)', components: ['V', 'S'], duration: 'Instantaneous', description: 'A thin sheet of flames shoots forth from your outstretched fingertips.', classes: ['wizard'] },
-    { id: 'charm_person', name: 'Charm Person', level: 1, school: 'Enchantment', castingTime: '1 action', range: '30 feet', components: ['V', 'S'], duration: 'Concentration, up to 1 hour', concentration: true, description: 'You attempt to charm a humanoid you can see within range.', classes: ['wizard'] }
-  ],
-  cleric: [
-    // Cantrips
-    { id: 'sacred_flame', name: 'Sacred Flame', level: 0, school: 'Evocation', castingTime: '1 action', range: '60 feet', components: ['V', 'S'], duration: 'Instantaneous', description: 'Flame-like radiance descends on a creature that you can see within range.', classes: ['cleric'] },
-    { id: 'guidance', name: 'Guidance', level: 0, school: 'Divination', castingTime: '1 action', range: 'Touch', components: ['V', 'S'], duration: 'Concentration, up to 1 minute', concentration: true, description: 'You touch one willing creature.', classes: ['cleric'] },
-    { id: 'thaumaturgy', name: 'Thaumaturgy', level: 0, school: 'Transmutation', castingTime: '1 action', range: '30 feet', components: ['V'], duration: 'Up to 1 minute', description: 'You manifest a minor wonder, a sign of supernatural power, within range.', classes: ['cleric'] },
-    { id: 'spare_the_dying', name: 'Spare the Dying', level: 0, school: 'Necromancy', castingTime: '1 action', range: 'Touch', components: ['V', 'S'], duration: 'Instantaneous', description: 'You touch a living creature that has 0 hit points.', classes: ['cleric'] },
-    // 1st Level
-    { id: 'cure_wounds', name: 'Cure Wounds', level: 1, school: 'Evocation', castingTime: '1 action', range: 'Touch', components: ['V', 'S'], duration: 'Instantaneous', description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.', classes: ['cleric'] },
-    { id: 'healing_word', name: 'Healing Word', level: 1, school: 'Evocation', castingTime: '1 bonus action', range: '60 feet', components: ['V'], duration: 'Instantaneous', description: 'A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.', classes: ['cleric'] },
-    { id: 'bless', name: 'Bless', level: 1, school: 'Enchantment', castingTime: '1 action', range: '30 feet', components: ['V', 'S', 'M'], materialComponent: 'a sprinkling of holy water', duration: 'Concentration, up to 1 minute', concentration: true, description: 'You bless up to three creatures of your choice within range.', classes: ['cleric'] },
-    { id: 'command', name: 'Command', level: 1, school: 'Enchantment', castingTime: '1 action', range: '60 feet', components: ['V'], duration: '1 round', description: 'You speak a one-word command to a creature you can see within range.', classes: ['cleric'] },
-    { id: 'detect_magic', name: 'Detect Magic', level: 1, school: 'Divination', castingTime: '1 action', range: 'Self', components: ['V', 'S'], duration: 'Concentration, up to 10 minutes', concentration: true, ritual: true, description: 'For the duration, you sense the presence of magic within 30 feet of you.', classes: ['cleric'] },
-    { id: 'inflict_wounds', name: 'Inflict Wounds', level: 1, school: 'Necromancy', castingTime: '1 action', range: 'Touch', components: ['V', 'S'], duration: 'Instantaneous', description: 'Make a melee spell attack against a creature you can reach.', classes: ['cleric'] }
-  ]
-}
-
 export function EquipmentSpellsStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
   const [selectedEquipmentChoices, setSelectedEquipmentChoices] = useState<Record<number, number>>({})
@@ -207,14 +161,13 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
   const spellcastingInfo = SPELLCASTING_CLASSES[characterData.class?.toLowerCase()]
   const isSpellcaster = !!spellcastingInfo
 
-  // Get spell lists for current class
+  // Get spell lists for current class using comprehensive spell data
   const availableSpells = useMemo(() => {
-    if (!isSpellcaster) return { cantrips: [], spells: [] }
-    
-    const classSpells = SPELLS_BY_CLASS[characterData.class?.toLowerCase()] || []
+    if (!isSpellcaster || !characterData.class) return { cantrips: [], spells: [] }
+
     return {
-      cantrips: classSpells.filter(spell => spell.level === 0),
-      spells: classSpells.filter(spell => spell.level === 1)
+      cantrips: getCantripsByClass(characterData.class),
+      spells: getSpellsByClass(characterData.class, 1) // 1st level spells
     }
   }, [isSpellcaster, characterData.class])
 
