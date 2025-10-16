@@ -254,10 +254,8 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
           }
           break
         case 'ability-scores':
-          stepData = {
-            stats: state.characterData.stats,
-            abilityScoreState: state.characterData.abilityScoreState
-          }
+          // Schema expects just the stats object, not wrapped
+          stepData = state.characterData.stats
           break
         case 'skills-proficiencies':
           stepData = {
@@ -289,16 +287,18 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
       dispatch({ type: 'SET_STEP_VALIDITY', payload: { stepId, isValid: true, errors: [] } })
       return true
     } catch (error: any) {
-      const errors = error.errors?.map((e: any) => e.message) || ['Validation failed']
+      const errors = error.errors && error.errors.length > 0
+        ? error.errors.map((e: any) => e.message)
+        : ['Validation failed']
       dispatch({ type: 'SET_STEP_VALIDITY', payload: { stepId, isValid: false, errors } })
       return false
     }
   }
 
   // Character submission
-  const submitCharacter = async (): Promise<void> => {
+  const submitCharacter = async (): Promise<Character | null> => {
     dispatch({ type: 'SET_SUBMITTING', payload: true })
-    
+
     try {
       // Convert wizard data to Character format
       const characterPayload: Omit<Character, 'id' | 'createdAt' | 'updatedAt' | 'userId'> = {
@@ -319,12 +319,14 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
         notes: state.characterData.notes,
       }
 
-      await api.post('/characters', characterPayload)
-      
+      const response = await api.post<Character>('/characters', characterPayload)
+
       // Clear saved progress after successful submission
       localStorage.removeItem(WIZARD_STORAGE_KEY)
+
+      // Return the created character data with ID
+      return response.data
     } catch (error) {
-      console.error('Failed to create character:', error)
       throw error
     } finally {
       dispatch({ type: 'SET_SUBMITTING', payload: false })
@@ -336,7 +338,7 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
     try {
       localStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state.characterData))
     } catch (error) {
-      console.error('Failed to save progress:', error)
+      // Silent fail - localStorage may not be available
     }
   }
 
@@ -348,13 +350,18 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
         dispatch({ type: 'LOAD_SAVED_DATA', payload: savedData })
       }
     } catch (error) {
-      console.error('Failed to load progress:', error)
+      // Silent fail - localStorage may not be available or data may be corrupted
     }
   }
 
   const clearProgress = () => {
     localStorage.removeItem(WIZARD_STORAGE_KEY)
     dispatch({ type: 'RESET_WIZARD' })
+  }
+
+  // Set step validity (for real-time validation callbacks)
+  const setStepValidity = (stepId: string, isValid: boolean, errors?: string[]) => {
+    dispatch({ type: 'SET_STEP_VALIDITY', payload: { stepId, isValid, errors } })
   }
 
   // Load saved progress on mount
@@ -426,6 +433,7 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
     currentStepData,
     updateStepData,
     validateStep,
+    setStepValidity,
     submitCharacter,
     saveProgress,
     loadProgress,

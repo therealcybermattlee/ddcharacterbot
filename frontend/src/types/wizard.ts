@@ -232,7 +232,8 @@ export interface WizardContextState {
   // State management
   updateStepData: (stepId: string, data: any) => void
   validateStep: (stepId: string) => Promise<boolean>
-  submitCharacter: () => Promise<void>
+  setStepValidity: (stepId: string, isValid: boolean, errors?: string[]) => void
+  submitCharacter: () => Promise<import('./character').Character | null>
   saveProgress: () => void
   loadProgress: () => void
   clearProgress: () => void

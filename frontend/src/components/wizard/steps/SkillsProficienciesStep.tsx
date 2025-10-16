@@ -49,7 +49,7 @@ const getClassData = async (className: string) => {
       }
     }
   } catch (error) {
-    console.error('Failed to fetch class data:', error)
+    // Fall through to fallback data
   }
 
   // Fallback to mock data if API fails
@@ -120,10 +120,46 @@ interface ProficiencySource {
 
 export function SkillsProficienciesStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
-  const [selectedClassSkills, setSelectedClassSkills] = useState<Set<SkillName>>(new Set())
-  const [selectedRaceSkills, setSelectedRaceSkills] = useState<Set<SkillName>>(new Set())
   const [classData, setClassData] = useState<{ skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] } | null>(null)
   const [isLoadingClassData, setIsLoadingClassData] = useState(false)
+
+  // Initialize selected skills from saved data
+  // We need to determine which skills came from class vs background/race
+  const getInitialClassSkills = (): Set<SkillName> => {
+    if (!data.skills || Object.keys(data.skills).length === 0) {
+      return new Set()
+    }
+
+    const backgroundSkills = getMockBackgroundData(characterData.background)
+    const raceSkillChoices = getMockRaceData(characterData.race)
+    const savedSkillNames = Object.keys(data.skills) as SkillName[]
+
+    // Class skills are those that aren't from background or race
+    const classSkills = savedSkillNames.filter(skill =>
+      !backgroundSkills.includes(skill) && !raceSkillChoices.includes(skill)
+    )
+
+    return new Set(classSkills)
+  }
+
+  const getInitialRaceSkills = (): Set<SkillName> => {
+    if (!data.skills || Object.keys(data.skills).length === 0) {
+      return new Set()
+    }
+
+    const raceSkillChoices = getMockRaceData(characterData.race)
+    const savedSkillNames = Object.keys(data.skills) as SkillName[]
+
+    // Race skills are those in the race skill choices list
+    const raceSkills = savedSkillNames.filter(skill =>
+      raceSkillChoices.includes(skill)
+    )
+
+    return new Set(raceSkills)
+  }
+
+  const [selectedClassSkills, setSelectedClassSkills] = useState<Set<SkillName>>(getInitialClassSkills())
+  const [selectedRaceSkills, setSelectedRaceSkills] = useState<Set<SkillName>>(getInitialRaceSkills())
 
   // Get current proficiency bonus based on level
   const proficiencyBonus = PROFICIENCY_BONUS_BY_LEVEL[characterData.level as keyof typeof PROFICIENCY_BONUS_BY_LEVEL] || 2
@@ -137,8 +173,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
           setClassData(data)
           setIsLoadingClassData(false)
         })
-        .catch((error) => {
-          console.error('Failed to load class data:', error)
+        .catch(() => {
           setIsLoadingClassData(false)
         })
     }
@@ -254,7 +289,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     // Validation
     const errors: string[] = []
-    
+
     // Check if all class skill choices are made
     if (classData && selectedClassSkills.size !== classData.skillChoices) {
       errors.push(`Select ${classData.skillChoices} skills from your class`)
@@ -266,7 +301,8 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     onValidationChange(errors.length === 0, errors)
-  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillChoices.length, proficiencyBonus, onChange, onValidationChange])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillChoices.length, proficiencyBonus])
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {

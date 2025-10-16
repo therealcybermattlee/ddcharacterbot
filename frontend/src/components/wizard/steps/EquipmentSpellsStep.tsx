@@ -148,7 +148,7 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
             setBackgroundData(background)
           }
         } catch (error) {
-          console.error('Failed to fetch background data:', error)
+          // Background data fetch failed - continue without background equipment
         }
       }
     }

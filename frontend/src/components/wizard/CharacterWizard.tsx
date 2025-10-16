@@ -25,6 +25,7 @@ export function CharacterWizard({
     currentStepData,
     updateStepData,
     validateStep,
+    setStepValidity,
     submitCharacter,
     isSubmitting,
     errors,
@@ -69,14 +70,15 @@ export function CharacterWizard({
       if (navigation.currentStep === steps.length - 1) {
         // Last step - submit character
         try {
-          await submitCharacter()
+          const createdCharacter = await submitCharacter()
+          const characterId = createdCharacter?.id || 'unknown'
+
           if (onComplete) {
-            onComplete('new-character-id') // This would come from the API response
+            onComplete(characterId)
           } else {
             navigate('/characters')
           }
         } catch (error) {
-          console.error('Failed to create character:', error)
           setValidationErrors(['Failed to create character. Please try again.'])
         }
       } else {
@@ -164,8 +166,9 @@ export function CharacterWizard({
                     <currentStep.component
                       data={currentStepData}
                       onChange={(data: any) => updateStepData(currentStep.id, data)}
-                      onValidationChange={(_isValid: boolean, _errors?: string[]) => {
-                        // This could be used for real-time validation feedback
+                      onValidationChange={(isValid: boolean, errors?: string[]) => {
+                        // Update step validity in real-time
+                        setStepValidity(currentStep.id, isValid, errors)
                       }}
                       onNext={handleNext}
                     />
@@ -213,8 +216,9 @@ export function CharacterWizard({
                   <currentStep.component
                     data={currentStepData}
                     onChange={(data: any) => updateStepData(currentStep.id, data)}
-                    onValidationChange={(_isValid: boolean, _errors?: string[]) => {
-                      // This could be used for real-time validation feedback
+                    onValidationChange={(isValid: boolean, errors?: string[]) => {
+                      // Update step validity in real-time
+                      setStepValidity(currentStep.id, isValid, errors)
                     }}
                     onNext={handleNext}
                   />

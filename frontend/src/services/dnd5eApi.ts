@@ -77,19 +77,15 @@ export async function fetchRaces(): Promise<Race[]> {
 
   try {
     const response = await api.get('/races')
-    console.log('Races API response:', response.data)
 
     if (!response.data || !response.data.data || !response.data.data.races) {
-      console.error('Invalid races response structure:', response.data)
       throw new Error('Invalid API response structure')
     }
 
     const races = response.data.data.races.map(transformRaceData)
-    console.log('Parsed and transformed races:', races)
     setCache(cacheKey, races)
     return races
   } catch (error) {
-    console.error('Failed to fetch races:', error)
     throw new Error('Unable to load race data. Please try again.')
   }
 }
@@ -179,19 +175,15 @@ export async function fetchClasses(): Promise<Class[]> {
 
   try {
     const response = await api.get('/classes')
-    console.log('Classes API response:', response.data)
 
     if (!response.data || !response.data.data || !response.data.data.classes) {
-      console.error('Invalid classes response structure:', response.data)
       throw new Error('Invalid API response structure')
     }
 
     const classes = response.data.data.classes.map(transformClassData)
-    console.log('Parsed and transformed classes:', classes)
     setCache(cacheKey, classes)
     return classes
   } catch (error) {
-    console.error('Failed to fetch classes:', error)
     throw new Error('Unable to load class data. Please try again.')
   }
 }
@@ -268,19 +260,15 @@ export async function fetchBackgrounds(): Promise<Background[]> {
 
   try {
     const response = await api.get('/backgrounds')
-    console.log('Backgrounds API response:', response.data)
 
     if (!response.data || !response.data.data || !response.data.data.backgrounds) {
-      console.error('Invalid backgrounds response structure:', response.data)
       throw new Error('Invalid API response structure')
     }
 
     const backgrounds = response.data.data.backgrounds.map(transformBackgroundData)
-    console.log('Parsed and transformed backgrounds:', backgrounds)
     setCache(cacheKey, backgrounds)
     return backgrounds
   } catch (error) {
-    console.error('Failed to fetch backgrounds:', error)
     throw new Error('Unable to load background data. Please try again.')
   }
 }
@@ -311,7 +299,6 @@ export async function fetchAllReferenceData(): Promise<{
 
     return { races, classes, backgrounds }
   } catch (error) {
-    console.error('Failed to fetch reference data:', error)
     throw new Error('Unable to load character creation data. Please check your connection and try again.')
   }
 }

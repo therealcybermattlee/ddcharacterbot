@@ -112,11 +112,30 @@ export function AbilityScoreGenerator({
   showRacialPreview = true,
   className
 }: AbilityScoreGeneratorProps) {
-  // Initialize state
-  const [method, setMethod] = useState<GenerationMethod>(initialState?.method || 'standard')
-  const [baseScores, setBaseScores] = useState<AbilityScores>(
-    initialState?.baseScores || STANDARD_ARRAY_SCORES
-  )
+  // Initialize state with validation for standard array
+  const method = initialState?.method || 'standard'
+
+  // For standard array, validate that saved scores match the standard array
+  // If not, reset to default standard array scores
+  const getInitialBaseScores = (): AbilityScores => {
+    if (method === 'standard' && initialState?.baseScores) {
+      const standardArray = [15, 14, 13, 12, 10, 8]
+      const savedScores = Object.values(initialState.baseScores)
+      const sortedSaved = [...savedScores].sort((a, b) => b - a)
+      const sortedStandard = [...standardArray].sort((a, b) => b - a)
+
+      // If saved scores match standard array, use them
+      if (JSON.stringify(sortedSaved) === JSON.stringify(sortedStandard)) {
+        return initialState.baseScores
+      }
+      // Otherwise, use default standard array scores
+      return STANDARD_ARRAY_SCORES
+    }
+    return initialState?.baseScores || STANDARD_ARRAY_SCORES
+  }
+
+  const [methodState, setMethod] = useState<GenerationMethod>(method)
+  const [baseScores, setBaseScores] = useState<AbilityScores>(getInitialBaseScores())
   const [rollHistory, setRollHistory] = useState<RollHistory[]>(initialState?.rollHistory || [])
   const [pointsUsed, setPointsUsed] = useState(initialState?.pointsUsed || 0)
   const [standardAssignments, setStandardAssignments] = useState(
@@ -141,28 +160,28 @@ export function AbilityScoreGenerator({
 
   // Update parent component when state changes
   useEffect(() => {
-    const isComplete = method === 'standard' ?
+    const isComplete = methodState === 'standard' ?
       (() => {
         const standardArray = [15, 14, 13, 12, 10, 8]
         const sortedScores = [...Object.values(baseScores)].sort((a, b) => b - a)
         const sortedStandard = [...standardArray].sort((a, b) => b - a)
         return JSON.stringify(sortedScores) === JSON.stringify(sortedStandard)
       })() :
-      method === 'pointBuy' ?
+      methodState === 'pointBuy' ?
       pointsUsed === 27 :
       Object.values(baseScores).every(score => score >= 8)
 
     const state: AbilityScoreState = {
-      method,
+      method: methodState,
       baseScores,
-      rollHistory: method === 'rolled' ? rollHistory : undefined,
-      pointsUsed: method === 'pointBuy' ? pointsUsed : undefined,
-      standardAssignments: method === 'standard' ? standardAssignments : undefined,
+      rollHistory: methodState === 'rolled' ? rollHistory : undefined,
+      pointsUsed: methodState === 'pointBuy' ? pointsUsed : undefined,
+      standardAssignments: methodState === 'standard' ? standardAssignments : undefined,
       isComplete
     }
 
     onStateChange(state)
-  }, [method, baseScores, rollHistory, pointsUsed, standardAssignments, onStateChange])
+  }, [methodState, baseScores, rollHistory, pointsUsed, standardAssignments, onStateChange])
 
   // Handle method selection
   const handleMethodChange = (newMethod: GenerationMethod) => {
@@ -190,14 +209,14 @@ export function AbilityScoreGenerator({
   // Handle score changes from interfaces
   const handleScoreChange = (newScores: AbilityScores) => {
     setBaseScores(newScores)
-    
+
     // Update method-specific state
-    if (method === 'pointBuy') {
+    if (methodState === 'pointBuy') {
       // Calculate points used for point buy
       const pointCosts: { [key: number]: number } = {
         8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
       }
-      const totalPoints = Object.values(newScores).reduce((sum, score) => 
+      const totalPoints = Object.values(newScores).reduce((sum, score) =>
         sum + pointCosts[score], 0
       )
       setPointsUsed(totalPoints)
@@ -206,7 +225,7 @@ export function AbilityScoreGenerator({
 
   // Render method-specific interface
   const renderMethodInterface = () => {
-    switch (method) {
+    switch (methodState) {
       case 'pointBuy':
         return (
           <PointBuyInterface
@@ -246,7 +265,7 @@ export function AbilityScoreGenerator({
       {/* Method Selection */}
       {showMethodSelector ? (
         <MethodSelector
-          selectedMethod={method}
+          selectedMethod={methodState}
           onMethodSelect={handleMethodChange}
           playerExperience={playerExperience}
           selectedClass={selectedClass}
@@ -256,14 +275,14 @@ export function AbilityScoreGenerator({
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-foreground">
-                {method === 'standard' && 'Standard Array'}
-                {method === 'pointBuy' && 'Point Buy System'}
-                {method === 'rolled' && 'Dice Rolling'}
+                {methodState === 'standard' && 'Standard Array'}
+                {methodState === 'pointBuy' && 'Point Buy System'}
+                {methodState === 'rolled' && 'Dice Rolling'}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {method === 'standard' && 'Assign predetermined scores to abilities'}
-                {method === 'pointBuy' && 'Spend 27 points to customize your scores'}
-                {method === 'rolled' && 'Roll 4d6 drop lowest for each ability'}
+                {methodState === 'standard' && 'Assign predetermined scores to abilities'}
+                {methodState === 'pointBuy' && 'Spend 27 points to customize your scores'}
+                {methodState === 'rolled' && 'Roll 4d6 drop lowest for each ability'}
               </p>
             </div>
             <div className="flex items-center gap-2">

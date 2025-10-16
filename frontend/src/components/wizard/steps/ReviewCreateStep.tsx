@@ -79,7 +79,6 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
         throw new Error('Failed to save character')
       }
     } catch (error) {
-      console.error('Failed to save character:', error)
       alert('Failed to save character. Please try again.')
     } finally {
       setIsSubmitting(false)
