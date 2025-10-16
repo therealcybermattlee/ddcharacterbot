@@ -1,7 +1,11 @@
 /**
  * D&D 5e Feats
  * Comprehensive feat database for character creation
- * Source: Player's Handbook (PHB), Xanathar's Guide to Everything (XGE), Tasha's Cauldron of Everything (TCE)
+ * Sources:
+ * - Player's Handbook (PHB)
+ * - Xanathar's Guide to Everything (XGE)
+ * - Tasha's Cauldron of Everything (TCE)
+ * - Fizban's Treasury of Dragons (FTD)
  */
 
 export interface FeatPrerequisites {
@@ -716,6 +720,131 @@ export const FEATS: Feat[] = [
     source: 'XGE',
     category: 'racial'
   },
+  {
+    id: 'bountiful_luck',
+    name: 'Bountiful Luck',
+    description: 'Your people have extraordinary luck, which you have learned to share with your companions.',
+    benefits: [
+      'When an ally you can see within 30 feet of you rolls a 1 on the d20 for an attack roll, ability check, or saving throw, you can use your reaction to let the ally reroll the die.',
+      'The ally must use the new roll.',
+      'When you use this ability, you can\'t use your Lucky racial trait before the end of your next turn.'
+    ],
+    prerequisites: {
+      race: 'Halfling'
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'drow_high_magic',
+    name: 'Drow High Magic',
+    description: 'You learn more of the magic typical of dark elves.',
+    benefits: [
+      'You learn the detect magic spell and can cast it at will, without expending a spell slot.',
+      'You also learn levitate and dispel magic, each of which you can cast once without expending a spell slot.',
+      'You regain the ability to cast these two spells in this way when you finish a long rest.',
+      'Charisma is your spellcasting ability for these spells.'
+    ],
+    prerequisites: {
+      race: 'Elf (drow)'
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'fey_teleportation',
+    name: 'Fey Teleportation',
+    description: 'Your study of high elven lore has unlocked fey power that few other elves possess.',
+    benefits: [
+      'Increase your Intelligence or Charisma score by 1, to a maximum of 20.',
+      'You learn to speak, read, and write Sylvan.',
+      'You learn the misty step spell and can cast it once without expending a spell slot.',
+      'You regain the ability to cast it in this way when you finish a short or long rest.',
+      'Intelligence is your spellcasting ability for this spell.'
+    ],
+    prerequisites: {
+      race: 'Elf (high)'
+    },
+    abilityScoreIncrease: {
+      options: ['intelligence', 'charisma'],
+      amount: 1,
+      count: 1
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'infernal_constitution',
+    name: 'Infernal Constitution',
+    description: 'Fiendish blood runs strong in you, unlocking a resilience akin to that possessed by some fiends.',
+    benefits: [
+      'Increase your Constitution score by 1, to a maximum of 20.',
+      'You have resistance to cold damage and poison damage.',
+      'You have advantage on saving throws against being poisoned.'
+    ],
+    prerequisites: {
+      race: 'Tiefling'
+    },
+    abilityScoreIncrease: {
+      options: ['constitution'],
+      amount: 1,
+      count: 1
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'prodigy',
+    name: 'Prodigy',
+    description: 'You have a knack for learning new things.',
+    benefits: [
+      'You gain proficiency in one skill of your choice, one tool of your choice, and fluency in one language of your choice.',
+      'Choose one skill in which you have proficiency. You gain expertise with that skill, which means your proficiency bonus is doubled for any ability check you make with it.',
+      'The skill you choose must be one that isn\'t already benefiting from a feature, such as Expertise, that doubles your proficiency bonus.'
+    ],
+    prerequisites: {
+      race: 'Human, Half-Elf, or Half-Orc'
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'squat_nimbleness',
+    name: 'Squat Nimbleness',
+    description: 'You are uncommonly nimble for your race.',
+    benefits: [
+      'Increase your Strength or Dexterity score by 1, to a maximum of 20.',
+      'Increase your walking speed by 5 feet.',
+      'You gain proficiency in the Acrobatics or Athletics skill (your choice).',
+      'You have advantage on any Strength (Athletics) or Dexterity (Acrobatics) check you make to escape from being grappled.'
+    ],
+    prerequisites: {
+      race: 'Dwarf, Gnome, or Halfling'
+    },
+    abilityScoreIncrease: {
+      options: ['strength', 'dexterity'],
+      amount: 1,
+      count: 1
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
+  {
+    id: 'wood_elf_magic',
+    name: 'Wood Elf Magic',
+    description: 'You learn the magic of the primeval woods, which are revered and protected by your people.',
+    benefits: [
+      'You learn one druid cantrip of your choice.',
+      'You also learn the longstrider and pass without trace spells, each of which you can cast once without expending a spell slot.',
+      'You regain the ability to cast these two spells in this way when you finish a long rest.',
+      'Wisdom is your spellcasting ability for these spells.'
+    ],
+    prerequisites: {
+      race: 'Elf (wood)'
+    },
+    source: 'XGE',
+    category: 'racial'
+  },
 
   // Tasha's Cauldron of Everything Feats
   {
@@ -913,6 +1042,121 @@ export const FEATS: Feat[] = [
     },
     source: 'TCE',
     category: 'combat'
+  },
+  {
+    id: 'artificer_initiate',
+    name: 'Artificer Initiate',
+    description: 'You\'ve learned some of an artificer\'s inventiveness.',
+    benefits: [
+      'You learn one cantrip of your choice from the artificer spell list, and you learn one 1st-level spell of your choice from that list.',
+      'Intelligence is your spellcasting ability for these spells.',
+      'You can cast this feat\'s 1st-level spell without a spell slot, and you must finish a long rest before you can cast it in this way again.',
+      'You can also cast the spell using any spell slots you have.',
+      'You gain proficiency with one type of artisan\'s tools of your choice, and you can use that type of tool as a spellcasting focus for any spell you cast that uses Intelligence as its spellcasting ability.'
+    ],
+    source: 'TCE',
+    category: 'spellcasting'
+  },
+  {
+    id: 'eldritch_adept',
+    name: 'Eldritch Adept',
+    description: 'Studying occult lore, you have unlocked eldritch power within yourself.',
+    benefits: [
+      'You learn one Eldritch Invocation option of your choice from the warlock class.',
+      'If the invocation has a prerequisite of any kind, you can choose that invocation only if you\'re a warlock who meets the prerequisite.',
+      'Whenever you gain a level, you can replace the invocation with another one from the warlock class.'
+    ],
+    prerequisites: {
+      spellcasting: true
+    },
+    source: 'TCE',
+    category: 'spellcasting'
+  },
+  {
+    id: 'metamagic_adept',
+    name: 'Metamagic Adept',
+    description: 'You\'ve learned how to exert your will on your spells to alter how they function.',
+    benefits: [
+      'You learn two Metamagic options of your choice from the sorcerer class.',
+      'You can use only one Metamagic option on a spell when you cast it, unless the option says otherwise.',
+      'Whenever you reach a level that grants the Ability Score Improvement feature, you can replace one of these Metamagic options with another one from the sorcerer class.',
+      'You gain 2 sorcery points to spend on Metamagic (these points are added to any sorcery points you have from another source but can be used only on Metamagic).',
+      'You regain all spent sorcery points when you finish a long rest.'
+    ],
+    prerequisites: {
+      spellcasting: true
+    },
+    source: 'TCE',
+    category: 'spellcasting'
+  },
+  {
+    id: 'skill_expert',
+    name: 'Skill Expert',
+    description: 'You have honed your proficiency with particular skills.',
+    benefits: [
+      'Increase one ability score of your choice by 1, to a maximum of 20.',
+      'You gain proficiency in one skill of your choice.',
+      'Choose one skill in which you have proficiency. You gain expertise with that skill, which means your proficiency bonus is doubled for any ability check you make with it.',
+      'The skill you choose must be one that isn\'t already benefiting from a feature, such as Expertise, that doubles your proficiency bonus.'
+    ],
+    abilityScoreIncrease: {
+      options: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],
+      amount: 1,
+      count: 1
+    },
+    source: 'TCE',
+    category: 'utility'
+  },
+
+  // Fizban's Treasury of Dragons Feats
+  {
+    id: 'gift_of_the_chromatic_dragon',
+    name: 'Gift of the Chromatic Dragon',
+    description: 'You\'ve manifested some of the power of chromatic dragons, granting you the following benefits.',
+    benefits: [
+      'Chromatic Infusion: As a bonus action, you can touch a simple or martial weapon and infuse it with one of the following damage types: acid, cold, fire, lightning, or poison.',
+      'For the next minute, the weapon deals an extra 1d4 damage of the chosen type when it hits.',
+      'After you use this bonus action, you can\'t do so again until you finish a long rest.',
+      'Reactive Resistance: When you take acid, cold, fire, lightning, or poison damage, you can use your reaction to give yourself resistance to that instance of damage.',
+      'You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.'
+    ],
+    source: 'FTD',
+    category: 'combat'
+  },
+  {
+    id: 'gift_of_the_gem_dragon',
+    name: 'Gift of the Gem Dragon',
+    description: 'You\'ve manifested some of the power of gem dragons, granting you the following benefits.',
+    benefits: [
+      'Increase your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20.',
+      'Telekinetic Reprisal: When you take damage from a creature that is within 10 feet of you, you can use your reaction to emanate telekinetic energy.',
+      'The creature that dealt damage to you must make a Strength saving throw (DC = 8 + your proficiency bonus + the ability modifier of the score increased by this feat).',
+      'On a failed save, the creature takes 2d8 force damage and is pushed up to 10 feet away from you.',
+      'On a successful save, the creature takes half as much damage and isn\'t pushed.',
+      'You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.'
+    ],
+    abilityScoreIncrease: {
+      options: ['intelligence', 'wisdom', 'charisma'],
+      amount: 1,
+      count: 1
+    },
+    source: 'FTD',
+    category: 'combat'
+  },
+  {
+    id: 'gift_of_the_metallic_dragon',
+    name: 'Gift of the Metallic Dragon',
+    description: 'You\'ve manifested some of the power of metallic dragons, granting you the following benefits.',
+    benefits: [
+      'Draconic Healing: You learn the cure wounds spell. You can cast this spell without expending a spell slot.',
+      'Once you cast this spell in this way, you can\'t do so again until you finish a long rest.',
+      'You can also cast this spell using spell slots you have. The spell\'s spellcasting ability is Intelligence, Wisdom, or Charisma when you cast it with this feat (choose when you gain the feat).',
+      'Protective Wings: You can manifest protective wings that can shield you or others. When you or another creature you can see within 5 feet of you is hit by an attack roll, you can use your reaction to manifest spectral wings from your back for a moment.',
+      'You grant a bonus to the target\'s AC equal to your proficiency bonus against that attack roll, potentially causing it to miss.',
+      'You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.'
+    ],
+    source: 'FTD',
+    category: 'utility'
   }
 ]
 
@@ -1047,7 +1291,8 @@ export function getFeatStats() {
     sources: {
       PHB: FEATS.filter(f => f.source === 'PHB').length,
       XGE: FEATS.filter(f => f.source === 'XGE').length,
-      TCE: FEATS.filter(f => f.source === 'TCE').length
+      TCE: FEATS.filter(f => f.source === 'TCE').length,
+      FTD: FEATS.filter(f => f.source === 'FTD').length
     }
   }
 }

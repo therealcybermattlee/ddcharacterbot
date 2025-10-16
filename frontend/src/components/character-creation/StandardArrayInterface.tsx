@@ -145,10 +145,10 @@ export function StandardArrayInterface({
     }
 
     // Assign remaining scores to unassigned abilities
-    const remainingAbilities = abilities.filter(ability => 
+    const remainingAbilities = abilities.filter(ability =>
       !primaryAbilities.includes(ability) && !secondaryAbilities.includes(ability)
     )
-    
+
     for (const ability of remainingAbilities) {
       if (scoreIndex < sortedScores.length) {
         newScores[ability] = sortedScores[scoreIndex]
@@ -157,8 +157,10 @@ export function StandardArrayInterface({
       }
     }
 
-    onScoresChange(newScores)
+    // Update assignments state first
     setAssignments(newAssignments)
+    // Then notify parent of score changes
+    onScoresChange(newScores)
   }
 
   // Reset all assignments

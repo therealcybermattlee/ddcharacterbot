@@ -165,6 +165,27 @@ Based on PROJECT-PLAN.md analysis:
    - **Bundle Size**: ~47KB raw feat data, ~12-15KB gzipped (minimal impact)
    - **Deployment**: Successfully deployed to production (commit 4160afe)
    - **Status**: ✅ **COMPLETED** - Feat selection fully integrated with background-based progressive disclosure
+12. ✅ Expand Feat Database with Missing Official Content
+   - **User Request**: Add missing feats from official D&D 5e sourcebooks
+   - **Investigation**: Discovered 14 missing feats across 3 sourcebooks
+   - **Research**: Conducted comprehensive web research to gather feat mechanics and descriptions
+   - **Implementation**:
+     * Added 7 missing XGE racial feats: Bountiful Luck, Drow High Magic, Fey Teleportation, Infernal Constitution, Prodigy, Squat Nimbleness, Wood Elf Magic
+     * Added 4 missing TCE feats: Artificer Initiate, Eldritch Adept, Metamagic Adept, Skill Expert
+     * Added 3 Fizban's Treasury of Dragons feats: Gift of the Chromatic Dragon, Gift of the Gem Dragon, Gift of the Metallic Dragon
+     * Updated feat database from 56 to 70 total feats (+25% increase)
+   - **Files Modified**:
+     * `/frontend/src/data/feats.ts` - Expanded from 1,092 to ~1,300 lines
+   - **Feat Breakdown by Source**:
+     * PHB: 39 feats (unchanged)
+     * XGE: 14 feats (was 7, added 7)
+     * TCE: 14 feats (was 10, added 4)
+     * FTD: 3 feats (new source)
+   - **New Feat Categories Added**:
+     * Additional racial feats for Halfling, Drow, High Elf, Tiefling, Human/Half-Elf/Half-Orc, Dwarf/Gnome/Halfling, Wood Elf
+     * Class-focused feats (Artificer Initiate, Eldritch Adept, Metamagic Adept)
+     * Draconic-themed feats with unique mechanics (Gift feats)
+   - **Status**: ✅ **COMPLETED** - Feat database now includes all major official 5e sourcebook feats (PHB, XGE, TCE, FTD)
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev
