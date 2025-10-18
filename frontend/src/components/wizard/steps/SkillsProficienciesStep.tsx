@@ -95,11 +95,22 @@ const getMockBackgroundData = (backgroundName: string) => {
 }
 
 const getMockRaceData = (raceName: string) => {
+  // All available skill names for races that can choose any skill
+  const allSkillNames = ALL_SKILLS.map(s => s.name)
+
   const raceData: Record<string, SkillName[]> = {
-    'half-elf': ['Deception', 'Persuasion'], // Gets 2 skill choices
-    'variant human': ['Persuasion'], // Gets 1 skill choice from feat
+    'half-elf': allSkillNames, // Can choose ANY 2 skills from all 18 available
+    'variant human': allSkillNames, // Can choose ANY 1 skill from all 18 available (from feat)
   }
   return raceData[raceName.toLowerCase()] || []
+}
+
+const getRaceSkillCount = (raceName: string) => {
+  const raceSkillCounts: Record<string, number> = {
+    'half-elf': 2, // Can choose 2 skills
+    'variant human': 1, // Can choose 1 skill from feat
+  }
+  return raceSkillCounts[raceName.toLowerCase()] || 0
 }
 
 // Proficiency source colors
@@ -186,6 +197,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   // Get background and race data (keeping mock for now)
   const backgroundSkills = getMockBackgroundData(characterData.background)
   const raceSkillChoices = getMockRaceData(characterData.race)
+  const raceSkillCount = getRaceSkillCount(characterData.race)
 
   // Calculate all proficiencies from different sources
   const proficiencySources = useMemo((): ProficiencySource[] => {
@@ -212,19 +224,19 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     // Race skill choices
-    if (raceSkillChoices.length > 0) {
+    if (raceSkillCount > 0) {
       sources.push({
         source: 'race',
         skills: [],
         choices: {
-          count: raceSkillChoices.length,
+          count: raceSkillCount,
           available: raceSkillChoices
         }
       })
     }
 
     return sources
-  }, [backgroundSkills, classData, raceSkillChoices])
+  }, [backgroundSkills, classData, raceSkillChoices, raceSkillCount])
 
   // Calculate final skill proficiencies
   const finalSkillProficiencies = useMemo(() => {
@@ -263,7 +275,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     const newSelected = new Set(selectedRaceSkills)
     if (newSelected.has(skill)) {
       newSelected.delete(skill)
-    } else if (newSelected.size < raceSkillChoices.length) {
+    } else if (newSelected.size < raceSkillCount) {
       newSelected.add(skill)
     }
     setSelectedRaceSkills(newSelected)
@@ -300,13 +312,13 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     // Check if all race skill choices are made (only if race provides skill choices)
-    if (raceSkillChoices.length > 0 && selectedRaceSkills.size !== raceSkillChoices.length) {
-      errors.push(`Select ${raceSkillChoices.length} skills from your race`)
+    if (raceSkillCount > 0 && selectedRaceSkills.size !== raceSkillCount) {
+      errors.push(`Select ${raceSkillCount} skills from your race`)
     }
 
     onValidationChange(errors.length === 0, errors)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillChoices.length, proficiencyBonus])
+  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillCount, proficiencyBonus])
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {
@@ -554,13 +566,13 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       )}
 
       {/* Race Skill Choices */}
-      {raceSkillChoices.length > 0 && (
+      {raceSkillCount > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Racial Skill Choices</span>
               <Badge className={PROFICIENCY_COLORS.race}>
-                {selectedRaceSkills.size}/{raceSkillChoices.length} selected
+                {selectedRaceSkills.size}/{raceSkillCount} selected
               </Badge>
             </CardTitle>
           </CardHeader>
