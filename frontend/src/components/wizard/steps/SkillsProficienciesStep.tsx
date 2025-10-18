@@ -142,12 +142,22 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     const backgroundSkills = getMockBackgroundData(characterData.background)
-    const raceSkillChoices = getMockRaceData(characterData.race)
+    const raceSkillCount = getRaceSkillCount(characterData.race)
     const savedSkillNames = Object.keys(data.skills) as SkillName[]
 
-    // Class skills are those that aren't from background or race
+    // If race has no skill choices, all non-background skills are class skills
+    if (raceSkillCount === 0) {
+      const classSkills = savedSkillNames.filter(skill =>
+        !backgroundSkills.includes(skill)
+      )
+      return new Set(classSkills)
+    }
+
+    // If race has skill choices, we need to look at what's already selected as race skills
+    // This prevents misclassification when races can choose from all skills
+    const raceSkills = data.raceSkills || []
     const classSkills = savedSkillNames.filter(skill =>
-      !backgroundSkills.includes(skill) && !raceSkillChoices.includes(skill)
+      !backgroundSkills.includes(skill) && !raceSkills.includes(skill)
     )
 
     return new Set(classSkills)
@@ -158,15 +168,12 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       return new Set()
     }
 
-    const raceSkillChoices = getMockRaceData(characterData.race)
-    const savedSkillNames = Object.keys(data.skills) as SkillName[]
+    // Use explicitly saved race skills if available
+    if (data.raceSkills) {
+      return new Set(data.raceSkills as SkillName[])
+    }
 
-    // Race skills are those in the race skill choices list
-    const raceSkills = savedSkillNames.filter(skill =>
-      raceSkillChoices.includes(skill)
-    )
-
-    return new Set(raceSkills)
+    return new Set()
   }
 
   const [selectedClassSkills, setSelectedClassSkills] = useState<Set<SkillName>>(getInitialClassSkills())
@@ -298,7 +305,8 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     const newData = {
       proficiencyBonus,
       skills: skillsRecord,
-      savingThrows: savingThrowsRecord
+      savingThrows: savingThrowsRecord,
+      raceSkills: Array.from(selectedRaceSkills) // Save race skills separately for proper categorization
     }
 
     onChange(newData)
