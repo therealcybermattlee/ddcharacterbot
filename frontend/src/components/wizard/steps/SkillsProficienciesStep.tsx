@@ -172,6 +172,10 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
         .then((data) => {
           setClassData(data)
           setIsLoadingClassData(false)
+
+          // Reinitialize selected class skills after class data loads
+          // This ensures proper categorization of saved skills
+          setSelectedClassSkills(getInitialClassSkills())
         })
         .catch(() => {
           setIsLoadingClassData(false)
