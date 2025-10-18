@@ -295,8 +295,8 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       errors.push(`Select ${classData.skillChoices} skills from your class`)
     }
 
-    // Check if all race skill choices are made
-    if (selectedRaceSkills.size !== raceSkillChoices.length) {
+    // Check if all race skill choices are made (only if race provides skill choices)
+    if (raceSkillChoices.length > 0 && selectedRaceSkills.size !== raceSkillChoices.length) {
       errors.push(`Select ${raceSkillChoices.length} skills from your race`)
     }
 
