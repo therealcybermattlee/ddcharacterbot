@@ -178,6 +178,8 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
   const [selectedClassSkills, setSelectedClassSkills] = useState<Set<SkillName>>(getInitialClassSkills())
   const [selectedRaceSkills, setSelectedRaceSkills] = useState<Set<SkillName>>(getInitialRaceSkills())
+  const [previousClass, setPreviousClass] = useState<string>(characterData.class)
+  const [previousRace, setPreviousRace] = useState<string>(characterData.race)
 
   // Get current proficiency bonus based on level
   const proficiencyBonus = PROFICIENCY_BONUS_BY_LEVEL[characterData.level as keyof typeof PROFICIENCY_BONUS_BY_LEVEL] || 2
@@ -200,6 +202,27 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
         })
     }
   }, [characterData.class])
+
+  // BUG FIX #2: Reset class skill selections when class changes
+  useEffect(() => {
+    if (previousClass && previousClass !== characterData.class) {
+      // Class changed - reset class skill selections
+      setSelectedClassSkills(new Set())
+    }
+    setPreviousClass(characterData.class)
+  }, [characterData.class])
+
+  // BUG FIX #3: Reset race skill selections when race changes or when changing to/from races with different skill counts
+  useEffect(() => {
+    const currentRaceSkillCount = getRaceSkillCount(characterData.race)
+    const previousRaceSkillCount = getRaceSkillCount(previousRace)
+
+    if (previousRace && (previousRace !== characterData.race || previousRaceSkillCount !== currentRaceSkillCount)) {
+      // Race changed or race skill count changed - reset race skill selections
+      setSelectedRaceSkills(new Set())
+    }
+    setPreviousRace(characterData.race)
+  }, [characterData.race])
 
   // Get background and race data (keeping mock for now)
   const backgroundSkills = getMockBackgroundData(characterData.background)
@@ -248,18 +271,21 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   // Calculate final skill proficiencies
   const finalSkillProficiencies = useMemo(() => {
     const skills = new Set<SkillName>()
-    
+
     // Add background skills
     backgroundSkills.forEach(skill => skills.add(skill))
-    
+
     // Add selected class skills
     selectedClassSkills.forEach(skill => skills.add(skill))
-    
-    // Add selected race skills
-    selectedRaceSkills.forEach(skill => skills.add(skill))
-    
+
+    // Add selected race skills (only if race actually grants skill choices)
+    // BUG FIX #3: Filter out race skills if current race doesn't grant skill choices
+    if (raceSkillCount > 0) {
+      selectedRaceSkills.forEach(skill => skills.add(skill))
+    }
+
     return skills
-  }, [backgroundSkills, selectedClassSkills, selectedRaceSkills])
+  }, [backgroundSkills, selectedClassSkills, selectedRaceSkills, raceSkillCount])
 
   // Calculate saving throw proficiencies
   const savingThrowProficiencies = useMemo(() => {
@@ -601,11 +627,11 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
                     key={skill}
                     type="button"
                     onClick={() => handleRaceSkillToggle(skill)}
-                    disabled={isAlreadyProficient}
+                    disabled={isAlreadyProficient || (selectedRaceSkills.size >= raceSkillCount && !isSelected)}
                     className={`p-3 border rounded-lg text-left transition-all ${
                       isSelected
                         ? 'border-purple-300 bg-purple-50 text-purple-900'
-                        : isAlreadyProficient
+                        : isAlreadyProficient || (selectedRaceSkills.size >= raceSkillCount && !isSelected)
                         ? 'border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed'
                         : 'border-gray-200 hover:border-purple-200 hover:bg-purple-25 text-gray-700'
                     }`}
