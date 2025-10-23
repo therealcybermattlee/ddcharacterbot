@@ -16,6 +16,7 @@ import {
   getSpellsByClass,
   getCantripsByClass
 } from '../../../data/spells'
+import { WeaponSelectorComponent } from '../WeaponSelector'
 
 // Using EquipmentPack and ClassEquipmentConfig interfaces from startingEquipment.ts
 
@@ -118,6 +119,7 @@ const SPELLCASTING_CLASSES: Record<string, SpellcastingClassInfo> = {
 export function EquipmentSpellsStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
   const [selectedEquipmentChoices, setSelectedEquipmentChoices] = useState<Record<number, number>>({})
+  const [weaponSelectorChoices, setWeaponSelectorChoices] = useState<Record<number, { weapons: EquipmentItem[], includesShield: boolean }>>({})
   const [selectedSpells, setSelectedSpells] = useState<{
     cantrips: Set<string>
     knownSpells: Set<string>
@@ -202,14 +204,36 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
 
     // Add equipment from choices
     classData.choices.forEach((choice, choiceIndex) => {
-      const selectedOption = selectedEquipmentChoices[choiceIndex]
-      if (selectedOption !== undefined && choice.options[selectedOption]) {
-        equipment.push(...choice.options[selectedOption])
+      // Check if this is a weapon selector choice
+      if (choice.weaponSelector) {
+        const weaponSelection = weaponSelectorChoices[choiceIndex]
+        if (weaponSelection) {
+          equipment.push(...weaponSelection.weapons)
+          // Add shield if selected
+          if (weaponSelection.includesShield) {
+            equipment.push({
+              id: 'shield',
+              name: 'Shield',
+              type: 'armor',
+              quantity: 1,
+              weight: 6,
+              value: 1000, // 10 gp
+              armorClass: 2,
+              description: '+2 AC'
+            })
+          }
+        }
+      } else {
+        // Standard equipment choice
+        const selectedOption = selectedEquipmentChoices[choiceIndex]
+        if (selectedOption !== undefined && choice.options[selectedOption]) {
+          equipment.push(...choice.options[selectedOption])
+        }
       }
     })
 
     return equipment
-  }, [classData, selectedEquipmentChoices, backgroundData])
+  }, [classData, selectedEquipmentChoices, weaponSelectorChoices, backgroundData])
 
   // Calculate total encumbrance
   const totalWeight = finalEquipment.reduce((total, item) => total + (item.weight || 0) * item.quantity, 0)
@@ -221,6 +245,12 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
   const handleEquipmentChoice = (choiceIndex: number, optionIndex: number) => {
     const newChoices = { ...selectedEquipmentChoices, [choiceIndex]: optionIndex }
     setSelectedEquipmentChoices(newChoices)
+  }
+
+  // Handle weapon selector choice
+  const handleWeaponSelectorChoice = (choiceIndex: number, weapons: EquipmentItem[], includesShield: boolean) => {
+    const newChoices = { ...weaponSelectorChoices, [choiceIndex]: { weapons, includesShield } }
+    setWeaponSelectorChoices(newChoices)
   }
 
   // Handle spell selection
@@ -314,12 +344,30 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
 
     // Validation
     const errors: string[] = []
-    
+
     // Check equipment choices
     if (classData) {
       classData.choices.forEach((choice, index) => {
-        if (selectedEquipmentChoices[index] === undefined) {
-          errors.push(`Make a selection for: ${choice.description}`)
+        if (choice.weaponSelector) {
+          // Validate weapon selector choice
+          const weaponSelection = weaponSelectorChoices[index]
+          if (!weaponSelection || weaponSelection.weapons.length === 0) {
+            errors.push(`Make a weapon selection for: ${choice.description}`)
+          } else {
+            // Calculate required weapon count based on shield selection
+            const requiredWeapons = choice.weaponSelector.includeShield && !weaponSelection.includesShield
+              ? choice.weaponSelector.count * 2
+              : choice.weaponSelector.count
+
+            if (weaponSelection.weapons.length < requiredWeapons) {
+              errors.push(`Select ${requiredWeapons} weapon(s) for: ${choice.description}`)
+            }
+          }
+        } else {
+          // Validate standard equipment choice
+          if (selectedEquipmentChoices[index] === undefined) {
+            errors.push(`Make a selection for: ${choice.description}`)
+          }
         }
       })
     }
@@ -336,7 +384,7 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
     }
 
     onValidationChange(errors.length === 0, errors)
-  }, [finalEquipment, selectedSpells, selectedEquipmentChoices, availableSpells, classData, isSpellcaster, spellcastingInfo, onChange, onValidationChange])
+  }, [finalEquipment, selectedSpells, selectedEquipmentChoices, weaponSelectorChoices, availableSpells, classData, isSpellcaster, spellcastingInfo, onChange, onValidationChange])
 
   if (!characterData.class) {
     return (
@@ -438,48 +486,64 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
         )}
 
         {/* Equipment Choices */}
-        {classData && classData.choices.map((choice, choiceIndex) => (
-          <Card key={choiceIndex} className="border-amber-200">
-            <CardHeader>
-              <CardTitle className="text-amber-800">{choice.description}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {choice.options.map((option, optionIndex) => (
-                <button
-                  key={optionIndex}
-                  type="button"
-                  onClick={() => handleEquipmentChoice(choiceIndex, optionIndex)}
-                  className={`w-full p-4 border rounded-lg text-left transition-all ${
-                    selectedEquipmentChoices[choiceIndex] === optionIndex
-                      ? 'border-amber-400 bg-amber-50 text-amber-900'
-                      : 'border-gray-200 hover:border-amber-300 hover:bg-amber-25'
-                  }`}
-                >
-                  <div className="space-y-2">
-                    {option.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium">{item.name}</div>
-                          {item.description && (
-                            <div className="text-xs text-muted-foreground">{item.description}</div>
-                          )}
-                          {item.damage && (
-                            <div className="text-xs font-mono text-blue-600">{item.damage}</div>
-                          )}
+        {classData && classData.choices.map((choice, choiceIndex) => {
+          // Check if this choice uses a weapon selector
+          if (choice.weaponSelector) {
+            return (
+              <WeaponSelectorComponent
+                key={choiceIndex}
+                config={choice.weaponSelector}
+                description={choice.description}
+                onSelect={(weapons, includesShield) => handleWeaponSelectorChoice(choiceIndex, weapons, includesShield)}
+                currentSelection={weaponSelectorChoices[choiceIndex]}
+              />
+            )
+          }
+
+          // Otherwise render standard equipment choice
+          return (
+            <Card key={choiceIndex} className="border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-800">{choice.description}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {choice.options.map((option, optionIndex) => (
+                  <button
+                    key={optionIndex}
+                    type="button"
+                    onClick={() => handleEquipmentChoice(choiceIndex, optionIndex)}
+                    className={`w-full p-4 border rounded-lg text-left transition-all ${
+                      selectedEquipmentChoices[choiceIndex] === optionIndex
+                        ? 'border-amber-400 bg-amber-50 text-amber-900'
+                        : 'border-gray-200 hover:border-amber-300 hover:bg-amber-25'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      {option.map((item, itemIndex) => (
+                        <div key={itemIndex} className="flex items-center justify-between">
+                          <div>
+                            <div className="font-medium">{item.name}</div>
+                            {item.description && (
+                              <div className="text-xs text-muted-foreground">{item.description}</div>
+                            )}
+                            {item.damage && (
+                              <div className="text-xs font-mono text-blue-600">{item.damage}</div>
+                            )}
+                          </div>
+                          <div className="text-right text-xs text-muted-foreground">
+                            {item.quantity > 1 && <div>×{item.quantity}</div>}
+                            {item.weight && <div>{item.weight} lb</div>}
+                            {item.armorClass && <div>AC {item.armorClass}</div>}
+                          </div>
                         </div>
-                        <div className="text-right text-xs text-muted-foreground">
-                          {item.quantity > 1 && <div>×{item.quantity}</div>}
-                          {item.weight && <div>{item.weight} lb</div>}
-                          {item.armorClass && <div>AC {item.armorClass}</div>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
+                      ))}
+                    </div>
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
+          )
+        })}
 
         {/* Additional Equipment */}
         {classData && classData.additionalEquipment && classData.additionalEquipment.length > 0 && (

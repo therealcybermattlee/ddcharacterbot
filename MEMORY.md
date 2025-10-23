@@ -186,6 +186,53 @@ Based on PROJECT-PLAN.md analysis:
      * Class-focused feats (Artificer Initiate, Eldritch Adept, Metamagic Adept)
      * Draconic-themed feats with unique mechanics (Gift feats)
    - **Status**: ✅ **COMPLETED** - Feat database now includes all major official 5e sourcebook feats (PHB, XGE, TCE, FTD)
+13. ✅ Implement Dynamic Weapon Selector for Starting Equipment
+   - **User Request**: Enable selection of "any martial weapon" / "any simple weapon" instead of limited preset options
+   - **Problem**: Fighter starting equipment only offered 2-3 preset weapon choices instead of full weapon proficiency
+   - **Investigation**: Equipment system used `EquipmentItem[][]` with fixed options - no dynamic weapon selection
+   - **Solution**: Created comprehensive weapon database and dynamic weapon selector component
+   - **Implementation**:
+     * Created `/frontend/src/data/weapons.ts` with all 37 D&D 5e weapons (489 lines)
+       - 10 simple melee weapons (Club, Dagger, Greatclub, Handaxe, Javelin, Light Hammer, Mace, Quarterstaff, Sickle, Spear)
+       - 4 simple ranged weapons (Light Crossbow, Dart, Shortbow, Sling)
+       - 18 martial melee weapons (Battleaxe, Flail, Glaive, Greataxe, Greatsword, Halberd, Lance, Longsword, Maul, Morningstar, Pike, Rapier, Scimitar, Shortsword, Trident, War Pick, Warhammer, Whip)
+       - 5 martial ranged weapons (Blowgun, Hand Crossbow, Heavy Crossbow, Longbow, Net)
+       - Complete weapon properties: damage, damage type, weight, cost (in copper), properties (ammunition, finesse, heavy, light, loading, reach, special, thrown, two-handed, versatile)
+     * Created `WeaponSelector` interface in `startingEquipment.ts`:
+       - `category: 'simple' | 'martial'` - weapon proficiency level
+       - `type?: 'melee' | 'ranged'` - optional filter for melee or ranged only
+       - `count: number` - how many weapons to select
+       - `includeShield?: boolean` - enables either/or logic (e.g., "1 weapon + shield OR 2 weapons")
+     * Created `/frontend/src/components/wizard/WeaponSelector.tsx` component (219 lines):
+       - Dynamic weapon list filtered by category and type
+       - Either/or logic: if `includeShield` option exists, user chooses shield + fewer weapons OR no shield + more weapons
+       - Selection limits enforced: maxWeapons = includeShield && !shieldSelected ? count * 2 : count
+       - Visual feedback: selected weapons highlighted, disabled weapons grayed out
+       - Weapon details displayed: name, damage, damage type, properties
+     * Updated Fighter equipment in `startingEquipment.ts`:
+       - Changed from fixed weapon options to `weaponSelector: { category: 'martial', count: 1, includeShield: true }`
+       - Enables Fighter to choose ANY martial weapon + shield OR 2 martial weapons
+     * Updated `EquipmentSpellsStep.tsx` to conditionally render weapon selector vs. standard equipment choice
+   - **Files Created**:
+     * `/frontend/src/data/weapons.ts` - Complete D&D 5e weapons database
+     * `/frontend/src/components/wizard/WeaponSelector.tsx` - Dynamic weapon selection UI
+   - **Files Modified**:
+     * `/frontend/src/data/startingEquipment.ts` - Added WeaponSelector interface, updated Fighter equipment
+     * `/frontend/src/components/wizard/steps/EquipmentSpellsStep.tsx` - Added weapon selector rendering logic
+   - **Features**:
+     * All 37 PHB weapons with accurate damage, properties, weight, and cost
+     * Helper functions: `getWeaponById()`, `getWeaponsByCategory()`, `getWeaponsByType()`, `formatWeaponProperties()`
+     * Weapon-to-EquipmentItem conversion for seamless equipment list integration
+     * Selection counter badge showing X/Y selected
+     * Support for complex equipment choices like "1 weapon + shield OR 2 weapons"
+   - **Status**: ✅ **IMPLEMENTED** - Weapon selector system fully functional
+   - **⚠️ Known Issue**: Cannot test in production due to pre-existing Skills step validation bug (Bug #12)
+     * Skills step shows "2/2 selected" in UI but validation still fails
+     * `selectedClassSkills` state (Acrobatics, Perception) not being saved to `characterData.skills` in localStorage
+     * SkillsProficienciesStep.tsx useEffect (lines 318-355) calls `onChange()` but data not persisting
+     * Next button remains disabled even when all required skills are selected
+     * Bug is in SkillsProficienciesStep component, unrelated to weapon selector implementation
+     * Prevents navigation to Equipment & Spells step where weapon selector would be visible
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev

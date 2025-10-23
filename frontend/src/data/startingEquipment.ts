@@ -15,10 +15,19 @@ export interface EquipmentItem {
   armorClass?: number
 }
 
+// Weapon Selector Interface - for "choose any weapon from category"
+export interface WeaponSelector {
+  category: 'simple' | 'martial'
+  type?: 'melee' | 'ranged' // optional filter
+  count: number // how many weapons to select
+  includeShield?: boolean // if true, can also choose a shield with the weapon
+}
+
 // Equipment Choice Interface
 export interface EquipmentChoice {
   description: string
   options: EquipmentItem[][]
+  weaponSelector?: WeaponSelector // if present, user chooses from all weapons in category
 }
 
 // Equipment Pack Interface
@@ -288,24 +297,33 @@ export const CLASS_STARTING_EQUIPMENT: Record<string, ClassEquipmentConfig> = {
   fighter: {
     choices: [
       {
-        description: "Choose armor:",
+        description: "(a) chain mail or (b) leather armor, longbow, and 20 arrows",
         options: [
           [{ id: 'chain_mail', name: 'Chain Mail', type: 'armor', quantity: 1, weight: 55, value: 7500, armorClass: 16, description: 'Heavy armor. AC 16. Stealth disadvantage.' }],
           [{ id: 'leather_armor', name: 'Leather Armor', type: 'armor', quantity: 1, weight: 10, value: 1000, armorClass: 11, description: 'Light armor. AC 11 + Dex modifier.' }, { id: 'longbow', name: 'Longbow', type: 'weapon', quantity: 1, weight: 2, value: 5000, damage: '1d8 piercing', properties: ['ammunition', 'heavy', 'two-handed'] }, { id: 'arrows', name: 'Arrows', type: 'ammunition', quantity: 20, weight: 1, value: 100 }]
         ]
       },
       {
-        description: "Choose weapons:",
-        options: [
-          [{ id: 'longsword', name: 'Longsword', type: 'weapon', quantity: 1, weight: 3, value: 1500, damage: '1d8 slashing', properties: ['versatile'] }, { id: 'shield', name: 'Shield', type: 'shield', quantity: 1, weight: 6, value: 1000, armorClass: 2 }],
-          [{ id: 'battleaxe', name: 'Battleaxe', type: 'weapon', quantity: 1, weight: 4, value: 1000, damage: '1d8 slashing', properties: ['versatile'] }, { id: 'handaxe', name: 'Handaxe', type: 'weapon', quantity: 2, weight: 4, value: 1000, damage: '1d6 slashing', properties: ['light', 'thrown'] }]
-        ]
+        description: "(a) a martial weapon and a shield or (b) two martial weapons",
+        options: [],
+        weaponSelector: {
+          category: 'martial',
+          count: 1,
+          includeShield: true
+        }
       },
       {
-        description: "Choose ranged weapon:",
+        description: "(a) a light crossbow and 20 bolts or (b) two handaxes",
         options: [
           [{ id: 'light_crossbow', name: 'Light Crossbow', type: 'weapon', quantity: 1, weight: 5, value: 2500, damage: '1d8 piercing', properties: ['ammunition', 'loading', 'two-handed'] }, { id: 'crossbow_bolts', name: 'Crossbow Bolts', type: 'ammunition', quantity: 20, weight: 1.5, value: 100 }],
           [{ id: 'handaxe', name: 'Handaxe', type: 'weapon', quantity: 2, weight: 4, value: 1000, damage: '1d6 slashing', properties: ['light', 'thrown'] }]
+        ]
+      },
+      {
+        description: "(a) a dungeoneer's pack or (b) an explorer's pack",
+        options: [
+          [{ id: 'dungeoneer_pack', name: "Dungeoneer's Pack", type: 'gear', quantity: 1, weight: 61.5, value: 1200, description: "Complete dungeoneering supplies." }],
+          [{ id: 'explorer_pack', name: "Explorer's Pack", type: 'gear', quantity: 1, weight: 59, value: 1000, description: "Basic exploration gear." }]
         ]
       }
     ],

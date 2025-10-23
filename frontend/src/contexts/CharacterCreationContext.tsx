@@ -231,7 +231,7 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
   // Step data management
   const updateStepData = (_stepId: string, data: any) => {
     dispatch({ type: 'UPDATE_STEP_DATA', payload: { stepId: _stepId, data } })
-    saveProgress() // Auto-save on data change
+    // Note: saveProgress() is now handled by useEffect to avoid race condition
   }
 
   const validateStep = async (stepId: string): Promise<boolean> => {
@@ -368,6 +368,12 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
   useEffect(() => {
     loadProgress()
   }, [])
+
+  // Auto-save to localStorage whenever characterData changes
+  // This ensures we save AFTER the reducer has updated the state
+  useEffect(() => {
+    saveProgress()
+  }, [state.characterData])
 
   // Navigation object
   const navigation = {
