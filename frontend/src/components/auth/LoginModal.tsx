@@ -123,9 +123,16 @@ export function LoginModal({
                 minLength={8}
               />
               {!isLoginMode && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Minimum 8 characters
-                </p>
+                <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+                  <p>Password must contain:</p>
+                  <ul className="ml-4 list-disc">
+                    <li>At least 8 characters</li>
+                    <li>One uppercase letter (A-Z)</li>
+                    <li>One lowercase letter (a-z)</li>
+                    <li>One number (0-9)</li>
+                    <li>One special character (!@#$%^&*)</li>
+                  </ul>
+                </div>
               )}
             </div>
 

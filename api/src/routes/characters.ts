@@ -10,14 +10,31 @@ const characters = new Hono<{ Bindings: Env }>();
 // Apply authentication middleware to all routes
 characters.use('*', createAuthMiddleware());
 
+// Helper function to sanitize text input (remove HTML/script tags)
+function sanitizeText(text: string): string {
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]+>/g, '') // Remove all HTML tags
+    .trim();
+}
+
 // Validation schemas
 const createCharacterSchema = z.object({
-  name: z.string().min(1, 'Character name is required').max(100),
-  race: z.string().min(1, 'Race is required').max(50),
-  characterClass: z.string().min(1, 'Class is required').max(50),
+  name: z.string()
+    .min(1, 'Character name is required')
+    .max(100)
+    .transform(sanitizeText),
+  race: z.string()
+    .min(1, 'Race is required')
+    .max(50)
+    .transform(sanitizeText),
+  characterClass: z.string()
+    .min(1, 'Class is required')
+    .max(50)
+    .transform(sanitizeText),
   level: z.number().int().min(1).max(20).default(1),
   experiencePoints: z.number().int().min(0).default(0),
-  
+
   // Ability scores (3-20 range for D&D)
   strength: z.number().int().min(3).max(20),
   dexterity: z.number().int().min(3).max(20),
@@ -25,16 +42,22 @@ const createCharacterSchema = z.object({
   intelligence: z.number().int().min(3).max(20),
   wisdom: z.number().int().min(3).max(20),
   charisma: z.number().int().min(3).max(20),
-  
+
   // Derived stats
   armorClass: z.number().int().min(1).max(30).default(10),
   hitPointsMax: z.number().int().min(1).max(999).default(8),
   hitPointsCurrent: z.number().int().min(0).max(999).optional(),
   speed: z.number().int().min(0).max(100).default(30),
-  
-  // Optional character details
-  background: z.string().max(50).optional(),
-  alignment: z.string().max(30).optional(),
+
+  // Optional character details (sanitized to prevent XSS)
+  background: z.string()
+    .max(50)
+    .transform(sanitizeText)
+    .optional(),
+  alignment: z.string()
+    .max(30)
+    .transform(sanitizeText)
+    .optional(),
   campaignId: z.string().uuid().optional(),
 });
 
@@ -244,10 +267,12 @@ characters.put('/:id', zValidator('json', updateCharacterSchema), async (c) => {
       }, 404);
     }
 
-    // Build dynamic update query
+    // Build dynamic update query with strict field whitelist
     const updateFields: string[] = [];
     const updateValues: any[] = [];
 
+    // Whitelist of allowed fields for update - prevents SQL injection
+    // Only these exact fields can be updated, no user input affects column names
     const fieldMap: { [key: string]: string } = {
       name: 'name',
       race: 'race',
@@ -269,8 +294,9 @@ characters.put('/:id', zValidator('json', updateCharacterSchema), async (c) => {
       campaignId: 'campaign_id',
     };
 
+    // Only process fields that exist in the whitelist
     Object.entries(updates).forEach(([key, value]) => {
-      if (fieldMap[key]) {
+      if (Object.prototype.hasOwnProperty.call(fieldMap, key)) {
         updateFields.push(`${fieldMap[key]} = ?`);
         updateValues.push(value);
       }

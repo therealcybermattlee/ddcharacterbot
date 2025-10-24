@@ -7,11 +7,27 @@ import { createAuthMiddleware } from '../middleware/security';
 // Create auth router
 const auth = new Hono<{ Bindings: Env }>();
 
+// Helper function to sanitize text input (prevent XSS in usernames)
+function sanitizeText(text: string): string {
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]+>/g, '') // Remove all HTML tags
+    .trim();
+}
+
 // Validation schemas
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  username: z.string().min(3, 'Username must be at least 3 characters').max(30),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email('Invalid email format').toLowerCase(),
+  username: z.string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(30)
+    .transform(sanitizeText),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
   role: z.enum(['dm', 'player']).default('player'),
 });
 

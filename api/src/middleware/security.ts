@@ -254,16 +254,23 @@ export function createSecurityHeadersMiddleware() {
   return secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"], // TODO: Remove unsafe-inline in production
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
     },
     crossOriginEmbedderPolicy: false, // Disable for KV/D1 compatibility
+    strictTransportSecurity: 'max-age=31536000; includeSubDomains', // HSTS for 1 year
+    xContentTypeOptions: 'nosniff',
+    xFrameOptions: 'DENY',
+    xXSSProtection: '1; mode=block',
+    referrerPolicy: 'strict-origin-when-cross-origin',
   });
 }
 
