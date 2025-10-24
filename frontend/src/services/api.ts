@@ -23,8 +23,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Clear auth token on 401 Unauthorized
       localStorage.removeItem('authToken')
-      window.location.href = '/login'
+      // Redirect to home page instead of non-existent /login route
+      // The Layout component will show the login button for unauthenticated users
+      if (window.location.pathname !== '/') {
+        window.location.href = '/'
+      }
     }
     return Promise.reject(error)
   }

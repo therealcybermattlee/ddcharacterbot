@@ -22,6 +22,7 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [pendingCharacterData, setPendingCharacterData] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
   // Always valid since this is just a review
   React.useEffect(() => {
@@ -32,26 +33,21 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
     const characterPayload = {
       name: characterData.name,
       race: characterData.race,
-      class: characterData.class,
+      characterClass: characterData.class, // Fixed: API expects 'characterClass' not 'class'
       level: characterData.level || 1,
       background: characterData.background,
       alignment: characterData.alignment,
-      stats: characterData.stats || {
-        strength: 13,
-        dexterity: 14,
-        constitution: 15,
-        intelligence: 12,
-        wisdom: 10,
-        charisma: 8
-      },
-      hitPoints: characterData.hitPoints,
-      armorClass: characterData.armorClass,
-      proficiencyBonus: characterData.proficiencyBonus,
-      savingThrows: characterData.savingThrows || {},
-      skills: characterData.skills || {},
-      equipment: characterData.equipment || [],
-      spells: characterData.spells || [],
-      notes: characterData.notes || `Created with D&D Character Builder on ${new Date().toLocaleDateString()}`
+      strength: characterData.stats?.strength || 10,
+      dexterity: characterData.stats?.dexterity || 10,
+      constitution: characterData.stats?.constitution || 10,
+      intelligence: characterData.stats?.intelligence || 10,
+      wisdom: characterData.stats?.wisdom || 10,
+      charisma: characterData.stats?.charisma || 10,
+      hitPointsMax: characterData.hitPoints?.maximum || 8,
+      hitPointsCurrent: characterData.hitPoints?.current || characterData.hitPoints?.maximum || 8,
+      armorClass: characterData.armorClass || 10,
+      speed: 30, // Default D&D speed
+      experiencePoints: 0
     }
 
     // Check authentication before attempting save
@@ -70,16 +66,19 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
 
   const saveCharacter = async (characterPayload: any) => {
     setIsSubmitting(true)
+    setError(null)
     try {
       const response = await api.post('/characters', characterPayload)
       if (response.data.success) {
         // Navigate to characters list or character view
         navigate('/characters')
       } else {
-        throw new Error('Failed to save character')
+        throw new Error(response.data.error?.message || 'Failed to save character')
       }
-    } catch (error) {
-      alert('Failed to save character. Please try again.')
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error?.message || error.message || 'Failed to save character. Please try again.'
+      setError(errorMessage)
+      console.error('Character save error:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -289,6 +288,29 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
           Export PDF
         </Button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <h4 className="font-medium text-red-800">Failed to Save Character</h4>
+              <p className="text-sm text-red-700 mt-1">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="ml-auto text-red-400 hover:text-red-600"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Save Character Action */}
       <div className="pt-6 border-t-2">

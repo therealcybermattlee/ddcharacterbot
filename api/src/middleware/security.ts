@@ -30,18 +30,44 @@ class JWTService {
       ['sign']
     );
 
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload64 = btoa(JSON.stringify(jwtPayload));
+    // Fixed: Use proper base64 encoding that handles Unicode characters
+    const header = this.base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload64 = this.base64UrlEncode(JSON.stringify(jwtPayload));
     const data = `${header}.${payload64}`;
-    
+
     const signature = await crypto.subtle.sign(
       'HMAC',
       key,
       encoder.encode(data)
     );
-    
-    const signature64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+
+    const signature64 = this.base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
     return `${data}.${signature64}`;
+  }
+
+  // Helper method for Unicode-safe base64 encoding
+  private base64UrlEncode(str: string): string {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+    // Convert to base64url format (replace + with -, / with _, remove padding =)
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+
+  private base64UrlDecode(str: string): string {
+    // Convert from base64url to base64
+    let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if needed
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const decoder = new TextDecoder();
+    return decoder.decode(bytes);
   }
 
   async verify(token: string): Promise<JWTPayload | null> {
@@ -59,8 +85,15 @@ class JWTService {
       );
 
       const data = `${parts[0]}.${parts[1]}`;
-      const signature = Uint8Array.from(atob(parts[2]), c => c.charCodeAt(0));
-      
+
+      // Fixed: Use proper base64url decoding for signature
+      const signatureBase64 = parts[2].replace(/-/g, '+').replace(/_/g, '/');
+      let paddedSignature = signatureBase64;
+      while (paddedSignature.length % 4) {
+        paddedSignature += '=';
+      }
+      const signature = Uint8Array.from(atob(paddedSignature), c => c.charCodeAt(0));
+
       const isValid = await crypto.subtle.verify(
         'HMAC',
         key,
@@ -70,8 +103,9 @@ class JWTService {
 
       if (!isValid) return null;
 
-      const payload = JSON.parse(atob(parts[1])) as JWTPayload;
-      
+      // Fixed: Use Unicode-safe decoding for payload
+      const payload = JSON.parse(this.base64UrlDecode(parts[1])) as JWTPayload;
+
       // Check expiration
       if (payload.exp < Math.floor(Date.now() / 1000)) {
         return null;
