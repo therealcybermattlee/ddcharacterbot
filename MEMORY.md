@@ -294,6 +294,54 @@ Based on PROJECT-PLAN.md analysis:
      * Professional presentation matching D&D brand aesthetics
    - **Deployment**: Successfully deployed to production (commit 6437e16)
    - **Status**: ✅ **COMPLETED** - Visual enhancements live at https://dnd.cyberlees.dev
+16. ✅ Add Login/Logout Functionality to Navigation
+   - **User Request**: "Could you make a function to log in?"
+   - **Investigation**:
+     * Discovered complete authentication system already implemented
+     * Backend: JWT-based auth in `/api/src/routes/auth.ts` with register, login, logout, profile, refresh endpoints
+     * Frontend: AuthContext in `/frontend/src/contexts/AuthContext.tsx` with login/register/logout functions
+     * Modal: LoginModal component in `/frontend/src/components/auth/LoginModal.tsx` for UI
+     * System: AuthProvider already wired up in main.tsx wrapping entire app
+   - **Implementation**:
+     * Added login/logout UI to Layout.tsx navigation (lines 1-99):
+       - Imported useAuth hook, LoginModal component, UserCircleIcon, ArrowRightOnRectangleIcon
+       - Added useState for login modal visibility
+       - Created auth section in navigation bar (right side)
+       - Unauthenticated state: Gradient login button (dnd-600 → magic-600) with UserCircleIcon
+       - Authenticated state: User profile display (username + icon) and logout button
+       - Integrated LoginModal with fantasy-themed messaging ("Welcome Back, Adventurer")
+   - **Files Modified**:
+     * `/frontend/src/components/Layout.tsx` (added 43 lines, total 99 lines)
+   - **Authentication System Details** (pre-existing):
+     * **Backend** (`/api/src/routes/auth.ts`):
+       - POST /auth/register: Create user account (email, username, password, role)
+       - POST /auth/login: Authenticate user, return JWT token + user data
+       - POST /auth/logout: Invalidate session in KV storage
+       - GET /auth/profile: Get current user profile (requires auth)
+       - POST /auth/refresh: Refresh JWT token (requires auth)
+       - Password hashing: SHA-256 via Web Crypto API
+       - Session storage: Cloudflare KV with 24-hour expiration
+       - JWT tokens: HS256 signing with 24-hour expiration
+     * **Frontend** (`/frontend/src/contexts/AuthContext.tsx`):
+       - login(email, password): Call API, store token in localStorage, update context
+       - register(email, username, password, role): Create account and auto-login
+       - logout(): Clear localStorage, call API logout endpoint, clear context
+       - checkAuthStatus(): Verify token validity on mount and page reload
+       - Error handling: Display API error messages in UI
+     * **UI Components**:
+       - LoginModal: Modal dialog with login/register tabs, form validation, loading states
+       - Layout: Navigation integration with conditional auth UI
+   - **Features**:
+     * Seamless login/logout from any page via navigation bar
+     * Automatic session persistence via localStorage
+     * User profile display when authenticated
+     * Fantasy-themed UI matching D&D aesthetics
+     * Modal-based authentication flow (no page redirects)
+     * Role selection during registration (Player/DM)
+     * Password validation (minimum 8 characters)
+     * Error messages displayed inline
+   - **Deployment**: Successfully deployed to production (commit 6e13046)
+   - **Status**: ✅ **COMPLETED** - Login functionality accessible from navigation at https://dnd.cyberlees.dev
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev
