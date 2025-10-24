@@ -1,6 +1,9 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { HomeIcon, UserGroupIcon, ChartBarIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, UserGroupIcon, ChartBarIcon, UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
+import { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import { LoginModal } from './auth/LoginModal'
 
 const navigation = [
   { name: 'Home', href: '/', icon: HomeIcon },
@@ -10,6 +13,8 @@ const navigation = [
 
 export default function Layout() {
   const location = useLocation()
+  const { user, isAuthenticated, logout } = useAuth()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-magic-50/10 to-dnd-50/10">
@@ -44,6 +49,33 @@ export default function Layout() {
                 })}
               </div>
             </div>
+
+            {/* Auth Section */}
+            <div className="flex items-center">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <UserCircleIcon className="h-5 w-5 text-magic-600" />
+                    <span className="font-medium">{user?.username}</span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-dnd-700 transition-colors duration-200"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                    <span className="hidden sm:inline">Log Out</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-dnd-600 to-magic-600 text-white font-semibold shadow-md hover:shadow-lg hover:from-dnd-700 hover:to-magic-700 transition-all duration-200"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  <span>Log In</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -51,6 +83,17 @@ export default function Layout() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={() => {
+          // Optional: Add success notification
+        }}
+        title="Welcome Back, Adventurer"
+        description="Log in to access your characters and continue your journey"
+      />
     </div>
   )
 }
