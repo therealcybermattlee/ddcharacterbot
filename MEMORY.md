@@ -225,14 +225,38 @@ Based on PROJECT-PLAN.md analysis:
      * Weapon-to-EquipmentItem conversion for seamless equipment list integration
      * Selection counter badge showing X/Y selected
      * Support for complex equipment choices like "1 weapon + shield OR 2 weapons"
-   - **Status**: ✅ **IMPLEMENTED** - Weapon selector system fully functional
-   - **⚠️ Known Issue**: Cannot test in production due to pre-existing Skills step validation bug (Bug #12)
+   - **Status**: ✅ **COMPLETED** - Weapon selector system fully functional and accessible
+   - **Deployment**: Successfully deployed to production (commit 78430ed)
+14. ✅ Fix Skills Step Validation Bug (Bug #12)
+   - **User Request**: Fix bug preventing navigation from Skills step to Equipment step
+   - **Symptoms**:
      * Skills step shows "2/2 selected" in UI but validation still fails
-     * `selectedClassSkills` state (Acrobatics, Perception) not being saved to `characterData.skills` in localStorage
-     * SkillsProficienciesStep.tsx useEffect (lines 318-355) calls `onChange()` but data not persisting
-     * Next button remains disabled even when all required skills are selected
-     * Bug is in SkillsProficienciesStep component, unrelated to weapon selector implementation
-     * Prevents navigation to Equipment & Spells step where weapon selector would be visible
+     * Selected class skills (Acrobatics, Perception) visible in UI with checkmarks
+     * localStorage only contains background skills (Athletics, Intimidation), missing class skills
+     * Next button remains disabled despite UI showing correct selection
+   - **Investigation**:
+     * `selectedClassSkills` React state is correct but not persisted to `characterData.skills`
+     * Traced data flow from component → onChange → context → localStorage
+     * Identified race condition in CharacterCreationContext.tsx
+   - **Root Cause**: Race condition in `updateStepData()` function (lines 232-235)
+     * `saveProgress()` called synchronously immediately after `dispatch({ type: 'UPDATE_STEP_DATA' })`
+     * React state updates are asynchronous - reducer hadn't updated `state.characterData` yet
+     * Old data (without class skills) saved to localStorage before new data applied
+     * This affected ALL wizard steps, not just Skills step
+   - **Fix**:
+     * Removed synchronous `saveProgress()` call from `updateStepData()` function
+     * Added `useEffect` hook (lines 372-376) that watches `state.characterData`
+     * Auto-saves to localStorage AFTER reducer has updated the state
+     * Ensures data persistence happens at correct time in React lifecycle
+   - **Files Modified**:
+     * `/frontend/src/contexts/CharacterCreationContext.tsx` (lines 232-235, 372-376)
+   - **Impact**:
+     * All character data now persists correctly to localStorage
+     * Skills step validation works as expected
+     * Users can navigate to Equipment & Spells step
+     * Weapon selector feature now accessible
+   - **Deployment**: Successfully deployed to production (commit 78430ed)
+   - **Status**: ✅ **RESOLVED** - Race condition fixed, all wizard steps now save data correctly
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev
