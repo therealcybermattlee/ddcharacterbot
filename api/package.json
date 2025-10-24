@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.1.11",
+    "@noble/hashes": "^2.0.1",
     "hono": "^3.11.7",
     "zod": "^3.22.4"
   },

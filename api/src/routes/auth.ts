@@ -3,6 +3,8 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { Env, User, UserSession, JWTPayload } from '../types';
 import { createAuthMiddleware } from '../middleware/security';
+import { scrypt } from '@noble/hashes/scrypt.js';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 
 // Create auth router
 const auth = new Hono<{ Bindings: Env }>();
@@ -76,27 +78,113 @@ class JWTService {
   }
 }
 
-// Password hashing utility (using Web Crypto API)
+// Password hashing utility (using scrypt from @noble/hashes)
 class PasswordService {
+  // scrypt parameters (N=2^16, r=8, p=1 - balanced security/performance for edge)
+  private static readonly SCRYPT_N = 65536; // 2^16 iterations
+  private static readonly SCRYPT_R = 8;
+  private static readonly SCRYPT_P = 1;
+  private static readonly HASH_LENGTH = 32;
+
+  /**
+   * Hash a password using scrypt
+   * Format: algorithm$salt$hash (e.g., "scrypt$abc123$def456")
+   */
   static async hash(password: string): Promise<string> {
     try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      // Generate random salt (16 bytes = 128 bits)
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+
+      // Hash password with scrypt
+      const hash = scrypt(password, salt, {
+        N: this.SCRYPT_N,
+        r: this.SCRYPT_R,
+        p: this.SCRYPT_P,
+        dkLen: this.HASH_LENGTH,
+      });
+
+      // Return in format: algorithm$salt$hash
+      const saltHex = bytesToHex(salt);
+      const hashHex = bytesToHex(hash);
+      return `scrypt$${saltHex}$${hashHex}`;
     } catch (error) {
       console.error('Password hashing error:', error);
       throw new Error('Failed to hash password');
     }
   }
 
-  static async verify(password: string, hash: string): Promise<boolean> {
+  /**
+   * Verify password against hash
+   * Supports both new scrypt hashes and legacy SHA-256 hashes
+   */
+  static async verify(password: string, storedHash: string): Promise<boolean> {
     try {
-      const passwordHash = await this.hash(password);
-      return passwordHash === hash;
+      // Check if this is a scrypt hash (format: algorithm$salt$hash)
+      if (storedHash.startsWith('scrypt$')) {
+        return await this.verifyScrypt(password, storedHash);
+      } else {
+        // Legacy SHA-256 hash (for backward compatibility)
+        return await this.verifySHA256(password, storedHash);
+      }
     } catch (error) {
       console.error('Password verification error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Verify password against scrypt hash
+   */
+  private static async verifyScrypt(password: string, storedHash: string): Promise<boolean> {
+    try {
+      // Parse stored hash: algorithm$salt$hash
+      const parts = storedHash.split('$');
+      if (parts.length !== 3 || parts[0] !== 'scrypt') {
+        return false;
+      }
+
+      const salt = hexToBytes(parts[1]);
+      const expectedHash = hexToBytes(parts[2]);
+
+      // Hash the provided password with the same salt
+      const actualHash = scrypt(password, salt, {
+        N: this.SCRYPT_N,
+        r: this.SCRYPT_R,
+        p: this.SCRYPT_P,
+        dkLen: this.HASH_LENGTH,
+      });
+
+      // Constant-time comparison
+      if (actualHash.length !== expectedHash.length) {
+        return false;
+      }
+
+      let result = 0;
+      for (let i = 0; i < actualHash.length; i++) {
+        result |= actualHash[i] ^ expectedHash[i];
+      }
+
+      return result === 0;
+    } catch (error) {
+      console.error('Scrypt verification error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Verify password against legacy SHA-256 hash
+   * Used for backward compatibility with existing user passwords
+   */
+  private static async verifySHA256(password: string, storedHash: string): Promise<boolean> {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return passwordHash === storedHash;
+    } catch (error) {
+      console.error('SHA-256 verification error:', error);
       return false;
     }
   }
@@ -218,6 +306,20 @@ auth.post('/login', zValidator('json', loginSchema), async (c) => {
         },
         timestamp: new Date().toISOString()
       }, 401);
+    }
+
+    // Auto-migrate legacy SHA-256 passwords to scrypt on successful login
+    if (!user.passwordHash.startsWith('scrypt$')) {
+      try {
+        const newHash = await PasswordService.hash(password);
+        await c.env.DB.prepare(
+          'UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?'
+        ).bind(newHash, new Date().toISOString(), user.id).run();
+        console.log(`Migrated user ${user.id} from SHA-256 to scrypt`);
+      } catch (error) {
+        // Don't fail login if migration fails - log and continue
+        console.error('Password migration error:', error);
+      }
     }
 
     // Generate JWT token
