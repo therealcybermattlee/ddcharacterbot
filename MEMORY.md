@@ -257,6 +257,43 @@ Based on PROJECT-PLAN.md analysis:
      * Weapon selector feature now accessible
    - **Deployment**: Successfully deployed to production (commit 78430ed)
    - **Status**: ✅ **RESOLVED** - Race condition fixed, all wizard steps now save data correctly
+15. ✅ Enhance Visual Design with D&D Fantasy Theme
+   - **User Request**: "Could you make the site more visually appealing?"
+   - **Investigation**:
+     * Reviewed existing design (index.css, tailwind.config.js)
+     * Found D&D color palette (dnd-*, magic-*, spell-*) and Cinzel font already configured
+     * Identified underutilization of fantasy theming on homepage and navigation
+   - **Implementation**:
+     * **Home.tsx** - Complete redesign (lines 1-128):
+       - Added fantasy-themed hero section with gradient background (dnd-700 → dnd-600 → magic-700)
+       - Implemented decorative elements: animated sparkles (3 positions), grid pattern SVG overlay
+       - Updated copy to fantasy language: "Forge legendary heroes", "Begin Your Quest", "View Party"
+       - Redesigned 3 feature cards with gradient backgrounds, 2px colored borders, decorative corner accents
+       - Added hover animations: scale (105%), shadow expansion, border color changes, gradient overlays
+       - Applied Cinzel font (font-dnd) to main heading with drop shadow
+       - Enhanced CTAs with shadow-xl, hover effects, and backdrop blur
+     * **Layout.tsx** - Navigation enhancement (lines 15-55):
+       - Added subtle gradient background to page wrapper (gray-50 → magic-50/10 → dnd-50/10)
+       - Enhanced navigation bar with gradient (white → magic-50/30), shadow-lg, border-b-2
+       - Applied gradient text to site title (dnd-700 → magic-700) with Cinzel font
+       - Updated active state: dnd-600 border, dnd-700 text, font-semibold
+       - Updated hover state: magic-300 border, magic-700 text
+       - Added smooth transitions (duration-200) to all navigation items
+   - **Files Modified**:
+     * `/frontend/src/components/Home.tsx` (complete redesign, 128 lines)
+     * `/frontend/src/components/Layout.tsx` (navigation enhancement, 56 lines)
+   - **Design Elements**:
+     * Color palette: D&D red (#f56565), Magic purple/blue (#6366f1), Spell blue (#3b82f6), Amber accents
+     * Typography: Cinzel serif font for headings, existing body font maintained
+     * Animations: Pulse (sparkles), scale transforms (cards/buttons), opacity transitions
+     * Decorative: Grid pattern overlay, rounded corners, gradient borders, backdrop blur
+   - **Impact**:
+     * Homepage transformed with immersive fantasy atmosphere
+     * Consistent D&D theming across navigation and landing page
+     * Enhanced user engagement through visual polish and animations
+     * Professional presentation matching D&D brand aesthetics
+   - **Deployment**: Successfully deployed to production (commit 6437e16)
+   - **Status**: ✅ **COMPLETED** - Visual enhancements live at https://dnd.cyberlees.dev
 
 ### Next Immediate Actions
 1. Monitor user validation of navigation fix at https://dnd.cyberlees.dev
