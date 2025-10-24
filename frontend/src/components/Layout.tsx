@@ -12,13 +12,15 @@ export default function Layout() {
   const location = useLocation()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-magic-50/10 to-dnd-50/10">
+      <nav className="bg-gradient-to-r from-white via-white to-magic-50/30 shadow-lg border-b-2 border-magic-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between">
             <div className="flex">
               <div className="flex flex-shrink-0 items-center">
-                <h1 className="text-xl font-bold text-gray-900">D&D Character Manager</h1>
+                <h1 className="text-xl font-dnd font-bold text-transparent bg-clip-text bg-gradient-to-r from-dnd-700 to-magic-700">
+                  D&D Character Manager
+                </h1>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 {navigation.map((item) => {
@@ -29,10 +31,10 @@ export default function Layout() {
                       key={item.name}
                       to={item.href}
                       className={clsx(
-                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium',
+                        'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-all duration-200',
                         isActive
-                          ? 'border-indigo-500 text-gray-900'
-                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                          ? 'border-dnd-600 text-dnd-700 font-semibold'
+                          : 'border-transparent text-gray-600 hover:border-magic-300 hover:text-magic-700'
                       )}
                     >
                       <Icon className="mr-2 h-4 w-4" />
