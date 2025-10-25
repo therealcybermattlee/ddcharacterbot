@@ -122,50 +122,6 @@ export class KVManager {
     await Promise.all(keys.map(key => this.cache.delete(key.name)));
   }
 
-  // Rate Limiting using KV
-  async checkRateLimit(identifier: string, limit: number, windowSeconds: number): Promise<{
-    allowed: boolean;
-    remaining: number;
-    resetTime: number;
-  }> {
-    const key = `rate_limit:${identifier}`;
-    const now = Math.floor(Date.now() / 1000);
-    const windowStart = Math.floor(now / windowSeconds) * windowSeconds;
-    
-    const rateLimitData = await this.cache.get(key);
-    let requests = 0;
-    
-    if (rateLimitData) {
-      try {
-        const parsed = JSON.parse(rateLimitData);
-        if (parsed.window === windowStart) {
-          requests = parsed.requests;
-        }
-      } catch {
-        // Invalid data, start fresh
-      }
-    }
-
-    const allowed = requests < limit;
-    const newRequests = requests + 1;
-
-    // Update the counter
-    await this.cache.put(
-      key,
-      JSON.stringify({
-        requests: newRequests,
-        window: windowStart,
-      }),
-      { expirationTtl: windowSeconds }
-    );
-
-    return {
-      allowed,
-      remaining: Math.max(0, limit - newRequests),
-      resetTime: windowStart + windowSeconds,
-    };
-  }
-
   // Character/Campaign caching helpers
   async cacheCharacter(characterId: string, characterData: any, ttlSeconds = 1800): Promise<void> {
     await this.setCache(`character:${characterId}`, characterData, ttlSeconds, '1.0');
