@@ -11,6 +11,7 @@ import {
 // Import routes
 import auth from './routes/auth';
 import characters from './routes/characters';
+import campaigns from './routes/campaigns';
 import races from './routes/races';
 import classes from './routes/classes';
 import backgrounds from './routes/backgrounds';
@@ -98,6 +99,7 @@ app.get('/health', async (c) => {
 // Mount API routes
 app.route('/api/auth', auth);
 app.route('/api/characters', characters);
+app.route('/api/campaigns', campaigns);
 app.route('/api/races', races);
 app.route('/api/classes', classes);
 app.route('/api/backgrounds', backgrounds);
