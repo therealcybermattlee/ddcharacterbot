@@ -4,7 +4,7 @@
 
 ### 🎉 Sprint 2 IN PROGRESS - Backend API & Database
 - ✅ Day 1-2: Database Schema Implementation (100%)
-- ⏳ Day 3-4: Authentication & Authorization (Upcoming)
+- ✅ Day 3-4: Authentication & Authorization (100%)
 - ⏳ Day 5-6: Character API Endpoints (Upcoming)
 - ⏳ Day 7-8: Campaign API Endpoints (Upcoming)
 - ⏳ Day 9-10: D&D Reference Data Integration (Upcoming)
@@ -18,6 +18,110 @@
 - ✅ Comprehensive testing and rollback mechanisms
 
 ### ✅ COMPLETED THIS SESSION (2025-10-25)
+23. ✅ Complete Sprint 2 Day 3-4: Authentication & Authorization Enhancement
+   - **Overview**: Enhanced existing authentication system with role-based authorization, extracted services, refresh token management, and comprehensive documentation
+   - **Service Extraction & Organization** (`api/src/lib/`):
+     * `jwt-service.ts` - Dedicated JWT token service with access/refresh token support
+     * `password-service.ts` - scrypt password hashing with complexity validation
+     * `token-manager.ts` - Complete token lifecycle management with KV storage
+     * All services fully typed and documented
+   - **JWT Service Features**:
+     * HS256 (HMAC-SHA256) signing algorithm
+     * Base64URL encoding per RFC 7515
+     * Token type validation (access vs refresh)
+     * Expiration checking and validation
+     * Unicode-safe encoding/decoding
+     * Methods: sign(), verify(), decode(), isExpired(), getTimeToExpiry()
+   - **Password Service Features**:
+     * scrypt hashing (N=2^16, r=8, p=1) - 50-100ms per operation
+     * 16-byte salt (128 bits), 32-byte hash (256 bits)
+     * Legacy SHA-256 migration support with auto-upgrade
+     * Password complexity validation (8+ chars, upper, lower, number, special)
+     * Constant-time comparison to prevent timing attacks
+     * Secure random password generation
+   - **Token Manager Features**:
+     * Separate access tokens (1 hour) and refresh tokens (7 days)
+     * Token pair generation with device/IP tracking
+     * Refresh token rotation on use
+     * Individual and bulk token revocation
+     * Token blacklisting for immediate invalidation
+     * Active session tracking and statistics
+     * KV-based storage with automatic expiration
+   - **Role-Based Authorization Middleware** (`middleware/authorization.ts`):
+     * Three roles: DM (full access), Player (own resources), Observer (read-only)
+     * `requireRole(['dm', 'player'])` - Specific role requirements
+     * `requireDM()`, `requirePlayerOrDM()`, `requireAuthenticated()` - Convenience methods
+     * `requireResourceOwnership('characters')` - Owner-only access
+     * `requireCampaignMembership()` - Campaign member validation
+     * `allowReadOnlyForObservers()` - Block write operations for observers
+     * Proper 401/403 error responses with detailed messages
+   - **Security Enhancements**:
+     * Password complexity requirements enforced
+     * Token type validation prevents refresh token abuse
+     * Blacklist system for immediate token revocation
+     * Session tracking with last activity timestamps
+     * Device fingerprinting support
+     * Protection against timing attacks in password verification
+   - **Comprehensive Test Suite** (`src/__tests__/auth.test.ts`):
+     * 23 test cases covering all authentication flows
+     * JWT signing, verification, expiration tests
+     * Password hashing, validation, migration tests
+     * Token manager lifecycle tests
+     * Token refresh and revocation scenarios
+     * Mock KV namespace for isolated testing
+   - **Comprehensive Documentation** (`lib/README.md`):
+     * 600+ lines of detailed documentation
+     * Usage examples for every service and method
+     * Security best practices and patterns
+     * API endpoint specifications
+     * Troubleshooting guide
+     * Performance considerations
+     * Integration examples
+   - **Observer Role Integration**:
+     * Full type system support (already existed)
+     * Authorization middleware enforcement
+     * Read-only access to public campaigns
+     * Write operation blocking
+   - **Files Created**:
+     * `api/src/lib/jwt-service.ts` (200 lines) - JWT token management
+     * `api/src/lib/password-service.ts` (220 lines) - Password hashing & validation
+     * `api/src/lib/token-manager.ts` (280 lines) - Token lifecycle management
+     * `api/src/middleware/authorization.ts` (350 lines) - Role-based access control
+     * `api/src/lib/README.md` (600+ lines) - Complete authentication guide
+     * `api/src/__tests__/auth.test.ts` (380 lines) - Comprehensive test suite
+   - **Existing System Preserved**:
+     * Existing auth routes in `routes/auth.ts` remain functional
+     * Working JWT implementation in `middleware/security.ts` maintained
+     * Backward compatibility with existing tokens and sessions
+     * scrypt password hashing already implemented
+     * All existing endpoints continue to work
+   - **Authentication Flow**:
+     1. User registers/logs in → receives access + refresh tokens
+     2. Access token (1hr) used for API requests with Bearer header
+     3. Refresh token (7 days) used to get new access tokens
+     4. Authorization middleware checks role requirements
+     5. Resource ownership validated for protected resources
+     6. Tokens can be revoked individually or in bulk
+     7. Blacklisted tokens rejected immediately
+   - **Security Hardening**:
+     * No secrets in code (JWT_SECRET from Wrangler secrets)
+     * CSRF protection via CORS origin validation
+     * Rate limiting on all endpoints
+     * Secure headers (HSTS, CSP, X-Frame-Options, etc.)
+     * Session timeout and automatic cleanup
+   - **Deployment**:
+     * Commit: d64aefb
+     * 6 files changed, 2,111 insertions(+)
+     * All changes backward compatible
+     * No breaking changes to existing API
+   - **Acceptance Criteria Met**:
+     * ✅ JWT authentication with refresh tokens
+     * ✅ Role-based authorization (DM, Player, Observer)
+     * ✅ Session management with KV storage
+     * ✅ User registration and login flows (existing, enhanced)
+     * ✅ Comprehensive documentation and tests
+     * ✅ Security best practices implemented
+   - **Status**: ✅ **COMPLETED** - Sprint 2 Day 3-4 objectives fully achieved with comprehensive enhancements
 22. ✅ Complete Sprint 2 Day 1-2: Database Schema Implementation
    - **Overview**: Built comprehensive database utilities with transaction management, migration system, and performance optimization achieving sub-100ms query target
    - **Database Client Utilities** (`api/src/db/client.ts`):
