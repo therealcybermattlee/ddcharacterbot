@@ -3,6 +3,14 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { Env, Character, UserSession } from '../types';
 import { createAuthMiddleware } from '../middleware/security';
+import {
+  calculateLevel,
+  getExperienceToNextLevel,
+  getProficiencyBonus,
+  canLevelUp,
+  getLevelUpInfo,
+  calculateModifier,
+} from '../lib/character-progression';
 
 // Create characters router
 const characters = new Hono<{ Bindings: Env }>();
@@ -62,6 +70,31 @@ const createCharacterSchema = z.object({
 });
 
 const updateCharacterSchema = createCharacterSchema.partial();
+
+const awardExperienceSchema = z.object({
+  experiencePoints: z.number().int().min(0).max(1000000),
+  reason: z.string().max(200).transform(sanitizeText).optional(),
+});
+
+const importCharacterSchema = z.object({
+  name: z.string().min(1).max(100).transform(sanitizeText),
+  race: z.string().min(1).max(50).transform(sanitizeText),
+  characterClass: z.string().min(1).max(50).transform(sanitizeText),
+  level: z.number().int().min(1).max(20),
+  experiencePoints: z.number().int().min(0),
+  strength: z.number().int().min(3).max(20),
+  dexterity: z.number().int().min(3).max(20),
+  constitution: z.number().int().min(3).max(20),
+  intelligence: z.number().int().min(3).max(20),
+  wisdom: z.number().int().min(3).max(20),
+  charisma: z.number().int().min(3).max(20),
+  armorClass: z.number().int().min(1).max(30),
+  hitPointsMax: z.number().int().min(1).max(999),
+  hitPointsCurrent: z.number().int().min(0).max(999).optional(),
+  speed: z.number().int().min(0).max(100),
+  background: z.string().max(50).transform(sanitizeText).optional(),
+  alignment: z.string().max(30).transform(sanitizeText).optional(),
+});
 
 // Get all characters for the authenticated user
 characters.get('/', async (c) => {
@@ -413,6 +446,396 @@ characters.delete('/:id', async (c) => {
       error: {
         code: 'DELETE_FAILED',
         message: 'Failed to delete character'
+      },
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Get character progression information
+characters.get('/:id/progression', async (c) => {
+  try {
+    const user = c.get('user') as UserSession;
+    const characterId = c.req.param('id');
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(characterId)) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid character ID format'
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    const character = await c.env.DB.prepare(
+      `SELECT level, experience_points as experiencePoints, character_class as characterClass
+       FROM characters
+       WHERE id = ? AND user_id = ?`
+    ).bind(characterId, user.userId).first();
+
+    if (!character) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'CHARACTER_NOT_FOUND',
+          message: 'Character not found or access denied'
+        },
+        timestamp: new Date().toISOString()
+      }, 404);
+    }
+
+    const level = character.level as number;
+    const experiencePoints = character.experiencePoints as number;
+
+    // Get progression information
+    const proficiencyBonus = getProficiencyBonus(level);
+    const nextLevelInfo = getExperienceToNextLevel(level, experiencePoints);
+    const levelUpCheck = canLevelUp(level, experiencePoints);
+
+    return c.json({
+      success: true,
+      data: {
+        currentLevel: level,
+        experiencePoints,
+        proficiencyBonus,
+        nextLevel: nextLevelInfo,
+        canLevelUp: levelUpCheck.canLevel,
+        levelUpReason: levelUpCheck.reason,
+      },
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Get progression error:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_FAILED',
+        message: 'Failed to fetch progression information'
+      },
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Award experience points to a character
+characters.post('/:id/experience', zValidator('json', awardExperienceSchema), async (c) => {
+  try {
+    const user = c.get('user') as UserSession;
+    const characterId = c.req.param('id');
+    const { experiencePoints: awardedXP, reason } = c.req.valid('json');
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(characterId)) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid character ID format'
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Get current character data
+    const character = await c.env.DB.prepare(
+      `SELECT level, experience_points as experiencePoints, character_class as characterClass
+       FROM characters
+       WHERE id = ? AND user_id = ?`
+    ).bind(characterId, user.userId).first();
+
+    if (!character) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'CHARACTER_NOT_FOUND',
+          message: 'Character not found or access denied'
+        },
+        timestamp: new Date().toISOString()
+      }, 404);
+    }
+
+    const oldLevel = character.level as number;
+    const oldXP = character.experiencePoints as number;
+    const newXP = oldXP + awardedXP;
+    const newLevel = calculateLevel(newXP);
+
+    // Update character XP and level
+    await c.env.DB.prepare(
+      `UPDATE characters
+       SET experience_points = ?, level = ?, updated_at = ?
+       WHERE id = ? AND user_id = ?`
+    ).bind(newXP, newLevel, new Date().toISOString(), characterId, user.userId).run();
+
+    // Check if character leveled up
+    const leveledUp = newLevel > oldLevel;
+    let levelUpInfo = null;
+
+    if (leveledUp) {
+      levelUpInfo = getLevelUpInfo(oldLevel, newLevel, character.characterClass as string);
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        message: `Awarded ${awardedXP} experience points${reason ? ` for: ${reason}` : ''}`,
+        experienceAwarded: awardedXP,
+        totalExperience: newXP,
+        oldLevel,
+        newLevel,
+        leveledUp,
+        levelUpInfo,
+      },
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Award experience error:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'AWARD_XP_FAILED',
+        message: 'Failed to award experience points'
+      },
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Level up a character (manual level up trigger)
+characters.post('/:id/level-up', async (c) => {
+  try {
+    const user = c.get('user') as UserSession;
+    const characterId = c.req.param('id');
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(characterId)) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid character ID format'
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Get current character data
+    const character = await c.env.DB.prepare(
+      `SELECT level, experience_points as experiencePoints, character_class as characterClass
+       FROM characters
+       WHERE id = ? AND user_id = ?`
+    ).bind(characterId, user.userId).first();
+
+    if (!character) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'CHARACTER_NOT_FOUND',
+          message: 'Character not found or access denied'
+        },
+        timestamp: new Date().toISOString()
+      }, 404);
+    }
+
+    const currentLevel = character.level as number;
+    const currentXP = character.experiencePoints as number;
+    const characterClass = character.characterClass as string;
+
+    // Check if character can level up
+    const levelUpCheck = canLevelUp(currentLevel, currentXP);
+
+    if (!levelUpCheck.canLevel) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'CANNOT_LEVEL_UP',
+          message: levelUpCheck.reason || 'Cannot level up at this time'
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    const newLevel = currentLevel + 1;
+
+    // Update character level
+    await c.env.DB.prepare(
+      `UPDATE characters
+       SET level = ?, updated_at = ?
+       WHERE id = ? AND user_id = ?`
+    ).bind(newLevel, new Date().toISOString(), characterId, user.userId).run();
+
+    // Get level up information
+    const levelUpInfo = getLevelUpInfo(currentLevel, newLevel, characterClass);
+
+    return c.json({
+      success: true,
+      data: {
+        message: `Congratulations! You've reached level ${newLevel}!`,
+        levelUpInfo,
+      },
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Level up error:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'LEVEL_UP_FAILED',
+        message: 'Failed to level up character'
+      },
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Export a character to JSON
+characters.get('/:id/export', async (c) => {
+  try {
+    const user = c.get('user') as UserSession;
+    const characterId = c.req.param('id');
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(characterId)) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid character ID format'
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    const character = await c.env.DB.prepare(
+      `SELECT
+        name, race, character_class as characterClass, level, experience_points as experiencePoints,
+        strength, dexterity, constitution, intelligence, wisdom, charisma,
+        armor_class as armorClass, hit_points_max as hitPointsMax,
+        hit_points_current as hitPointsCurrent, speed,
+        background, alignment,
+        created_at as createdAt, updated_at as updatedAt
+       FROM characters
+       WHERE id = ? AND user_id = ?`
+    ).bind(characterId, user.userId).first();
+
+    if (!character) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'CHARACTER_NOT_FOUND',
+          message: 'Character not found or access denied'
+        },
+        timestamp: new Date().toISOString()
+      }, 404);
+    }
+
+    // Create export data with metadata
+    const exportData = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      character: {
+        ...character,
+        // Add calculated values for convenience
+        proficiencyBonus: getProficiencyBonus(character.level as number),
+        abilityModifiers: {
+          strength: calculateModifier(character.strength as number),
+          dexterity: calculateModifier(character.dexterity as number),
+          constitution: calculateModifier(character.constitution as number),
+          intelligence: calculateModifier(character.intelligence as number),
+          wisdom: calculateModifier(character.wisdom as number),
+          charisma: calculateModifier(character.charisma as number),
+        }
+      }
+    };
+
+    return c.json({
+      success: true,
+      data: exportData,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Export character error:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'EXPORT_FAILED',
+        message: 'Failed to export character'
+      },
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Import a character from JSON
+characters.post('/import', zValidator('json', importCharacterSchema), async (c) => {
+  try {
+    const user = c.get('user') as UserSession;
+    const characterData = c.req.valid('json');
+
+    // Generate character ID
+    const characterId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    // Set current HP to max HP if not provided
+    const hitPointsCurrent = characterData.hitPointsCurrent ?? characterData.hitPointsMax;
+
+    // Insert imported character into database
+    await c.env.DB.prepare(
+      `INSERT INTO characters (
+        id, user_id, name, race, character_class, level, experience_points,
+        strength, dexterity, constitution, intelligence, wisdom, charisma,
+        armor_class, hit_points_max, hit_points_current, speed,
+        background, alignment, campaign_id, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      characterId, user.userId, characterData.name, characterData.race,
+      characterData.characterClass, characterData.level, characterData.experiencePoints,
+      characterData.strength, characterData.dexterity, characterData.constitution,
+      characterData.intelligence, characterData.wisdom, characterData.charisma,
+      characterData.armorClass, characterData.hitPointsMax, hitPointsCurrent,
+      characterData.speed, characterData.background || null,
+      characterData.alignment || null, null, // campaignId set to null on import
+      now, now
+    ).run();
+
+    // Fetch the imported character
+    const importedCharacter = await c.env.DB.prepare(
+      `SELECT
+        id, name, race, character_class as characterClass, level, experience_points as experiencePoints,
+        strength, dexterity, constitution, intelligence, wisdom, charisma,
+        armor_class as armorClass, hit_points_max as hitPointsMax,
+        hit_points_current as hitPointsCurrent, speed,
+        background, alignment, campaign_id as campaignId,
+        created_at as createdAt, updated_at as updatedAt
+       FROM characters WHERE id = ?`
+    ).bind(characterId).first();
+
+    return c.json({
+      success: true,
+      data: {
+        character: importedCharacter,
+        message: `Character "${characterData.name}" imported successfully`
+      },
+      timestamp: new Date().toISOString()
+    }, 201);
+
+  } catch (error) {
+    console.error('Import character error:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'IMPORT_FAILED',
+        message: 'Failed to import character'
       },
       timestamp: new Date().toISOString()
     }, 500);
