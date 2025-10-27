@@ -232,6 +232,23 @@ export interface Feature {
   prerequisites?: string[];
 }
 
+// Spell types
+export interface Spell {
+  id: string;
+  name: string;
+  level: number;
+  school: string;
+  castingTime: string;
+  range: string;
+  components: string;
+  duration: string;
+  description: string;
+  atHigherLevels?: string;
+  classes: string[];
+  source: string;
+  isHomebrew: boolean;
+}
+
 // Cache types for reference data
 export interface CachedReferenceData<T> {
   data: T;

@@ -15,6 +15,7 @@ import campaigns from './routes/campaigns';
 import races from './routes/races';
 import classes from './routes/classes';
 import backgrounds from './routes/backgrounds';
+import spells from './routes/spells';
 
 // Create Hono app with Cloudflare bindings
 const app = new Hono<{ Bindings: AppEnv }>();
@@ -103,6 +104,7 @@ app.route('/api/campaigns', campaigns);
 app.route('/api/races', races);
 app.route('/api/classes', classes);
 app.route('/api/backgrounds', backgrounds);
+app.route('/api/spells', spells);
 
 // API status endpoint
 app.get('/api/v1/status', (c) => {
