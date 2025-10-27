@@ -106,6 +106,57 @@
      * Expand spell database with additional spells (currently 16 sample spells)
      * Create comprehensive reference data documentation
    - **Status**: ✅ **COMPLETED** - Sprint 2 Day 9-10 objectives achieved with known issues documented
+27. ✅ Remote Database Schema Synchronization (Spells & Backgrounds)
+   - **Overview**: Fixed critical schema mismatches between local and remote databases that were preventing API functionality
+   - **Problem Investigation**:
+     * Spells API failing with "table spells has no column named range" error
+     * Backgrounds API failing with "FETCH_FAILED" error
+     * Remote database had fundamentally different schemas than local database
+   - **Spells Table Schema Fix** (Migration 018):
+     * **Remote (old)**: `range_distance`, `higher_level`, missing `classes` column, extra `ritual`/`concentration`/`created_by` columns
+     * **Local (correct)**: `range`, `at_higher_levels`, `classes` (JSON array), `created_at`/`updated_at` columns
+     * **Solution**: DROP and recreate spells table with correct schema
+     * **Indexes Added**: `idx_spells_level`, `idx_spells_school`, `idx_spells_source`
+     * **Applied**: Migration 018 executed successfully on remote DB
+     * **Data Seeded**: Migration 017 applied successfully - 16 spells inserted (96 rows written)
+   - **Backgrounds Table Schema Fix** (Migration 019):
+     * **Remote (old)**: `description`, `language_choices`, `starting_equipment`, `suggested_characteristics` (single JSON)
+     * **Local (correct)**: `language_proficiencies`, `equipment`, separate `personality_traits`/`ideals`/`bonds`/`flaws` columns
+     * **Solution**: DROP and recreate backgrounds table with correct schema
+     * **Indexes Added**: `idx_backgrounds_source`
+     * **Applied**: Migration 019 executed successfully on remote DB
+     * **Status**: Schema fixed but data seed migrations blocked by races/classes schema mismatches
+   - **API Testing Results**:
+     * ✅ **GET /api/spells** - Returns all 16 spells successfully
+     * ✅ **GET /api/spells/level/3** - Level filtering working (returns Counterspell, Fireball)
+     * ✅ **GET /api/spells/school/evocation** - School filtering working (returns 7 Evocation spells)
+     * ✅ **GET /api/spells/class/wizard** - Class filtering working
+     * ✅ **GET /api/backgrounds** - Returns empty array (schema fixed, awaiting data)
+   - **Discovered Issues**:
+     * **Races Table**: Remote has different column names (`ability_score_increase` vs local schema)
+     * **Classes Table**: Likely schema mismatches (not yet investigated)
+     * **Migration Chain Broken**: Cannot apply seed data migrations (002, 004, 007, 011, 013) due to schema differences
+     * **Root Cause**: Remote database was initialized with older/different schema than current local schema
+   - **Files Created**:
+     * `database/migrations/018_fix_spells_table_schema.sql` - Spells table schema fix
+     * `database/migrations/019_fix_backgrounds_table_schema.sql` - Backgrounds table schema fix
+   - **Deployment**:
+     * Migration 018 applied: 5 queries, 495 rows read, 13 rows written
+     * Migration 017 applied: 10 queries, 0 rows read, 96 rows written (16 spells)
+     * Migration 019 applied: 3 queries, 292 rows read, 8 rows written
+     * Spells API fully functional with 16 spells
+     * Backgrounds API functional with empty dataset
+   - **Performance**:
+     * Spells endpoint response time: ~50-100ms (first request, uncached)
+     * Caching working correctly (cached: false → cached: true on subsequent requests)
+     * Database latency acceptable for development environment
+   - **Next Steps Required**:
+     * **Option 1**: Create schema fix migrations for races and classes tables (similar to migrations 018/019)
+     * **Option 2**: Rebuild remote database from scratch using all local migrations in sequence
+     * **Option 3**: Export local database and restore to remote (fastest but risky)
+     * Recommend Option 1 for production safety and auditability
+     * After schema alignment, re-apply all seed data migrations (002, 004, 007, 011, 013, etc.)
+   - **Status**: ✅ **PARTIALLY COMPLETED** - Spells fully working, backgrounds schema fixed but empty
 25. ✅ Complete Sprint 2 Day 7-8: Campaign API Endpoints
    - **Overview**: Implemented comprehensive campaign management system with role-based membership, character association, and DM-centric authorization model
    - **Campaign CRUD Operations** (`api/src/routes/campaigns.ts`, 1,194 lines total):
