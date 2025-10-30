@@ -1231,7 +1231,70 @@ No previous sessions documented - this is the initial project memory establishme
 - None currently identified
 
 ## Action Items for Next Session
-1. Deploy API to development environment using Wrangler
-2. Configure JWT secrets for all environments
-3. Test frontend-API integration
-4. Complete remaining Sprint 1 objectives
+1. Continue with Sprint 2 implementation
+2. Test frontend integration with reference data APIs
+3. Implement character creation workflow using reference data
+4. Monitor API performance and cache effectiveness
+
+---
+
+## Session 28: Database Schema Synchronization Completion (2025-10-30)
+
+### Objective
+Complete database schema synchronization between local and remote D1 databases for all reference data tables (races, classes, backgrounds, spells).
+
+### Work Completed
+
+#### Database Schema Fixes
+1. **Migration 020 - Races Table Schema Fix**
+   - Fixed `ability_score_bonuses` → `ability_score_increase` column name
+   - Added `created_at` and `updated_at` columns
+   - Added proper indexes for common queries
+   - Applied to remote database successfully
+
+2. **Migration 021 - Classes Table Schema Fix**
+   - Fixed `hit_die` data type from TEXT to INTEGER
+   - Added `created_at` and `updated_at` columns
+   - Added proper indexes (source, spellcasting ability)
+   - Applied to remote database successfully
+
+3. **Migration 002 Re-Application**
+   - Successfully seeded reference data after schema fixes
+   - 121 rows written: 9 races, 12 classes, 5 backgrounds
+   - Data verified in remote database
+
+#### API Code Fixes
+4. **Races API Handler Fix** (`api/src/routes/races.ts`)
+   - Updated `transformRace` function to use `ability_score_increase`
+   - Fixed all SQL queries (4 locations) to use correct column name
+   - Redeployed API (Version: 4174fda1-eec5-435b-b6a3-d1f90fb4537c)
+
+### Testing Results
+All reference data API endpoints verified working:
+- ✅ **GET /api/races** - Returns 9 races
+- ✅ **GET /api/classes** - Returns 12 classes
+- ✅ **GET /api/backgrounds** - Returns 5 backgrounds
+- ✅ **GET /api/spells** - Returns 16 spells
+
+### Commits
+- `c5b3468` - feat: Fix races and classes table schemas (Bug #4)
+
+### Issues Resolved
+- **Bug #4**: Remote database schema mismatches for races and classes tables
+- Schema synchronization now complete across all reference data tables
+- All D&D reference data APIs fully functional
+
+### Database State
+**Remote Database (dnd-character-manager-dev):**
+- Spells: 16 entries (PHB cantrips and low-level spells)
+- Backgrounds: 5 entries (Acolyte, Criminal, Folk Hero, Noble, Sage)
+- Races: 9 entries (All core PHB races)
+- Classes: 12 entries (All core PHB classes)
+
+**Schema Status:** ✅ Fully synchronized between local and remote
+
+### Next Steps
+1. Expand reference data with more spells, backgrounds, and subclasses
+2. Implement character creation workflow in frontend
+3. Add reference data filtering and search capabilities
+4. Consider adding subraces and class features data
