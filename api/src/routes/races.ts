@@ -61,7 +61,7 @@ function transformRace(dbRace: any): Race {
     name: dbRace.name,
     size: dbRace.size,
     speed: dbRace.speed,
-    abilityScoreBonuses: JSON.parse(dbRace.ability_score_bonuses || '{}'),
+    abilityScoreBonuses: JSON.parse(dbRace.ability_score_increase || '{}'),
     traits: JSON.parse(dbRace.traits || '[]'),
     languages: JSON.parse(dbRace.languages || '[]'),
     proficiencies: JSON.parse(dbRace.proficiencies || '{}'),
@@ -90,11 +90,11 @@ races.get('/', async (c) => {
 
     // Fetch from database
     const dbRaces = await c.env.DB.prepare(
-      `SELECT 
-        id, name, size, speed, ability_score_bonuses, traits, 
+      `SELECT
+        id, name, size, speed, ability_score_increase, traits,
         languages, proficiencies, source, is_homebrew
-       FROM races 
-       WHERE is_homebrew = FALSE 
+       FROM races
+       WHERE is_homebrew = FALSE
        ORDER BY name`
     ).all();
 
@@ -160,10 +160,10 @@ races.get('/:id', async (c) => {
 
     // Fetch from database
     const dbRace = await c.env.DB.prepare(
-      `SELECT 
-        id, name, size, speed, ability_score_bonuses, traits, 
+      `SELECT
+        id, name, size, speed, ability_score_increase, traits,
         languages, proficiencies, source, is_homebrew
-       FROM races 
+       FROM races
        WHERE id = ? AND is_homebrew = FALSE`
     ).bind(raceId).first();
 
@@ -245,19 +245,19 @@ races.get('/source/:source', async (c) => {
     let params: any[];
 
     if (source === 'homebrew') {
-      query = `SELECT 
-        id, name, size, speed, ability_score_bonuses, traits, 
+      query = `SELECT
+        id, name, size, speed, ability_score_increase, traits,
         languages, proficiencies, source, is_homebrew
-       FROM races 
-       WHERE is_homebrew = TRUE 
+       FROM races
+       WHERE is_homebrew = TRUE
        ORDER BY name`;
       params = [];
     } else {
-      query = `SELECT 
-        id, name, size, speed, ability_score_bonuses, traits, 
+      query = `SELECT
+        id, name, size, speed, ability_score_increase, traits,
         languages, proficiencies, source, is_homebrew
-       FROM races 
-       WHERE source = ? AND is_homebrew = FALSE 
+       FROM races
+       WHERE source = ? AND is_homebrew = FALSE
        ORDER BY name`;
       params = [source];
     }
