@@ -128,7 +128,7 @@ export interface Race {
   size: string;
   speed: number;
   abilityScoreBonuses: Record<string, number>;
-  traits: RaceTrait[];
+  traits: string[]; // Fixed: Changed from RaceTrait[] to string[] to match database storage
   languages: string[];
   proficiencies: RaceProficiencies;
   source: string;
@@ -152,7 +152,7 @@ export interface RaceProficiencies {
 export interface CharacterClass {
   id: string;
   name: string;
-  hitDie: string;
+  hitDie: number; // Fixed: Changed from string to number to match database INTEGER
   primaryAbility: string[];
   savingThrowProficiencies: string[];
   skillProficiencies: string[];

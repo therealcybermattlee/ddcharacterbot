@@ -204,6 +204,56 @@ characters.post('/', zValidator('json', createCharacterSchema), async (c) => {
     const user = c.get('user') as UserSession;
     const characterData = c.req.valid('json');
 
+    // Validate race exists in reference data
+    const raceExists = await c.env.DB.prepare(
+      'SELECT id FROM races WHERE id = ?'
+    ).bind(characterData.race).first();
+
+    if (!raceExists) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_RACE',
+          message: `Race '${characterData.race}' not found in reference data`
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Validate class exists in reference data
+    const classExists = await c.env.DB.prepare(
+      'SELECT id FROM classes WHERE id = ?'
+    ).bind(characterData.characterClass).first();
+
+    if (!classExists) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_CLASS',
+          message: `Class '${characterData.characterClass}' not found in reference data`
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Validate background exists (if provided - background is optional)
+    if (characterData.background) {
+      const backgroundExists = await c.env.DB.prepare(
+        'SELECT id FROM backgrounds WHERE id = ?'
+      ).bind(characterData.background).first();
+
+      if (!backgroundExists) {
+        return c.json({
+          success: false,
+          error: {
+            code: 'INVALID_BACKGROUND',
+            message: `Background '${characterData.background}' not found in reference data`
+          },
+          timestamp: new Date().toISOString()
+        }, 400);
+      }
+    }
+
     // Generate character ID
     const characterId = crypto.randomUUID();
     const now = new Date().toISOString();
@@ -781,6 +831,56 @@ characters.post('/import', zValidator('json', importCharacterSchema), async (c) 
   try {
     const user = c.get('user') as UserSession;
     const characterData = c.req.valid('json');
+
+    // Validate race exists in reference data
+    const raceExists = await c.env.DB.prepare(
+      'SELECT id FROM races WHERE id = ?'
+    ).bind(characterData.race).first();
+
+    if (!raceExists) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_RACE',
+          message: `Race '${characterData.race}' not found in reference data`
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Validate class exists in reference data
+    const classExists = await c.env.DB.prepare(
+      'SELECT id FROM classes WHERE id = ?'
+    ).bind(characterData.characterClass).first();
+
+    if (!classExists) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_CLASS',
+          message: `Class '${characterData.characterClass}' not found in reference data`
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Validate background exists (if provided - background is optional)
+    if (characterData.background) {
+      const backgroundExists = await c.env.DB.prepare(
+        'SELECT id FROM backgrounds WHERE id = ?'
+      ).bind(characterData.background).first();
+
+      if (!backgroundExists) {
+        return c.json({
+          success: false,
+          error: {
+            code: 'INVALID_BACKGROUND',
+            message: `Background '${characterData.background}' not found in reference data`
+          },
+          timestamp: new Date().toISOString()
+        }, 400);
+      }
+    }
 
     // Generate character ID
     const characterId = crypto.randomUUID();
