@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import type { Env, CharacterClass, CachedReferenceData } from '../types';
+import type { HonoEnv, CharacterClass, CachedReferenceData } from '../types';
 import { getClassFeatures } from '../lib/classFeatures';
 import { getSubclasses } from '../lib/subclasses';
 
 // Create classes router (no auth required for reference data)
-const classes = new Hono<{ Bindings: Env }>();
+const classes = new Hono<HonoEnv>();
 
 // Cache configuration
 const CACHE_TTL = 3600; // 1 hour in seconds
@@ -426,13 +426,13 @@ classes.get('/:id/proficiencies', async (c) => {
     // Transform the proficiency data
     const proficiencies = {
       skills: {
-        available: JSON.parse(dbClass.skill_proficiencies || '[]'),
-        choices: dbClass.skill_choices || 0
+        available: JSON.parse((dbClass.skill_proficiencies as string) || '[]'),
+        choices: (dbClass.skill_choices as number) || 0
       },
-      armor: JSON.parse(dbClass.armor_proficiencies || '[]'),
-      weapons: JSON.parse(dbClass.weapon_proficiencies || '[]'),
-      tools: JSON.parse(dbClass.tool_proficiencies || '[]'),
-      savingThrows: JSON.parse(dbClass.saving_throw_proficiencies || '[]')
+      armor: JSON.parse((dbClass.armor_proficiencies as string) || '[]'),
+      weapons: JSON.parse((dbClass.weapon_proficiencies as string) || '[]'),
+      tools: JSON.parse((dbClass.tool_proficiencies as string) || '[]'),
+      savingThrows: JSON.parse((dbClass.saving_throw_proficiencies as string) || '[]')
     };
 
     // Cache the result

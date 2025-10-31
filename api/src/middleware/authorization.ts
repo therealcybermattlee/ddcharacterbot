@@ -8,7 +8,7 @@
  */
 
 import { Context, Next } from 'hono';
-import type { Env, UserSession } from '../types';
+import type { HonoEnv, UserSession } from '../types';
 
 export type Role = 'dm' | 'player' | 'observer';
 
@@ -29,7 +29,7 @@ export type Role = 'dm' | 'player' | 'observer';
  * });
  */
 export function requireRole(allowedRoles: Role[]) {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const user = c.get('user') as UserSession | undefined;
 
     if (!user) {
@@ -108,7 +108,7 @@ export function requireResourceOwnership(
   tableName: string,
   ownerColumn: string = 'user_id'
 ) {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const user = c.get('user') as UserSession | undefined;
     const resourceId = c.req.param('id');
 
@@ -202,7 +202,7 @@ export function requireResourceOwnership(
  * Checks if user is a member of the campaign
  */
 export function requireCampaignMembership() {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const user = c.get('user') as UserSession | undefined;
     const campaignId = c.req.param('id') || c.req.param('campaignId');
 
@@ -284,7 +284,7 @@ export function requireCampaignMembership() {
         );
       }
 
-      c.set('campaignRole', membership.role);
+      c.set('campaignRole', membership.role as 'dm' | 'player' | 'observer');
       c.set('isCampaignDM', false);
 
       await next();
@@ -310,7 +310,7 @@ export function requireCampaignMembership() {
  * Blocks write operations (POST, PUT, PATCH, DELETE) for observer role
  */
 export function allowReadOnlyForObservers() {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const user = c.get('user') as UserSession | undefined;
     const method = c.req.method;
 

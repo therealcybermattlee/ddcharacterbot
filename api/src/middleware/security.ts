@@ -3,7 +3,7 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 import { secureHeaders } from 'hono/secure-headers';
-import type { Env, JWTPayload, UserSession, RateLimitInfo } from '../types';
+import type { Env, HonoEnv, JWTPayload, UserSession, RateLimitInfo } from '../types';
 
 // JWT utilities for Cloudflare Workers
 class JWTService {
@@ -131,7 +131,7 @@ export function createCORSMiddleware(origin: string) {
 
 // Rate limiting middleware
 export function createRateLimitMiddleware(requestsPerWindow: number, windowSeconds: number) {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const clientIP = c.req.header('CF-Connecting-IP') || 'unknown';
     const now = Math.floor(Date.now() / 1000);
     const windowStart = Math.floor(now / windowSeconds) * windowSeconds;
@@ -192,7 +192,7 @@ export function createRateLimitMiddleware(requestsPerWindow: number, windowSecon
 
 // Authentication middleware
 export function createAuthMiddleware() {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const authHeader = c.req.header('Authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -269,7 +269,7 @@ export function createSecurityHeadersMiddleware() {
     strictTransportSecurity: 'max-age=31536000; includeSubDomains', // HSTS for 1 year
     xContentTypeOptions: 'nosniff',
     xFrameOptions: 'DENY',
-    xXSSProtection: '1; mode=block',
+    xXssProtection: '1; mode=block',
     referrerPolicy: 'strict-origin-when-cross-origin',
   });
 }
@@ -283,7 +283,7 @@ export function createCSRFMiddleware(origin: string) {
 
 // Error handling middleware
 export function createErrorHandlerMiddleware() {
-  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     try {
       await next();
     } catch (error) {

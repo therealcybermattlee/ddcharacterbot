@@ -1,13 +1,13 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import type { Env, User, UserSession, JWTPayload } from '../types';
+import type { HonoEnv, User, UserSession, JWTPayload } from '../types';
 import { createAuthMiddleware } from '../middleware/security';
 import { scrypt } from '@noble/hashes/scrypt.js';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 
 // Create auth router
-const auth = new Hono<{ Bindings: Env }>();
+const auth = new Hono<HonoEnv>();
 
 // Helper function to sanitize text input (prevent XSS in usernames)
 function sanitizeText(text: string): string {

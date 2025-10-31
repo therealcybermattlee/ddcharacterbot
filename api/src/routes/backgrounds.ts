@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import type { Env, Background, CachedReferenceData } from '../types';
+import type { HonoEnv, Background, CachedReferenceData } from '../types';
 
 // Create backgrounds router (no auth required for reference data)
-const backgrounds = new Hono<{ Bindings: Env }>();
+const backgrounds = new Hono<HonoEnv>();
 
 // Cache configuration
 const CACHE_TTL = 3600; // 1 hour in seconds
@@ -366,10 +366,10 @@ backgrounds.get('/:id/proficiencies', async (c) => {
 
     // Transform the proficiency data
     const proficiencies = {
-      skills: JSON.parse(dbBackground.skill_proficiencies || '[]'),
-      languages: JSON.parse(dbBackground.language_proficiencies || '[]'),
-      tools: JSON.parse(dbBackground.tool_proficiencies || '[]'),
-      startingEquipment: JSON.parse(dbBackground.equipment || '{"items": [], "gp": 0}')
+      skills: JSON.parse((dbBackground.skill_proficiencies as string) || '[]'),
+      languages: JSON.parse((dbBackground.language_proficiencies as string) || '[]'),
+      tools: JSON.parse((dbBackground.tool_proficiencies as string) || '[]'),
+      startingEquipment: JSON.parse((dbBackground.equipment as string) || '{"items": [], "gp": 0}')
     };
 
     // Cache the result
@@ -449,10 +449,10 @@ backgrounds.get('/:id/characteristics', async (c) => {
 
     // Transform the characteristics data
     const characteristics = {
-      personalityTraits: JSON.parse(dbBackground.personality_traits || '[]'),
-      ideals: JSON.parse(dbBackground.ideals || '[]'),
-      bonds: JSON.parse(dbBackground.bonds || '[]'),
-      flaws: JSON.parse(dbBackground.flaws || '[]'),
+      personalityTraits: JSON.parse((dbBackground.personality_traits as string) || '[]'),
+      ideals: JSON.parse((dbBackground.ideals as string) || '[]'),
+      bonds: JSON.parse((dbBackground.bonds as string) || '[]'),
+      flaws: JSON.parse((dbBackground.flaws as string) || '[]'),
       feature: {
         name: dbBackground.feature_name,
         description: dbBackground.feature_description

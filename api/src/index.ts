@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import type { Env as AppEnv } from './types';
+import type { Env as AppEnv, HonoEnv } from './types';
 import {
   createCORSMiddleware,
   createRateLimitMiddleware,
@@ -17,8 +17,8 @@ import classes from './routes/classes';
 import backgrounds from './routes/backgrounds';
 import spells from './routes/spells';
 
-// Create Hono app with Cloudflare bindings
-const app = new Hono<{ Bindings: AppEnv }>();
+// Create Hono app with Cloudflare bindings and context variables
+const app = new Hono<HonoEnv>();
 
 // Global error handling
 app.use('*', createErrorHandlerMiddleware());

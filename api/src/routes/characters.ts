@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import type { Env, Character, UserSession } from '../types';
+import type { HonoEnv, Character, UserSession } from '../types';
 import { createAuthMiddleware } from '../middleware/security';
 import {
   calculateLevel,
@@ -13,7 +13,7 @@ import {
 } from '../lib/character-progression';
 
 // Create characters router
-const characters = new Hono<{ Bindings: Env }>();
+const characters = new Hono<HonoEnv>();
 
 // Apply authentication middleware to all routes
 characters.use('*', createAuthMiddleware());

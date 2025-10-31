@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import type { Env, Spell, CachedReferenceData } from '../types';
+import type { HonoEnv, Spell, CachedReferenceData } from '../types';
 
 // Create spells router (no auth required for reference data)
-const spells = new Hono<{ Bindings: Env }>();
+const spells = new Hono<HonoEnv>();
 
 // Cache configuration
 const CACHE_TTL = 3600; // 1 hour in seconds

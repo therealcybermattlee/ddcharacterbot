@@ -4,6 +4,8 @@ export interface Env {
   DB: D1Database;
   KV: KVNamespace;
   ASSETS?: R2Bucket;
+  CACHE?: KVNamespace;
+  SESSIONS?: KVNamespace;
 
   // Environment variables
   ENVIRONMENT: string;
@@ -16,6 +18,21 @@ export interface Env {
 
   // Index signature for Hono compatibility
   [key: string]: any;
+}
+
+// Hono context variables set by middleware
+export interface HonoVariables {
+  user?: UserSession;
+  requestId?: string;
+  isCampaignDM?: boolean;
+  campaignRole?: 'dm' | 'player' | 'observer';
+  [key: string]: any;
+}
+
+// Complete Hono environment type
+export interface HonoEnv {
+  Bindings: Env;
+  Variables: HonoVariables;
 }
 
 // Authentication types

@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import type { Env, Campaign, UserSession } from '../types';
+import type { HonoEnv, Campaign, UserSession } from '../types';
 import { createAuthMiddleware } from '../middleware/security';
 
 // Create campaigns router
-const campaigns = new Hono<{ Bindings: Env }>();
+const campaigns = new Hono<HonoEnv>();
 
 // Apply authentication middleware to all routes
 campaigns.use('*', createAuthMiddleware());

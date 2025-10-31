@@ -4,9 +4,9 @@
 import { Hono } from 'hono';
 import { KVManager } from '../lib/kv-manager';
 import { R2Manager } from '../lib/r2-manager';
-import type { Env } from '../index';
+import type { HonoEnv } from '../types';
 
-const healthCheck = new Hono<{ Bindings: Env }>();
+const healthCheck = new Hono<HonoEnv>();
 
 // Basic health check
 healthCheck.get('/', async (c) => {
@@ -26,7 +26,7 @@ healthCheck.get('/', async (c) => {
   } catch (error) {
     return c.json({
       status: 'unhealthy',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       requestId,
     }, 500);
   }
@@ -52,11 +52,11 @@ healthCheck.get('/detailed', async (c) => {
     }
 
     // Test KV storage
-    const kvManager = new KVManager(c.env.CACHE, c.env.SESSIONS);
+    const kvManager = new KVManager(c.env.CACHE!, c.env.SESSIONS!);
     const kvHealth = await kvManager.healthCheck();
 
     // Test R2 storage
-    const r2Manager = new R2Manager(c.env.ASSETS, 'assets-bucket');
+    const r2Manager = new R2Manager(c.env.ASSETS!, 'assets-bucket');
     const r2Start = Date.now();
     const r2Health = await r2Manager.healthCheck();
     const r2Latency = Date.now() - r2Start;
@@ -105,7 +105,7 @@ healthCheck.get('/detailed', async (c) => {
   } catch (error) {
     return c.json({
       status: 'unhealthy',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       requestId,
       timestamp: new Date().toISOString(),
     }, 500);
@@ -125,7 +125,7 @@ healthCheck.get('/ready', async (c) => {
   } catch (error) {
     return c.json({
       status: 'not ready',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
     }, 503);
   }
 });
@@ -145,7 +145,7 @@ healthCheck.get('/metrics', async (c) => {
   
   try {
     // Get basic metrics from KV
-    const kvManager = new KVManager(c.env.CACHE, c.env.SESSIONS);
+    const kvManager = new KVManager(c.env.CACHE!, c.env.SESSIONS!);
     
     // Sample metrics (in a real app, these would be collected over time)
     const metrics = {
@@ -171,7 +171,7 @@ healthCheck.get('/metrics', async (c) => {
   } catch (error) {
     return c.json({
       error: 'Failed to retrieve metrics',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Unknown error',
       requestId,
     }, 500);
   }
@@ -189,14 +189,14 @@ healthCheck.get('/performance', async (c) => {
 
     // KV performance test
     const kvStart = Date.now();
-    const kvManager = new KVManager(c.env.CACHE, c.env.SESSIONS);
+    const kvManager = new KVManager(c.env.CACHE!, c.env.SESSIONS!);
     await kvManager.setCache('perf_test', { test: true }, 60);
     await kvManager.getCache('perf_test');
     const kvTime = Date.now() - kvStart;
 
     // R2 performance test (basic check)
     const r2Start = Date.now();
-    const r2Manager = new R2Manager(c.env.ASSETS, 'assets-bucket');
+    const r2Manager = new R2Manager(c.env.ASSETS!, 'assets-bucket');
     await r2Manager.healthCheck();
     const r2Time = Date.now() - r2Start;
 
@@ -228,7 +228,7 @@ healthCheck.get('/performance', async (c) => {
   } catch (error) {
     return c.json({
       error: 'Performance test failed',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Unknown error',
     }, 500);
   }
 });
