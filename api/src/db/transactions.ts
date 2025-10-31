@@ -128,21 +128,21 @@ export async function withOptimisticLock<T = D1Result>(
       const operation = await updateFn(currentVersion);
 
       // Execute update with version check
-      const result = (await executeCommand(
+      const result = await executeCommand(
         db,
         operation.query,
         operation.params || []
-      )) as T;
+      );
 
       // Check if update actually modified a row
-      if ('meta' in result && result.meta.changes === 0) {
+      if ('meta' in result && typeof result.meta === 'object' && result.meta !== null && 'changes' in result.meta && (result.meta as any).changes === 0) {
         // Version conflict - retry
         retries++;
         await new Promise((resolve) => setTimeout(resolve, 50 * retries)); // Exponential backoff
         continue;
       }
 
-      return { success: true, result, retries };
+      return { success: true, result: result as T, retries };
     } catch (error) {
       console.error('[DB Optimistic Lock] Failed:', {
         tableName,

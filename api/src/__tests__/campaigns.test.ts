@@ -264,7 +264,7 @@ describe('Campaign Data Integrity', () => {
     });
 
     it('should unassign characters when member leaves', () => {
-      const character = { campaignId: 'campaign-1', userId: 'user-1' };
+      const character: { campaignId: string | null; userId: string } = { campaignId: 'campaign-1', userId: 'user-1' };
 
       // Simulates member removal
       character.campaignId = null;

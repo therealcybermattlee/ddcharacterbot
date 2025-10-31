@@ -17,8 +17,8 @@ const QueryParamsSchema = z.object({
   race: z.string().optional(),
   level_min: z.string().transform(Number).optional(),
   level_max: z.string().transform(Number).optional(),
-  limit: z.string().transform(Number).optional().default(100),
-  offset: z.string().transform(Number).optional().default(0),
+  limit: z.string().optional().default('100').transform(Number),
+  offset: z.string().optional().default('0').transform(Number),
 });
 
 const BuildRecommendationSchema = z.object({
@@ -63,7 +63,7 @@ analytics.get('/builds/performance',
       LIMIT ? OFFSET ?
     `;
 
-    const params = [className, race].filter(Boolean).concat([limit, offset]);
+    const params = [className, race].filter(Boolean).concat([String(limit), String(offset)]);
 
     try {
       const result = await c.env.DB.prepare(query).bind(...params).all();
