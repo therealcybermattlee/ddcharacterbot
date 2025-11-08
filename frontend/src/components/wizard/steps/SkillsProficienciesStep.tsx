@@ -4,9 +4,10 @@ import { Button } from '../../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 import { WizardStepProps } from '../../../types/wizard'
 import { useCharacterCreation } from '../../../contexts/CharacterCreationContext'
-import { 
-  SKILLS_BY_ABILITY, 
-  ABILITY_NAMES, 
+import { api } from '../../../services/api'
+import {
+  SKILLS_BY_ABILITY,
+  ABILITY_NAMES,
   PROFICIENCY_BONUS_BY_LEVEL,
   getAbilityModifier,
   type AbilityName,
@@ -38,10 +39,9 @@ const ALL_SKILLS: { name: SkillName; ability: AbilityName }[] = [
 // Get real class data from API instead of mock data
 const getClassData = async (className: string) => {
   try {
-    const response = await fetch(`https://dnd-character-manager-api.cybermattlee-llc.workers.dev/api/classes/${className.toLowerCase()}`)
-    const result = await response.json()
-    if (result.success && result.data?.class) {
-      const classData = result.data.class
+    const response = await api.get(`/classes/${className.toLowerCase()}`)
+    if (response.data.success && response.data.data?.class) {
+      const classData = response.data.data.class
       return {
         skillChoices: classData.skillChoices,
         availableSkills: classData.skillProficiencies,
