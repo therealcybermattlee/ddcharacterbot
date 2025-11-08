@@ -19,18 +19,17 @@ function sanitizeText(text: string): string {
 
 // Validation schemas
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format').toLowerCase(),
+  email: z.string().email('Invalid email format'),
   username: z.string()
     .min(3, 'Username must be at least 3 characters')
-    .max(30)
-    .transform(sanitizeText),
+    .max(30),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  role: z.enum(['dm', 'player']).default('player'),
+  role: z.enum(['dm', 'player']).optional(),
 });
 
 const loginSchema = z.object({
@@ -190,10 +189,45 @@ class PasswordService {
   }
 }
 
-// Register endpoint
-auth.post('/register', zValidator('json', registerSchema), async (c) => {
+// Register endpoint (using manual JSON parsing as workaround)
+auth.post('/register', async (c) => {
   try {
-    const { email, username, password, role } = c.req.valid('json');
+    // Manual JSON parsing workaround using raw request
+    let body: any;
+    try {
+      // Use raw Request object to avoid Hono's body caching issues
+      const text = await c.req.raw.text();
+      body = JSON.parse(text);
+    } catch (e) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_JSON',
+          message: 'Invalid JSON in request body',
+          debug: e instanceof Error ? e.message : String(e)
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    // Manual validation
+    const result = registerSchema.safeParse(body);
+    if (!result.success) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Validation failed',
+          details: result.error.errors
+        },
+        timestamp: new Date().toISOString()
+      }, 400);
+    }
+
+    const email = result.data.email.toLowerCase();
+    const username = sanitizeText(result.data.username);
+    const password = result.data.password;
+    const role = result.data.role || 'player';
 
     // Check if user already exists
     const existingUser = await c.env.DB.prepare(
