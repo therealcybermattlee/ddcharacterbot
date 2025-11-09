@@ -351,8 +351,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     onValidationChange(errors.length === 0, errors)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData?.skillChoices, raceSkillCount, proficiencyBonus])
+  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData, raceSkillCount, proficiencyBonus, onChange, onValidationChange])
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {

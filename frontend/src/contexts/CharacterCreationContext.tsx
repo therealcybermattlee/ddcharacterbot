@@ -287,7 +287,7 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
       dispatch({ type: 'SET_STEP_VALIDITY', payload: { stepId, isValid: true, errors: [] } })
       return true
     } catch (error: any) {
-      const errors = error.errors && error.errors.length > 0
+      const errors = Array.isArray(error.errors) && error.errors.length > 0
         ? error.errors.map((e: any) => e.message)
         : ['Validation failed']
       dispatch({ type: 'SET_STEP_VALIDITY', payload: { stepId, isValid: false, errors } })
