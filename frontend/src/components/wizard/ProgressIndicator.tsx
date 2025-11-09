@@ -9,22 +9,22 @@ interface ProgressIndicatorProps {
   className?: string
 }
 
-export function ProgressIndicator({ 
-  steps, 
-  currentStep, 
-  onStepClick, 
-  className 
+export function ProgressIndicator({
+  steps,
+  currentStep,
+  onStepClick,
+  className
 }: ProgressIndicatorProps) {
   return (
     <div className={cn("w-full", className)}>
       {/* Progress bar */}
       <div className="relative">
         {/* Background line */}
-        <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted"></div>
-        
-        {/* Progress line */}
-        <div 
-          className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 ease-out"
+        <div className="absolute top-5 left-0 right-0 h-1 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full"></div>
+
+        {/* Progress line - magical gradient */}
+        <div
+          className="absolute top-5 left-0 h-1 bg-gradient-to-r from-dnd-600 via-magic-500 to-spell-500 rounded-full shadow-lg transition-all duration-500 ease-out"
           style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
         ></div>
 
@@ -34,29 +34,29 @@ export function ProgressIndicator({
             const isActive = index === currentStep
             const isCompleted = index < currentStep
             const isClickable = onStepClick && (isCompleted || isActive)
-            
+
             return (
-              <div 
+              <div
                 key={step.id}
                 className="flex flex-col items-center"
               >
                 {/* Step circle */}
                 <button
                   className={cn(
-                    "w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-medium transition-all duration-200",
-                    "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                    "w-12 h-12 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all duration-300 shadow-lg",
+                    "focus:outline-none focus:ring-2 focus:ring-magic-400 focus:ring-offset-2",
                     {
-                      // Completed step
-                      "bg-primary border-primary text-primary-foreground": isCompleted,
-                      
-                      // Active step
-                      "bg-background border-primary text-primary ring-4 ring-primary/20": isActive,
-                      
+                      // Completed step - magical gradient
+                      "bg-gradient-to-br from-dnd-500 to-magic-600 border-magic-400 text-white shadow-magic-500/50": isCompleted,
+
+                      // Active step - glowing effect
+                      "bg-gradient-to-br from-white to-amber-50 border-dnd-500 text-dnd-700 ring-4 ring-dnd-400/30 shadow-xl scale-110": isActive,
+
                       // Future step
-                      "bg-muted border-muted-foreground/20 text-muted-foreground": !isCompleted && !isActive,
-                      
+                      "bg-gray-100 border-gray-300 text-gray-400": !isCompleted && !isActive,
+
                       // Clickable styles
-                      "cursor-pointer hover:border-primary/60": isClickable,
+                      "cursor-pointer hover:scale-105 hover:shadow-xl": isClickable,
                       "cursor-default": !isClickable
                     }
                   )}
@@ -86,14 +86,14 @@ export function ProgressIndicator({
                 </button>
 
                 {/* Step label */}
-                <div className="mt-2 text-center max-w-24">
-                  <div 
+                <div className="mt-3 text-center max-w-24">
+                  <div
                     className={cn(
-                      "text-xs font-medium leading-tight",
+                      "text-xs font-semibold leading-tight",
                       {
-                        "text-primary": isActive,
-                        "text-foreground": isCompleted,
-                        "text-foreground/60": !isCompleted && !isActive
+                        "text-dnd-700 font-bold": isActive,
+                        "text-dnd-600": isCompleted,
+                        "text-gray-500": !isCompleted && !isActive
                       }
                     )}
                   >
@@ -106,28 +106,18 @@ export function ProgressIndicator({
         </div>
       </div>
 
-      {/* Current step info */}
-      <div className="mt-6 text-center">
-        <h2 className="text-lg font-semibold text-foreground">
-          {steps[currentStep]?.title}
-        </h2>
-        <p className="text-sm text-foreground/70 mt-1">
-          {steps[currentStep]?.description}
-        </p>
-      </div>
-
-      {/* Progress percentage */}
-      <div className="mt-4 text-center">
-        <div className="text-xs text-foreground/60 font-medium">
+      {/* Progress percentage with magical styling */}
+      <div className="mt-8 text-center">
+        <div className="text-xs text-gray-600 font-semibold uppercase tracking-wider mb-2">
           Step {currentStep + 1} of {steps.length}
         </div>
-        <div className="w-full bg-muted rounded-full h-1 mt-2">
-          <div 
-            className="bg-primary h-1 rounded-full transition-all duration-500 ease-out"
+        <div className="w-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full h-2 shadow-inner">
+          <div
+            className="bg-gradient-to-r from-dnd-500 via-magic-500 to-spell-500 h-2 rounded-full transition-all duration-500 ease-out shadow-md"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           ></div>
         </div>
-        <div className="text-xs text-foreground/60 font-medium mt-1">
+        <div className="text-sm text-dnd-600 font-bold mt-2">
           {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
         </div>
       </div>
