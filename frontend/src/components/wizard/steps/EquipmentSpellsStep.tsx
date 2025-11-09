@@ -17,6 +17,7 @@ import {
   getCantripsByClass
 } from '../../../data/spells'
 import { WeaponSelectorComponent } from '../WeaponSelector'
+import { api } from '../../../services/api'
 
 // Using EquipmentPack and ClassEquipmentConfig interfaces from startingEquipment.ts
 
@@ -143,10 +144,9 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
     const fetchBackgroundData = async () => {
       if (characterData.background) {
         try {
-          const response = await fetch(`https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev/api/backgrounds`)
-          const result = await response.json()
-          if (result.success) {
-            const background = result.data.backgrounds.find((bg: any) => bg.id === characterData.background)
+          const response = await api.get('/backgrounds')
+          if (response.data.success) {
+            const background = response.data.data.backgrounds.find((bg: any) => bg.id === characterData.background)
             setBackgroundData(background)
           }
         } catch (error) {
