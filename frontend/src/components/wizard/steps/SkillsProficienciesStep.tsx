@@ -337,12 +337,16 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     onChange(newData)
 
-    // Validation
+    // Validation - only validate when class data has loaded
     const errors: string[] = []
 
-    // Check if all class skill choices are made
-    if (classData && selectedClassSkills.size !== classData.skillChoices) {
-      errors.push(`Select ${classData.skillChoices} skills from your class`)
+    // BUG FIX #13: Only validate class skill choices if classData has loaded
+    // Without this check, validation fails during initial load
+    if (classData) {
+      // Check if all class skill choices are made
+      if (selectedClassSkills.size !== classData.skillChoices) {
+        errors.push(`Select ${classData.skillChoices} skills from your class`)
+      }
     }
 
     // Check if all race skill choices are made (only if race provides skill choices)
