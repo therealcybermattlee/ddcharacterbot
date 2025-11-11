@@ -163,6 +163,7 @@ export interface CharacterCreationData {
   proficiencyBonus: number
   savingThrows: Record<string, number>
   skills: Record<string, number>
+  raceSkills?: string[] // Skills gained from racial traits
   
   // Equipment & Spells
   equipment: Array<{
