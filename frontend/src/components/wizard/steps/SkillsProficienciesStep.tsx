@@ -335,6 +335,16 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       raceSkills: Array.from(selectedRaceSkills) // Save race skills separately for proper categorization
     }
 
+    // DEBUG: Log the data being sent to parent
+    console.log('[SkillsStep] useEffect fired:', {
+      selectedClassSkills: Array.from(selectedClassSkills),
+      selectedRaceSkills: Array.from(selectedRaceSkills),
+      backgroundSkills,
+      finalSkillProficiencies: Array.from(finalSkillProficiencies),
+      skillsRecord,
+      newData
+    })
+
     onChange(newData)
 
     // Validation - only validate when class data has loaded

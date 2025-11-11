@@ -99,9 +99,17 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
     
     case 'UPDATE_STEP_DATA':
       const { stepId, data } = action.payload
+      const newCharacterData = { ...state.characterData, ...data }
+      // DEBUG: Log the merge result
+      console.log('[Reducer] UPDATE_STEP_DATA:', {
+        stepId,
+        oldSkills: state.characterData.skills,
+        newSkills: data.skills,
+        mergedSkills: newCharacterData.skills
+      })
       return {
         ...state,
-        characterData: { ...state.characterData, ...data }
+        characterData: newCharacterData
       }
     
     case 'SET_STEP_VALIDITY':
@@ -230,6 +238,8 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
 
   // Step data management
   const updateStepData = (_stepId: string, data: any) => {
+    // DEBUG: Log the data being received
+    console.log('[Context] updateStepData called:', { stepId: _stepId, data })
     dispatch({ type: 'UPDATE_STEP_DATA', payload: { stepId: _stepId, data } })
     // Note: saveProgress() is now handled by useEffect to avoid race condition
   }
@@ -336,6 +346,8 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
   // Progress persistence
   const saveProgress = () => {
     try {
+      // DEBUG: Log what's being saved
+      console.log('[Context] saveProgress:', { skills: state.characterData.skills })
       localStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state.characterData))
     } catch (error) {
       // Silent fail - localStorage may not be available
