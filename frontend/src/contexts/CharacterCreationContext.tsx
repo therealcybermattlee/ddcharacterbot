@@ -412,6 +412,7 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
           proficiencyBonus: state.characterData.proficiencyBonus,
           savingThrows: state.characterData.savingThrows,
           skills: state.characterData.skills,
+          raceSkills: state.characterData.raceSkills,
         }
       case 'equipment-spells':
         return {

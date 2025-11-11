@@ -356,6 +356,8 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     onValidationChange(errors.length === 0, errors)
   }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData, raceSkillCount, proficiencyBonus, onChange, onValidationChange])
+  // Note: selectedClassSkills and selectedRaceSkills are intentionally kept in dependencies
+  // even though they're included in finalSkillProficiencies, because they're needed for validation
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {

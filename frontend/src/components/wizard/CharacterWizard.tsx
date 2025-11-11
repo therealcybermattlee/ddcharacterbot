@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterCreation } from '../../contexts/CharacterCreationContext'
 import { ProgressIndicator, CompactProgressIndicator } from './ProgressIndicator'
@@ -136,6 +136,19 @@ export function CharacterWizard({
     }
   }
 
+  // Memoize callbacks to prevent unnecessary re-renders and stale closures
+  const handleStepDataChange = useCallback((data: any) => {
+    if (currentStep) {
+      updateStepData(currentStep.id, data)
+    }
+  }, [currentStep, updateStepData])
+
+  const handleValidationChange = useCallback((isValid: boolean, errors?: string[]) => {
+    if (currentStep) {
+      setStepValidity(currentStep.id, isValid, errors)
+    }
+  }, [currentStep, setStepValidity])
+
   const isNextDisabled = isValidating || currentStepErrors.length > 0
 
   return (
@@ -195,11 +208,8 @@ export function CharacterWizard({
                   {currentStep && (
                     <currentStep.component
                       data={currentStepData}
-                      onChange={(data: any) => updateStepData(currentStep.id, data)}
-                      onValidationChange={(isValid: boolean, errors?: string[]) => {
-                        // Update step validity in real-time
-                        setStepValidity(currentStep.id, isValid, errors)
-                      }}
+                      onChange={handleStepDataChange}
+                      onValidationChange={handleValidationChange}
                       onNext={handleNext}
                     />
                   )}
@@ -245,11 +255,8 @@ export function CharacterWizard({
                 {currentStep && (
                   <currentStep.component
                     data={currentStepData}
-                    onChange={(data: any) => updateStepData(currentStep.id, data)}
-                    onValidationChange={(isValid: boolean, errors?: string[]) => {
-                      // Update step validity in real-time
-                      setStepValidity(currentStep.id, isValid, errors)
-                    }}
+                    onChange={handleStepDataChange}
+                    onValidationChange={handleValidationChange}
                     onNext={handleNext}
                   />
                 )}
