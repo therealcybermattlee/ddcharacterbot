@@ -365,9 +365,10 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
     }
 
     onValidationChange(errors.length === 0, errors)
-  }, [finalSkillProficiencies, savingThrowProficiencies, selectedClassSkills, selectedRaceSkills, classData, raceSkillCount, proficiencyBonus, onChange, onValidationChange])
-  // Note: selectedClassSkills and selectedRaceSkills are intentionally kept in dependencies
-  // even though they're included in finalSkillProficiencies, because they're needed for validation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalSkillProficiencies, savingThrowProficiencies, classData, raceSkillCount, proficiencyBonus])
+  // BUG FIX #14: Removed onChange, onValidationChange, selectedClassSkills, and selectedRaceSkills
+  // from dependencies to prevent race conditions when callbacks are recreated
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {
