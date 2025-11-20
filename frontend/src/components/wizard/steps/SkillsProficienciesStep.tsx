@@ -408,9 +408,10 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     onValidationChange(errors.length === 0, errors)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalSkillProficiencies, savingThrowProficiencies, classData, raceSkillCount, proficiencyBonus])
-  // BUG FIX #14: Removed onChange, onValidationChange, selectedClassSkills, and selectedRaceSkills
-  // from dependencies to prevent race conditions when callbacks are recreated
+  }, [finalSkillProficiencies, savingThrowProficiencies, classData, raceSkillCount, proficiencyBonus, selectedClassSkills, selectedRaceSkills])
+  // BUG FIX #22: Added selectedClassSkills and selectedRaceSkills back to dependencies to fix validation
+  // Validation needs to re-run when skill selections change, otherwise Next button doesn't enable
+  // Note: onChange and onValidationChange still excluded to prevent race conditions from Bug #14
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {
