@@ -62,18 +62,28 @@ class JWTService {
       ['sign']
     );
 
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload64 = btoa(JSON.stringify(jwtPayload));
+    // Fixed: Use Unicode-safe base64 encoding (Bug #17)
+    const header = this.base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload64 = this.base64UrlEncode(JSON.stringify(jwtPayload));
     const data = `${header}.${payload64}`;
-    
+
     const signature = await crypto.subtle.sign(
       'HMAC',
       key,
       encoder.encode(data)
     );
-    
-    const signature64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+
+    const signature64 = this.base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
     return `${data}.${signature64}`;
+  }
+
+  // Helper method for Unicode-safe base64 encoding
+  private base64UrlEncode(str: string): string {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+    // Convert to base64url format (replace + with -, / with _, remove padding =)
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   }
 }
 

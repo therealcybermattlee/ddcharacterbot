@@ -118,14 +118,14 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
         
         <div className="text-center p-4 border border-border rounded-md">
           <div className="text-2xl font-bold text-foreground">
-            {characterData.hitPoints.maximum}
+            {characterData.hitPoints?.maximum ?? 8}
           </div>
           <div className="text-sm text-muted-foreground">Hit Points</div>
         </div>
-        
+
         <div className="text-center p-4 border border-border rounded-md">
           <div className="text-2xl font-bold text-foreground">
-            +{characterData.proficiencyBonus}
+            +{characterData.proficiencyBonus ?? 2}
           </div>
           <div className="text-sm text-muted-foreground">Proficiency</div>
         </div>
@@ -135,11 +135,11 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
       <div>
         <h3 className="text-lg font-medium text-foreground mb-3">Ability Scores</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {Object.entries(characterData.stats).map(([ability, score]) => (
+          {characterData.stats && Object.entries(characterData.stats).map(([ability, score]) => (
             <div key={ability} className="p-3 border border-border rounded-md text-center">
-              <div className="text-lg font-bold text-foreground">{score}</div>
+              <div className="text-lg font-bold text-foreground">{score ?? 10}</div>
               <div className="text-sm font-medium text-muted-foreground">
-                {formatModifier(getModifier(score))}
+                {formatModifier(getModifier(score ?? 10))}
               </div>
               <div className="text-xs text-muted-foreground capitalize">
                 {ability.slice(0, 3)}
@@ -158,10 +158,10 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
           <div>
             <h4 className="text-sm font-medium text-foreground mb-2">Saving Throws</h4>
             <div className="flex flex-wrap gap-1">
-              {Object.keys(characterData.savingThrows).length > 0 ? (
+              {characterData.savingThrows && Object.keys(characterData.savingThrows).length > 0 ? (
                 Object.keys(characterData.savingThrows).map((save) => (
                   <Badge key={save} variant="outline" size="sm">
-                    {save} +{characterData.savingThrows[save]}
+                    {save} +{characterData.savingThrows[save] ?? 0}
                   </Badge>
                 ))
               ) : (
@@ -174,10 +174,10 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
           <div>
             <h4 className="text-sm font-medium text-foreground mb-2">Skills</h4>
             <div className="flex flex-wrap gap-1">
-              {Object.keys(characterData.skills).length > 0 ? (
+              {characterData.skills && Object.keys(characterData.skills).length > 0 ? (
                 Object.keys(characterData.skills).map((skill) => (
                   <Badge key={skill} variant="outline" size="sm">
-                    {skill} +{characterData.skills[skill]}
+                    {skill} +{characterData.skills[skill] ?? 0}
                   </Badge>
                 ))
               ) : (
@@ -191,15 +191,15 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
       {/* Equipment */}
       <div>
         <h3 className="text-lg font-medium text-foreground mb-3">Equipment</h3>
-        {characterData.equipment.length > 0 ? (
+        {characterData.equipment && characterData.equipment.length > 0 ? (
           <div className="space-y-2">
             {characterData.equipment.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-2 border border-border rounded text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{item.name}</span>
-                  <Badge variant="outline" size="sm">{item.type}</Badge>
+                  <span className="font-medium">{item?.name ?? 'Unknown Item'}</span>
+                  <Badge variant="outline" size="sm">{item?.type ?? 'Item'}</Badge>
                 </div>
-                {item.quantity > 1 && (
+                {item?.quantity && item.quantity > 1 && (
                   <Badge variant="secondary" size="sm">×{item.quantity}</Badge>
                 )}
               </div>
@@ -211,20 +211,20 @@ export function ReviewCreateStep({ onValidationChange }: WizardStepProps) {
       </div>
 
       {/* Spells */}
-      {characterData.spells && characterData.spells.length > 0 && (
+      {characterData.spells && Array.isArray(characterData.spells) && characterData.spells.length > 0 && (
         <div>
           <h3 className="text-lg font-medium text-foreground mb-3">Spells</h3>
           <div className="space-y-2">
             {characterData.spells.map((spell, index) => (
               <div key={index} className="flex items-center justify-between p-2 border border-border rounded text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{spell.name}</span>
-                  <Badge variant={spell.level === 0 ? 'secondary' : 'outline'} size="sm">
-                    Level {spell.level}
+                  <span className="font-medium">{spell?.name ?? 'Unknown Spell'}</span>
+                  <Badge variant={spell?.level === 0 ? 'secondary' : 'outline'} size="sm">
+                    Level {spell?.level ?? 0}
                   </Badge>
-                  <Badge variant="outline" size="sm">{spell.school}</Badge>
+                  <Badge variant="outline" size="sm">{spell?.school ?? 'Unknown'}</Badge>
                 </div>
-                {spell.prepared && (
+                {spell?.prepared && (
                   <Badge variant="default" size="sm">Prepared</Badge>
                 )}
               </div>

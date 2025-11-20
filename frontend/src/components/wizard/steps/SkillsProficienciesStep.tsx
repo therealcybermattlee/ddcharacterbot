@@ -52,32 +52,67 @@ const getClassData = async (className: string) => {
     // Fall through to fallback data
   }
 
-  // Fallback to mock data if API fails
+  // Fallback to complete data for all 12 core D&D classes if API fails (Bug #21 fix)
   const fallbackData: Record<string, { skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] }> = {
     'barbarian': {
       skillChoices: 2,
       availableSkills: ['Animal Handling', 'Athletics', 'Intimidation', 'Nature', 'Perception', 'Survival'],
       savingThrows: ['strength', 'constitution']
     },
+    'bard': {
+      skillChoices: 3,
+      availableSkills: ['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival'], // Any 3
+      savingThrows: ['dexterity', 'charisma']
+    },
+    'cleric': {
+      skillChoices: 2,
+      availableSkills: ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion'],
+      savingThrows: ['wisdom', 'charisma']
+    },
+    'druid': {
+      skillChoices: 2,
+      availableSkills: ['Arcana', 'Animal Handling', 'Insight', 'Medicine', 'Nature', 'Perception', 'Religion', 'Survival'],
+      savingThrows: ['intelligence', 'wisdom']
+    },
     'fighter': {
       skillChoices: 2,
       availableSkills: ['Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Perception', 'Survival'],
       savingThrows: ['strength', 'constitution']
     },
-    'wizard': {
+    'monk': {
       skillChoices: 2,
-      availableSkills: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'],
-      savingThrows: ['intelligence', 'wisdom']
+      availableSkills: ['Acrobatics', 'Athletics', 'History', 'Insight', 'Religion', 'Stealth'],
+      savingThrows: ['strength', 'dexterity']
+    },
+    'paladin': {
+      skillChoices: 2,
+      availableSkills: ['Athletics', 'Insight', 'Intimidation', 'Medicine', 'Persuasion', 'Religion'],
+      savingThrows: ['wisdom', 'charisma']
+    },
+    'ranger': {
+      skillChoices: 3,
+      availableSkills: ['Animal Handling', 'Athletics', 'Insight', 'Investigation', 'Nature', 'Perception', 'Stealth', 'Survival'],
+      savingThrows: ['strength', 'dexterity']
     },
     'rogue': {
       skillChoices: 4,
       availableSkills: ['Acrobatics', 'Athletics', 'Deception', 'Insight', 'Intimidation', 'Investigation', 'Perception', 'Performance', 'Persuasion', 'Sleight of Hand', 'Stealth'],
       savingThrows: ['dexterity', 'intelligence']
     },
-    'ranger': {
-      skillChoices: 3,
-      availableSkills: ['Animal Handling', 'Athletics', 'Insight', 'Investigation', 'Nature', 'Perception', 'Stealth', 'Survival'],
-      savingThrows: ['strength', 'dexterity']
+    'sorcerer': {
+      skillChoices: 2,
+      availableSkills: ['Arcana', 'Deception', 'Insight', 'Intimidation', 'Persuasion', 'Religion'],
+      savingThrows: ['constitution', 'charisma']
+    },
+    'warlock': {
+      skillChoices: 2,
+      availableSkills: ['Arcana', 'Deception', 'History', 'Intimidation', 'Investigation', 'Nature', 'Religion'],
+      savingThrows: ['wisdom', 'charisma']
+    },
+    'wizard': {
+      skillChoices: 2,
+      availableSkills: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'],
+      savingThrows: ['intelligence', 'wisdom']
     }
   }
   return fallbackData[className.toLowerCase()] || { skillChoices: 2, availableSkills: [], savingThrows: [] }
@@ -134,10 +169,16 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   const [classData, setClassData] = useState<{ skillChoices: number; availableSkills: SkillName[]; savingThrows: AbilityName[] } | null>(null)
   const [isLoadingClassData, setIsLoadingClassData] = useState(false)
 
-  // Initialize selected skills from saved data
+  // Initialize selected skills from saved data (Bug #16 fix: simplified with safety checks)
   // We need to determine which skills came from class vs background/race
   const getInitialClassSkills = (): Set<SkillName> => {
-    if (!data.skills || Object.keys(data.skills).length === 0) {
+    // Safety check: ensure data exists and is valid
+    if (!data?.skills || typeof data.skills !== 'object' || Object.keys(data.skills).length === 0) {
+      return new Set()
+    }
+
+    // Safety check: ensure characterData is populated
+    if (!characterData?.background || !characterData?.race) {
       return new Set()
     }
 
@@ -155,7 +196,7 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     // If race has skill choices, we need to look at what's already selected as race skills
     // This prevents misclassification when races can choose from all skills
-    const raceSkills = data.raceSkills || []
+    const raceSkills = Array.isArray(data.raceSkills) ? data.raceSkills : []
     const classSkills = savedSkillNames.filter(skill =>
       !backgroundSkills.includes(skill) && !raceSkills.includes(skill)
     )
@@ -164,12 +205,13 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   }
 
   const getInitialRaceSkills = (): Set<SkillName> => {
-    if (!data.skills || Object.keys(data.skills).length === 0) {
+    // Safety check: ensure data exists and is valid
+    if (!data?.skills || typeof data.skills !== 'object' || Object.keys(data.skills).length === 0) {
       return new Set()
     }
 
-    // Use explicitly saved race skills if available
-    if (data.raceSkills) {
+    // Use explicitly saved race skills if available and valid
+    if (Array.isArray(data.raceSkills) && data.raceSkills.length > 0) {
       return new Set(data.raceSkills as SkillName[])
     }
 

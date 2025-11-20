@@ -381,10 +381,15 @@ export function CharacterCreationProvider({ children }: CharacterCreationProvide
     loadProgress()
   }, [])
 
-  // Auto-save to localStorage whenever characterData changes
+  // Auto-save to localStorage whenever characterData changes (Bug #20 fix: add debouncing)
   // This ensures we save AFTER the reducer has updated the state
+  // Debounced to prevent excessive writes
   useEffect(() => {
-    saveProgress()
+    const timeoutId = setTimeout(() => {
+      saveProgress()
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(timeoutId)
   }, [state.characterData])
 
   // Navigation object

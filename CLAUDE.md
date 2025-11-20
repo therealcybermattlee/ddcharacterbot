@@ -85,5 +85,46 @@ npx wrangler list
 - Update PROJECT-PLAN.md with progress and next steps
 - Maintain context between sessions
 
+### Auto-Compaction Rules
+**Trigger compaction when MEMORY.md exceeds:**
+- **Line count**: >800 lines
+- **Byte size**: >100KB
+- **Session count**: >15 detailed sessions
+
+**Compaction Strategy:**
+1. **Keep Recent** (retain in MEMORY.md):
+   - Current sprint status and progress
+   - Last 3-5 sessions with full details
+   - All active bugs and open issues
+   - Critical decisions from last 30 days
+   - Current deployment state
+
+2. **Archive Old** (move to MEMORY-ARCHIVE.md):
+   - Sessions older than 30 days
+   - Completed sprints (summarized)
+   - Resolved bugs (one-line summary only)
+   - Historical deployment logs
+
+3. **Compression Format**:
+   - Detailed sessions: Full markdown with all sub-items
+   - Summarized sessions: One paragraph per major task
+   - Archived sessions: Title, date, 2-3 bullet points max
+
+**Archive File Structure:**
+```
+MEMORY-ARCHIVE.md
+├── Archive: [Date Range]
+│   ├── Sprint Summary
+│   ├── Key Decisions
+│   └── Major Milestones
+└── Session History (compressed)
+```
+
+**When to Compact:**
+- At the start of each new sprint
+- When MEMORY.md exceeds thresholds
+- Before major releases
+- Monthly maintenance (first session of month)
+
 ## Model Configuration
 Use Sonnet (claude-sonnet-4) as the primary model for main tasks and complex reasoning.
