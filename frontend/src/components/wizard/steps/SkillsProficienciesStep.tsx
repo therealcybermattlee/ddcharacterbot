@@ -389,15 +389,21 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
 
     onChange(newData)
 
-    // Validation - only validate when class data has loaded
+    // BUG FIX #22: More lenient validation that works even when API data hasn't loaded
     const errors: string[] = []
 
-    // BUG FIX #13: Only validate class skill choices if classData has loaded
-    // Without this check, validation fails during initial load
+    // If classData has loaded, validate against it
     if (classData) {
       // Check if all class skill choices are made
       if (selectedClassSkills.size !== classData.skillChoices) {
         errors.push(`Select ${classData.skillChoices} skills from your class`)
+      }
+    } else {
+      // If API hasn't loaded but we have skill selections from localStorage, consider it valid
+      // This allows progression when the user is returning to a saved character
+      // Validation will happen properly when they create the character
+      if (finalSkillProficiencies.size === 0) {
+        errors.push('Select your skill proficiencies')
       }
     }
 

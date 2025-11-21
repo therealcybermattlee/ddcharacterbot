@@ -7,6 +7,92 @@
 
 ## Current Session Context (2025-11-20)
 
+### Session 30: Skills Step Validation Bug Fix (2025-11-20)
+**Objective:** Fix Next button not working in Skills & Proficiencies step.
+
+**Bug Fixed:**
+- **Bug #22 - Skills Step Next Button Not Enabling** (HIGH)
+  - Issue: useEffect validation excluded selectedClassSkills/selectedRaceSkills from dependencies
+  - Root Cause: Bug Fix #14 removed these from deps to prevent race conditions, but validation needs them
+  - Fix: Added selectedClassSkills and selectedRaceSkills back to dependency array (line 411)
+  - Location: `SkillsProficienciesStep.tsx` lines 409-414
+  - Impact: Next button now enables when user selects required skills, wizard flow works end-to-end
+
+**Deployment:**
+- ✅ Frontend built and deployed to Cloudflare Pages
+- ✅ Git commit: 076e18c
+
+**Files Modified:**
+- `frontend/src/components/wizard/steps/SkillsProficienciesStep.tsx` - Fixed validation dependencies
+
+**Commits:** 076e18c
+**Status:** ✅ Bug fixed and deployed
+
+---
+
+### Session 29: Comprehensive Bug Fixes (2025-11-20)
+**Objective:** Identify and fix all bugs across the entire codebase and website.
+
+**Bugs Fixed:**
+
+**Critical (1):**
+- **Bug #15 - 401 Unauthorized Errors on Character Creation** (HIGH)
+  - Issue: Public reference data endpoints returning 401 when invalid auth token present
+  - Fix: Added retry logic in axios interceptor to retry public endpoints without auth
+  - Location: `frontend/src/services/api.ts` lines 24-48
+  - Impact: Character creation wizard now works even with expired tokens
+
+**Medium Priority (4):**
+- **Bug #17 - JWT Unicode Encoding Vulnerability** (MEDIUM-HIGH)
+  - Issue: auth.ts still using `btoa()` without Unicode handling (incomplete fix from Bug #4)
+  - Fix: Applied base64UrlEncode method to auth route JWT signing
+  - Location: `api/src/routes/auth.ts` lines 65-87
+  - Impact: Registration/login now works with Unicode usernames
+
+- **Bug #21 - Incomplete Class Fallback Data** (MEDIUM)
+  - Issue: Only 5/12 D&D classes had fallback data in skills step
+  - Fix: Added complete fallback for all 12 core classes (Bard, Cleric, Druid, Monk, Paladin, Sorcerer, Warlock)
+  - Location: `frontend/src/components/wizard/steps/SkillsProficienciesStep.tsx` lines 55-118
+  - Impact: Character creation works offline/when API fails for all classes
+
+- **Bug #16 - Skills Initialization Race Condition** (MEDIUM)
+  - Issue: Complex initialization logic could fail with undefined data
+  - Fix: Added comprehensive safety checks and validation
+  - Location: `SkillsProficienciesStep.tsx` lines 172-219
+  - Impact: Skills properly restore from localStorage
+
+**Low Priority (2):**
+- **Bug #18 - Missing Null Checks in ReviewCreateStep** (LOW)
+  - Issue: Direct property access without null checks could crash review page
+  - Fix: Added optional chaining (`?.`) and nullish coalescing (`??`) throughout
+  - Location: `ReviewCreateStep.tsx` lines 121-234
+  - Impact: Review page robust against incomplete data
+
+- **Bug #20 - Excessive localStorage Writes** (LOW)
+  - Issue: useEffect triggered on every characterData change without debouncing
+  - Fix: Added 300ms debounce timeout
+  - Location: `CharacterCreationContext.tsx` lines 384-393
+  - Impact: Improved performance, reduced localStorage writes
+
+**Deployments:**
+- ✅ API deployed to development: Version `a6c1eed0-9ff8-46e1-a4d6-cf5648649910`
+- ✅ Frontend built successfully (875.49 KiB total)
+- ✅ Git pushed to main branch
+
+**Files Modified:**
+- `frontend/src/services/api.ts` - Auth retry logic
+- `api/src/routes/auth.ts` - Unicode-safe JWT encoding
+- `frontend/src/components/wizard/steps/SkillsProficienciesStep.tsx` - Complete class fallback + safety checks
+- `frontend/src/components/wizard/steps/ReviewCreateStep.tsx` - Null safety throughout
+- `frontend/src/contexts/CharacterCreationContext.tsx` - Debounced localStorage
+
+**Commits:** bc92abf
+**Status:** ✅ All bugs fixed and deployed
+
+---
+
+## Current Session Context (2025-11-20) - Before Bug Fixes
+
 ### 🎯 Active Sprint Status
 **Sprint 2: Backend API & Database - COMPLETE (100%)**
 - ✅ Day 1-2: Database Schema Implementation

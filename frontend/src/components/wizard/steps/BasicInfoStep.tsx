@@ -90,6 +90,32 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
     }
   }, [data, currentStep, shouldShowFeatSelection])
 
+  // BUG FIX #22: Validate step when data is complete, even if API hasn't loaded
+  // This allows progression when localStorage has valid data but API fails
+  useEffect(() => {
+    const isComplete = Boolean(
+      data.name?.trim() &&
+      data.race?.trim() &&
+      data.class?.trim() &&
+      data.background?.trim() &&
+      data.alignment
+    )
+
+    if (isComplete) {
+      // Step is complete with valid data, mark as valid
+      onValidationChange(true, [])
+    } else {
+      // Step is incomplete, mark as invalid
+      const errors: string[] = []
+      if (!data.name?.trim()) errors.push('Character name is required')
+      if (!data.race?.trim()) errors.push('Race is required')
+      if (!data.class?.trim()) errors.push('Class is required')
+      if (!data.background?.trim()) errors.push('Background is required')
+      if (!data.alignment) errors.push('Alignment is required')
+      onValidationChange(false, errors)
+    }
+  }, [data.name, data.race, data.class, data.background, data.alignment, onValidationChange])
+
   const handleInputChange = (field: string, value: string | number) => {
     const newData = { ...data, [field]: value }
     onChange(newData)
