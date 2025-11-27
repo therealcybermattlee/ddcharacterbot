@@ -132,6 +132,8 @@ Use Sonnet (claude-sonnet-4) as the primary model for main tasks and complex rea
 ## Active Technologies
 - TypeScript 5.6.3, React 18.3.1 + React (hooks: useState, useEffect, useMemo), React Router DOM 6.26.2, Axios 1.7.7 (001-fix-skills-next-button)
 - localStorage (browser) for character creation state persistence (001-fix-skills-next-button)
+- TypeScript 5.x (Frontend), TypeScript 5.x on Cloudflare Workers (Backend) + React 18, Vite (Frontend); Hono, Cloudflare Workers SDK (Backend) (003-class-skill-display-fix)
+- Cloudflare D1 SQLite database (003-class-skill-display-fix)
 
 ## Recent Changes
 - 001-fix-skills-next-button: Added TypeScript 5.6.3, React 18.3.1 + React (hooks: useState, useEffect, useMemo), React Router DOM 6.26.2, Axios 1.7.7
