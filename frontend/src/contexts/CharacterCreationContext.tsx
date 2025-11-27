@@ -113,7 +113,17 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
       }
     
     case 'SET_STEP_VALIDITY':
-      return {
+      // INVESTIGATION #002: Log reducer processing SET_STEP_VALIDITY
+      console.log('[Reducer] SET_STEP_VALIDITY:', {
+        timestamp: new Date().toISOString(),
+        stepId: action.payload.stepId,
+        isValid: action.payload.isValid,
+        errors: action.payload.errors,
+        oldValidity: state.stepValidities[action.payload.stepId],
+        newValidity: action.payload.isValid
+      })
+
+      const newState = {
         ...state,
         stepValidities: {
           ...state.stepValidities,
@@ -124,6 +134,13 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
           [action.payload.stepId]: action.payload.errors || []
         }
       }
+
+      console.log('[Reducer] SET_STEP_VALIDITY COMPLETE:', {
+        stepId: action.payload.stepId,
+        updatedStepValidities: newState.stepValidities
+      })
+
+      return newState
     
     case 'SET_SUBMITTING':
       return { ...state, isSubmitting: action.payload }
