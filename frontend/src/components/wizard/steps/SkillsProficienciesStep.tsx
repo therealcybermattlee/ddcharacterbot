@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { Badge } from '../../ui/badge'
 import { Button } from '../../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
@@ -223,6 +223,15 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
   const [previousClass, setPreviousClass] = useState<string>(characterData.class)
   const [previousRace, setPreviousRace] = useState<string>(characterData.race)
 
+  // BUG FIX #23: Use ref pattern to handle unstable onValidationChange callback
+  // This ensures validation always calls the latest callback even when its identity changes
+  // Prevents Next button from staying disabled when selections are complete
+  const onValidationChangeRef = useRef(onValidationChange)
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
+
   // Get current proficiency bonus based on level
   const proficiencyBonus = PROFICIENCY_BONUS_BY_LEVEL[characterData.level as keyof typeof PROFICIENCY_BONUS_BY_LEVEL] || 2
 
@@ -438,17 +447,19 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       }
     })
 
-    onValidationChange(errors.length === 0, errors)
+    onValidationChangeRef.current(errors.length === 0, errors)
 
-    console.log('[SkillsStep] onValidationChange CALLED with:', {
+    console.log('[SkillsStep] onValidationChangeRef.current CALLED with:', {
       isValid: errors.length === 0,
       errors: errors
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finalSkillProficiencies, savingThrowProficiencies, classData, raceSkillCount, proficiencyBonus, selectedClassSkills, selectedRaceSkills])
-  // BUG FIX #22: Added selectedClassSkills and selectedRaceSkills back to dependencies to fix validation
-  // Validation needs to re-run when skill selections change, otherwise Next button doesn't enable
-  // Note: onChange and onValidationChange still excluded to prevent race conditions from Bug #14
+  // BUG FIX #23: Use ref pattern (onValidationChangeRef.current) to call latest callback
+  // This fixes Bug #22 properly - Next button now enables when selections complete
+  // The ref pattern allows validation to work with unstable callbacks from CharacterWizard
+  // Dependencies include selectedClassSkills/selectedRaceSkills to trigger on selection changes
+  // onChange and onValidationChange excluded via ref pattern to prevent race conditions (Bug #14)
 
   // Get skill modifier for display
   const getSkillModifier = (skill: SkillName, isProficient: boolean) => {
