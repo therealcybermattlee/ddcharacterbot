@@ -7,6 +7,61 @@
 
 ## Current Session Context (2025-11-27)
 
+### Session 32: Class Skill Display Bug Investigation (2025-11-27)
+**Objective:** Investigate user report of issues with the Cleric class.
+
+**User Request:** `/speckit.specify could you check for any issues having to do with the class cleric`
+
+**Investigation Findings:**
+1. **Cleric Class Status:** ✅ Working correctly
+   - Displays "Skills: 2 of 5" as expected
+   - Data structure correct in both API and fallback data
+   - No Cleric-specific issues found
+
+2. **Actual Bug Discovered:** Class skill count display bug affecting multiple classes
+   - **Bard** shows "Skills: 3 of 0" instead of "Skills: 3 of 18"
+   - **Root Cause:** Data structure mismatch between API and frontend
+
+**Root Cause Analysis:**
+- **Frontend expects** (`frontend/src/types/dnd5e.ts:92-95`):
+  ```typescript
+  skill_proficiencies: {
+    choose: number
+    from: string[]
+  }
+  ```
+- **API returns** (`api/src/routes/classes.ts:71-72`):
+  ```typescript
+  skillProficiencies: string[]  // Flat array
+  skillChoices: number
+  ```
+- **Display code** (`frontend/src/components/character-creation/ClassSelector.tsx:360`):
+  ```typescript
+  {cls?.skill_proficiencies?.choose || 0} of {cls?.skill_proficiencies?.from?.length || 0}
+  ```
+  - Expects nested structure, gets flat array
+  - Results in `from` being undefined → displays "X of 0"
+
+**API Data Confirmed:**
+- Bard: `skillProficiencies: []`, `skillChoices: 3` (empty array because Bard can choose ANY skill)
+- Cleric: `skillProficiencies: ["History", "Insight", "Medicine", "Persuasion", "Religion"]`, `skillChoices: 2`
+
+**Feature 003 Created:**
+- **Location:** `.specify/features/003-class-skill-display-fix/spec.md`
+- **Solution:** Update API to return nested structure matching frontend TypeScript interface
+- **Priority:** High
+- **Type:** Bug Fix
+
+**Files Identified:**
+- `api/src/routes/classes.ts` - API response transformation (needs fix)
+- `frontend/src/components/character-creation/ClassSelector.tsx` - Display logic (already correct, will work once API fixed)
+- `frontend/src/types/dnd5e.ts` - TypeScript interface (already correct)
+- `database/migrations/` - May need to populate Bard with all 18 skills
+
+**Status:** ✅ Investigation complete, specification created
+
+---
+
 ### Session 31: Skills Next Button - Ref Pattern Implementation (2025-11-27)
 **Objective:** Actually implement the fix researched in Feature 001 for Bug #23 (Skills Next button still not working).
 
