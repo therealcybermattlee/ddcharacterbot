@@ -412,7 +412,38 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
       errors.push(`Select ${raceSkillCount} skills from your race`)
     }
 
+    // INVESTIGATION #002: Comprehensive logging to trace validation flow
+    console.log('[SkillsStep] VALIDATION CHECKPOINT:', {
+      timestamp: new Date().toISOString(),
+      validationState: {
+        isValid: errors.length === 0,
+        errors: errors,
+        errorCount: errors.length
+      },
+      selections: {
+        selectedClassSkills: Array.from(selectedClassSkills),
+        selectedClassSkillsCount: selectedClassSkills.size,
+        selectedRaceSkills: Array.from(selectedRaceSkills),
+        selectedRaceSkillsCount: selectedRaceSkills.size
+      },
+      requirements: {
+        classData: classData,
+        requiredClassSkills: classData?.skillChoices,
+        requiredRaceSkills: raceSkillCount
+      },
+      callback: {
+        onValidationChangeType: typeof onValidationChange,
+        onValidationChangeName: onValidationChange.name,
+        aboutToCall: true
+      }
+    })
+
     onValidationChange(errors.length === 0, errors)
+
+    console.log('[SkillsStep] onValidationChange CALLED with:', {
+      isValid: errors.length === 0,
+      errors: errors
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finalSkillProficiencies, savingThrowProficiencies, classData, raceSkillCount, proficiencyBonus, selectedClassSkills, selectedRaceSkills])
   // BUG FIX #22: Added selectedClassSkills and selectedRaceSkills back to dependencies to fix validation

@@ -144,12 +144,38 @@ export function CharacterWizard({
   }, [currentStep, updateStepData])
 
   const handleValidationChange = useCallback((isValid: boolean, errors?: string[]) => {
+    // INVESTIGATION #002: Log when validation callback is invoked
+    console.log('[CharacterWizard] handleValidationChange INVOKED:', {
+      timestamp: new Date().toISOString(),
+      currentStep: currentStep?.id,
+      isValid,
+      errors,
+      callbackIdentity: handleValidationChange.toString().substring(0, 50)
+    })
+
     if (currentStep) {
+      console.log('[CharacterWizard] Calling setStepValidity for step:', currentStep.id)
       setStepValidity(currentStep.id, isValid, errors)
+
+      console.log('[CharacterWizard] setStepValidity COMPLETED for step:', currentStep.id)
+    } else {
+      console.warn('[CharacterWizard] No currentStep! Cannot set validity')
     }
   }, [currentStep, setStepValidity])
 
   const isNextDisabled = isValidating || currentStepErrors.length > 0
+
+  // INVESTIGATION #002: Log render state to track button updates
+  console.log('[CharacterWizard] RENDER:', {
+    timestamp: new Date().toISOString(),
+    currentStepId: currentStep?.id,
+    isNextDisabled,
+    isValidating,
+    currentStepErrors,
+    currentStepErrorsLength: currentStepErrors.length,
+    currentStepIsValid: currentStep?.isValid,
+    allStepsValid: steps.map(s => ({ id: s.id, isValid: s.isValid }))
+  })
 
   return (
     <div className={cn("min-h-screen bg-gradient-to-b from-dnd-50/30 via-background to-magic-50/20", className)}>
