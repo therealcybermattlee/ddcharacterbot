@@ -5,7 +5,74 @@
 
 ---
 
-## Current Session Context (2025-11-20)
+## Current Session Context (2025-11-27)
+
+### Session 31: Skills Next Button - Ref Pattern Implementation (2025-11-27)
+**Objective:** Actually implement the fix researched in Feature 001 for Bug #23 (Skills Next button still not working).
+
+**Critical Discovery:**
+- User reported "the prior change did not fix the issue"
+- Investigation revealed: Feature 001 researched the solution but **NEVER implemented it**
+- Only specification/research artifacts were created, no code changes were made
+- Bug #22 fix from Session 30 was insufficient (only fixed dependencies, not callback stability)
+
+**Root Cause Identified:**
+- `onValidationChange` callback from CharacterWizard has unstable identity
+- CharacterWizard's `useCallback` includes `currentStep` in dependencies
+- When callback identity changes, validation can't reliably notify parent
+- Result: Next button stays disabled even when selections are complete
+
+**Solution Implemented - Ref Pattern:**
+1. Added `useRef` import to SkillsProficienciesStep.tsx
+2. Created `onValidationChangeRef` to store latest callback reference
+3. Added useEffect to update ref when callback prop changes
+4. Modified validation to call `onValidationChangeRef.current()` instead of direct callback
+5. Added comprehensive investigation logging throughout validation flow
+
+**Implementation Details:**
+- File: `frontend/src/components/wizard/steps/SkillsProficienciesStep.tsx`
+  - Line 1: Added `useRef` to imports
+  - Lines 226-233: Created ref and update useEffect
+  - Line 450: Changed to use `onValidationChangeRef.current()`
+  - Lines 458-462: Updated comments to document Bug #23 fix
+
+**Investigation Logging Added:**
+- `frontend/src/components/wizard/steps/SkillsProficienciesStep.tsx` - Validation checkpoint logging
+- `frontend/src/components/wizard/CharacterWizard.tsx` - Callback invocation and render logging
+- `frontend/src/contexts/CharacterCreationContext.tsx` - Reducer action logging
+
+**Commits:**
+- d8016b5: Investigation logging
+- 90f0d55: Investigation logging (cherry-picked to main)
+- de97404: Ref pattern implementation
+- a3d3873: Ref pattern implementation (rebased)
+
+**Deployment:**
+- ✅ Code built successfully
+- ✅ Committed to main branch
+- ✅ Pushed to GitHub (triggers Cloudflare Pages deployment)
+- ⏳ Cloudflare Pages deployment in progress (may take several minutes)
+
+**Testing Required:**
+Once deployment completes (check https://dnd.cyberlees.dev):
+1. Navigate to character creation wizard
+2. Complete Basic Info step (select class, race, background)
+3. Navigate to Skills & Proficiencies step
+4. Select all required skills (e.g., 4 for Rogue)
+5. **Verify**: Next button enables immediately when selections complete
+6. Check browser console for investigation logging to confirm fix is active
+
+**Related Work:**
+- Feature 001: Original research and specification (never implemented until now)
+- Feature 002: Started as investigation spec, superseded by actual implementation
+- Bug #22: Previous incomplete fix (Session 30) - only fixed dependencies
+- Bug #23: This fix - ref pattern addresses callback stability issue
+
+**Status:** ✅ Implementation complete, deployment in progress
+
+---
+
+## Previous Session Context (2025-11-20)
 
 ### Session 30: Skills Step Validation Bug Fix (2025-11-20)
 **Objective:** Fix Next button not working in Skills & Proficiencies step.
