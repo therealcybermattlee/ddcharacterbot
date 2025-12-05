@@ -103,7 +103,7 @@
 
 ---
 
-### Session 34: Basic Information Bug Fixes - Technical Research (2025-12-04)
+### Session 34: Basic Information Bug Fixes - Technical Research (2025-12-04 Morning)
 **Objective:** Research and document technical decisions for implementing the 7 bug fixes identified in Session 33.
 
 **User Request:** "Research and document technical decisions for the Basic Information bug fixes. I need you to research 5 specific areas..."
@@ -174,13 +174,128 @@
 - Multiple accessibility resources (DigitalA11Y, Deque)
 - UX best practices articles
 
-**Status:** ✅ Research complete, ready for Phase 1 (Design & Contracts)
+**Status:** ✅ Research complete, planning artifacts created, ready for implementation
+
+**Planning Artifacts Created (Session 35 Morning):**
+- `plan.md` - Implementation strategy with 3 phases
+- `data-model.md` - Component state models and data flow
+- `contracts/CharacterPreview.contract.md` - Bug #2 component behavior contract
+- `contracts/BasicInfoStep.contract.md` - Bugs #3, #6, #7 component behavior contract
+- `quickstart.md` - Developer implementation guide with step-by-step instructions
+- `tasks.md` - 97 dependency-ordered implementation tasks
 
 **Next Steps:**
-- Execute `/speckit.plan` Phase 1 to create data models and contracts
-- Update agent context with research findings
-- Generate implementation tasks with `/speckit.tasks`
-- Begin implementation starting with Bug #2 (CharacterPreview)
+- Execute `/speckit.implement` to begin task execution starting with Bug #2
+- Or manually implement following quickstart.md guide
+- Feature 005 (Cleric bug) should be fixed as hotfix before Feature 004
+
+---
+
+### Session 35: Feature 004 Planning + Feature 005 Investigation (2025-12-05)
+**Objective:** Complete Feature 004 planning phase and investigate Cleric class selection bug.
+
+**User Request 1:** "continue" - Resume work on Feature 004
+
+**Feature 004 Planning Complete:**
+- Executed `/speckit.plan` workflow to generate design artifacts
+- Created 5 comprehensive planning documents (1,500+ lines total)
+- Used Task subagent for technical research
+- Updated CLAUDE.md agent context with React patterns
+- Committed and pushed all artifacts to branch 004-basic-info-bugs (commit b9823fa)
+
+**Planning Documents:**
+- **plan.md** - Implementation strategy, language/framework context, 3 phases
+- **research.md** - Technical research with 5 decision areas (created by Task subagent)
+- **data-model.md** - Component state models, interfaces, data flow diagrams
+- **contracts/CharacterPreview.contract.md** - Bug #2 component contract (never display "?")
+- **contracts/BasicInfoStep.contract.md** - Bugs #3, #6, #7 component contracts
+- **quickstart.md** - Developer implementation guide (4 phases, ~10 hours total time)
+
+**User Request 2:** "commit and push" - ✅ Committed planning artifacts
+
+**User Request 3:** `/speckit.tasks` - Generate implementation tasks
+
+**Tasks Generated:**
+- **Total:** 97 tasks organized by user story
+- **Phase Structure:**
+  - Phase 2: Foundational (T001-T006) - Read and understand code
+  - Phase 3: US1/Bug #2 (T007-T020) - CharacterPreview fix (1-2 hours)
+  - Phase 4: US2/Bug #3 (T021-T040) - Sub-step navigation (2-3 hours)
+  - Phase 5: US3/Bug #6 (T041-T050) - Auto-advance removal (1 hour)
+  - Phase 6: US4/Bug #7 (T051-T064) - Validation timing (2-3 hours)
+  - Phase 7: Integration (T065-T073) - Component integration testing
+  - Phase 8: Manual Testing (T074-T088) - User acceptance testing
+  - Phase 9: Deployment (T089-T097) - Production deployment
+
+**Task Format:**
+```markdown
+- [ ] [TaskID] [P?] [Story?] Description with file path
+```
+
+**MVP Strategy:**
+- Bug #2 (CharacterPreview) identified as quick win (1-2 hours)
+- Independent file, high visibility, immediate UX improvement
+- Should be implemented first before other bugs
+
+**User Request 4:** "commit and push" - ✅ Committed tasks.md (commit pushed)
+
+**User Request 5:** `/speckit.specify "Whenever chosing cleric it seems to break for some reason. Could you look around to figure out what could be causing the issues?"`
+
+**Feature 005 Investigation:**
+- **Created:** Branch 005-cleric-selection-bug
+- **Investigation Method:** Playwright browser automation on production site
+- **Bug Reproduced:**
+  1. Navigated to https://dnd.cyberlees.dev/characters/new
+  2. Entered name "Tiberius", selected race "Human"
+  3. Clicked Cleric class card (displays "Skills: 2 of 5" correctly)
+  4. **Observed:** Wizard advances to sub-step 4, but main content area is completely blank
+  5. **Screenshot:** Saved at `.playwright-mcp/cleric-bug-blank-screen.png`
+
+**Bug Details:**
+- **Sub-step indicator:** Shows step 4 active (blue circle)
+- **Content area:** Completely blank (no card, no UI elements)
+- **Character preview:** Shows "Verification... Level 1 ? ?" (related to Feature 004 Bug #2)
+- **Console logs:** `UPDATE_STEP_DATA: {stepId: basic-info, newSkills: undefined}`
+- **No JavaScript errors:** Logic issue, not runtime exception
+
+**Root Cause Analysis:**
+1. **Auto-advance useEffect** (BasicInfoStep.tsx:68-91) sets `currentStep='subclass'` when Cleric selected
+2. **Rendering condition** (line 377): `{currentStep === 'subclass' && data.classData?.subclasses && (...)}`
+3. **Issue:** `data.classData.subclasses` is undefined or empty, preventing SubclassSelector from rendering
+4. **Suspected causes:**
+   - API not returning subclasses array for Cleric
+   - Timing issue: useEffect runs before classData is updated
+   - Missing null-safety check in rendering logic
+
+**Specification Created:**
+- **File:** `specs/005-cleric-selection-bug/spec.md`
+- **User Stories:** 3 prioritized stories (P1: Fix Cleric, P2: All classes consistency, P3: Error messages)
+- **Functional Requirements:** 8 requirements for sub-step progression
+- **Success Criteria:** 5 measurable outcomes
+- **Recommended Fixes:**
+  1. Add null-safety and fallback UI to subclass rendering condition
+  2. Add defensive logging to diagnose issue
+  3. Check for data.classData existence before advancing to 'subclass' step
+
+**Relationship to Feature 004:**
+- **Independent but related** to Bug #6 (auto-advance removal)
+- **Recommendation:** Fix Feature 005 first as hotfix to unblock Cleric creation
+- Then implement Feature 004 Bug #6 to prevent similar issues
+- **Conflict risk:** Low (different lines in BasicInfoStep.tsx)
+
+**Commits:**
+- b9823fa: Feature 004 planning artifacts
+- [tasks commit]: Feature 004 tasks.md
+- 3216c4d: Feature 005 specification and screenshot
+
+**Status:**
+- ✅ Feature 004: Fully planned, 97 tasks ready for implementation
+- ✅ Feature 005: Investigation complete, specification written, ready for `/speckit.plan`
+
+**Next Steps:**
+- Feature 005: Execute `/speckit.plan` to create implementation plan
+- Feature 004: Can begin implementation with Bug #2 (CharacterPreview) as MVP
+- Feature 003: API fix for class skills (dependency for Feature 004 Bug #1)
 
 ---
 
