@@ -5,7 +5,186 @@
 
 ---
 
-## Current Session Context (2025-11-27)
+## Current Session Context (2025-12-04)
+
+### Session 33: Basic Information Area Bug Investigation (2025-12-04)
+**Objective:** Comprehensive investigation of bugs in the Basic Information step of character creation wizard.
+
+**User Request:** `/speckit.specify could you check for any bugs in the basic information area?`
+
+**Investigation Approach:**
+1. Read BasicInfoStep.tsx component code (617 lines) to understand structure
+2. Navigate to production site (https://dnd.cyberlees.dev/characters/new)
+3. Use Playwright browser automation to examine live UI behavior
+4. Compare code logic with actual rendered output
+5. Document all bugs found with severity ratings and root cause analysis
+
+**Bugs Identified:**
+
+**Bug #1: Bard Class Shows "Skills: 3 of 0" (CRITICAL)**
+- **Location:** ClassSelector component
+- **Status:** Duplicate of Bug #003 from Session 32
+- **Evidence:** Browser snapshot shows "Skills: 3 of 0" for Bard class
+- **Impact:** Mathematically nonsensical display damaging credibility
+
+**Bug #2: Character Preview Shows "Level 1 ? ?" (HIGH)**
+- **Location:** CharacterPreview component
+- **Root Cause:** Component displays "?" when raceData/classData is undefined
+- **Evidence:** Preview sidebar shows "Verification Test Character, Level 1 ? ?"
+- **Expected:** Should show friendly text like "Race: Not selected" instead of "?"
+- **Impact:** Makes interface appear broken, poor UX
+
+**Bug #3: Cannot Navigate Back Through Sub-Steps (MEDIUM)**
+- **Location:** BasicInfoStep.tsx lines 246-264 (sub-step indicator)
+- **Root Cause:** Sub-step indicators are purely visual divs, no click handlers
+- **Expected:** Clickable circles to navigate backward through completed steps
+- **Impact:** Users must cancel and restart to change earlier selections
+
+**Bug #4: Continue Buttons Force Linear Progression (LOW)**
+- **Location:** Multiple Continue button locations
+- **Type:** UX Enhancement (not critical bug)
+- **Impact:** Forces explicit clicks, removes flexibility
+
+**Bug #5: Level Defaults to 1 Without Visual Indication (LOW)**
+- **Location:** Level badge at line 497-501
+- **Impact:** Users might not realize level is adjustable
+
+**Bug #6: Name Input May Auto-Advance During Typing (MEDIUM)**
+- **Location:** useEffect lines 68-91
+- **Status:** Requires user testing to verify
+- **Root Cause:** Logic attempts to prevent auto-advance but runs on every data change
+- **Impact:** Could cause jarring UX if step changes while typing
+
+**Bug #7: Validation Runs on Pristine Form (LOW)**
+- **Location:** Validation useEffect lines 93-117
+- **Impact:** May show errors before user interaction
+- **Note:** May be intentional to disable Next button
+
+**Feature 004 Created:**
+- **Location:** `specs/004-basic-info-bugs/spec.md`
+- **Status:** Specification complete with 7 bugs documented
+- **Priority Phases:**
+  - Phase 1 (Critical): Bugs #1, #2
+  - Phase 2 (UX): Bugs #3, #6
+  - Phase 3 (Enhancements): Bugs #4, #5, #7
+
+**Files Affected:**
+- `frontend/src/components/character-creation/CharacterPreview.tsx` (Bug #2)
+- `frontend/src/components/character-creation/ClassSelector.tsx` (Bug #1, duplicate of #003)
+- `frontend/src/components/wizard/steps/BasicInfoStep.tsx` (Bugs #3, #6, #7)
+
+**Technical Analysis:**
+- BasicInfoStep implements progressive disclosure pattern
+- State machine with 8 possible steps: name, race, class, subclass, background, feat, alignment, complete
+- Three separate useEffects manage: data loading, step progression, validation
+- Tight coupling between components causes cascading issues
+- Over-reliance on useEffect creates potential race conditions
+
+**User Stories Created (5 stories, prioritized P1-P3):**
+1. **P1:** Accurate class information display
+2. **P1:** Clear character preview with friendly placeholders
+3. **P2:** Flexible sub-step navigation
+4. **P2:** Smooth name entry experience
+5. **P3:** Progressive validation feedback
+
+**Success Criteria Defined:**
+- SC-001: All 12 classes show correct "Skills: X of Y" format
+- SC-002: Preview never shows "?" symbols
+- SC-003: Backward navigation works with data preservation
+- SC-004: Name typing doesn't auto-advance
+- SC-005: Validation only after user interaction
+
+**Status:** ✅ Investigation complete, comprehensive specification created
+
+**Next Steps:**
+- Review specification for completeness
+- Prioritize which bugs to fix first (likely Phase 1: Bugs #1 and #2)
+- Note: Bug #1 depends on Bug #003 fix from Session 32
+
+---
+
+### Session 34: Basic Information Bug Fixes - Technical Research (2025-12-04)
+**Objective:** Research and document technical decisions for implementing the 7 bug fixes identified in Session 33.
+
+**User Request:** "Research and document technical decisions for the Basic Information bug fixes. I need you to research 5 specific areas..."
+
+**Research Areas Completed:**
+
+1. **React Hook Best Practices for Sub-Step Navigation** ✅
+   - **Decision:** Use `<button>` elements with `aria-disabled` for incomplete steps
+   - **Rationale:** Native keyboard support (Enter + Spacebar), keeps elements in tab order for screen readers
+   - **ARIA:** Use `aria-current="step"` for current step, `aria-disabled="true"` for incomplete steps
+   - **Rejected:** `<a>` tags (wrong semantics), `<div role="button">` (requires manual handlers), native `disabled` (removes from tab order)
+   - **Note:** W3C removed wizard pattern from ARIA APG; using Navigation landmark pattern instead
+
+2. **Character Preview Placeholder Patterns** ✅
+   - **Decision:** Use descriptive text "Not selected yet" with muted styling
+   - **Rationale:** WCAG 2.1 SC 3.3.2 requires meaningful labels, "?" symbols appear broken, em-dashes lack semantic meaning
+   - **Implementation:** `{race?.name || <span className="text-muted-foreground italic">Not selected yet</span>}`
+   - **Accessibility:** Ensure 4.5:1 contrast ratio, never use color alone, translatable text
+   - **Industry Patterns:** LinkedIn uses "Add [field]", Stripe uses "Not provided", Google Forms never uses "?" or "—"
+
+3. **Validation Timing Patterns in React** ✅
+   - **Decision:** Track touched/dirty state, show errors only after user interaction (hybrid approach)
+   - **Pattern:** Disabled Next button initially, show errors after first Next attempt, subsequent validation on change
+   - **Implementation:** Use `touchedFields` Set and `hasAttemptedSubmit` boolean state
+   - **useEffect Strategy:** Use `useRef` for callback stability to prevent infinite loops (already used in Bug #23 fix)
+   - **Libraries:** React Hook Form and Formik default to validate on blur/submit, not on mount
+
+4. **Auto-Advance Prevention in useEffect** ✅
+   - **Decision:** Remove auto-advance logic entirely, require explicit Continue button clicks
+   - **Rationale:** Auto-advance creates jarring UX, useEffect runs on every data change (unpredictable), explicit buttons provide better control
+   - **Rejected:** Debouncing (still unpredictable), delayed auto-advance (500ms delay doesn't fix core issue)
+   - **Progressive Disclosure:** Maintain via disabled button states, not automatic step changes
+   - **Implementation:** Delete lines 68-91 useEffect, keep only Continue button onClick handlers
+
+5. **Implementation Dependencies** ✅
+   - **Bug #2 (CharacterPreview):** ✅ Fully independent, can start immediately (1-2 hours)
+   - **Bug #1 (Class Skills):** ⚠️ Depends on Bug #003 API fix (2-4 hours including API work)
+   - **Bug #3 (Sub-Step Navigation):** ✅ Independent (2-3 hours)
+   - **Bug #6 (Auto-Advance):** ✅ Independent (1 hour)
+   - **Bug #7 (Validation Timing):** ✅ Independent (2-3 hours)
+   - **Parallel Work:** Developer 1 can do #2, #6, #7; Developer 2 can do #3, #1 (after API)
+   - **Total Time:** 10-15 hours serial, 6-8 hours parallel
+
+**Research Document Created:**
+- **Location:** `specs/004-basic-info-bugs/research.md` (comprehensive 500+ line document)
+- **Contents:**
+  - 5 research areas with decisions, rationale, alternatives, and code examples
+  - ARIA accessibility requirements from W3C WAI
+  - WCAG 2.1 compliance guidelines
+  - React Hook Form and form library best practices
+  - Industry UX patterns (LinkedIn, Stripe, Google)
+  - Implementation dependency analysis
+  - Decision matrix and reference links
+
+**Key Technical Decisions:**
+- **Sub-step indicators:** `<button>` with `aria-disabled`, not `<div>` or `<a>`
+- **Placeholder text:** "Not selected yet", not "?" or "—"
+- **Validation:** Hybrid timing (submit then change), not immediate or on blur only
+- **Auto-advance:** Remove entirely, not debounce or delay
+- **Implementation:** Bug #2 first (quick win), then parallel work on #3, #6, #7
+
+**Sources Consulted:**
+- W3C ARIA Authoring Practices Guide (APG)
+- WCAG 2.1 Guidelines (SC 3.3.2, SC 1.4.3, SC 2.4.6)
+- MDN Web Docs (ARIA roles and attributes)
+- React Hook Form documentation
+- Final Form FormState patterns
+- Multiple accessibility resources (DigitalA11Y, Deque)
+- UX best practices articles
+
+**Status:** ✅ Research complete, ready for Phase 1 (Design & Contracts)
+
+**Next Steps:**
+- Execute `/speckit.plan` Phase 1 to create data models and contracts
+- Update agent context with research findings
+- Generate implementation tasks with `/speckit.tasks`
+- Begin implementation starting with Bug #2 (CharacterPreview)
+
+---
+
+## Previous Session Context (2025-11-27)
 
 ### Session 32: Class Skill Display Bug Investigation (2025-11-27)
 **Objective:** Investigate user report of issues with the Cleric class.
