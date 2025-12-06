@@ -5,7 +5,321 @@
 
 ---
 
-## Current Session Context (2025-11-27)
+## Current Session Context (2025-12-04)
+
+### Session 33: Basic Information Area Bug Investigation (2025-12-04)
+**Objective:** Comprehensive investigation of bugs in the Basic Information step of character creation wizard.
+
+**User Request:** `/speckit.specify could you check for any bugs in the basic information area?`
+
+**Investigation Approach:**
+1. Read BasicInfoStep.tsx component code (617 lines) to understand structure
+2. Navigate to production site (https://dnd.cyberlees.dev/characters/new)
+3. Use Playwright browser automation to examine live UI behavior
+4. Compare code logic with actual rendered output
+5. Document all bugs found with severity ratings and root cause analysis
+
+**Bugs Identified:**
+
+**Bug #1: Bard Class Shows "Skills: 3 of 0" (CRITICAL)**
+- **Location:** ClassSelector component
+- **Status:** Duplicate of Bug #003 from Session 32
+- **Evidence:** Browser snapshot shows "Skills: 3 of 0" for Bard class
+- **Impact:** Mathematically nonsensical display damaging credibility
+
+**Bug #2: Character Preview Shows "Level 1 ? ?" (HIGH)**
+- **Location:** CharacterPreview component
+- **Root Cause:** Component displays "?" when raceData/classData is undefined
+- **Evidence:** Preview sidebar shows "Verification Test Character, Level 1 ? ?"
+- **Expected:** Should show friendly text like "Race: Not selected" instead of "?"
+- **Impact:** Makes interface appear broken, poor UX
+
+**Bug #3: Cannot Navigate Back Through Sub-Steps (MEDIUM)**
+- **Location:** BasicInfoStep.tsx lines 246-264 (sub-step indicator)
+- **Root Cause:** Sub-step indicators are purely visual divs, no click handlers
+- **Expected:** Clickable circles to navigate backward through completed steps
+- **Impact:** Users must cancel and restart to change earlier selections
+
+**Bug #4: Continue Buttons Force Linear Progression (LOW)**
+- **Location:** Multiple Continue button locations
+- **Type:** UX Enhancement (not critical bug)
+- **Impact:** Forces explicit clicks, removes flexibility
+
+**Bug #5: Level Defaults to 1 Without Visual Indication (LOW)**
+- **Location:** Level badge at line 497-501
+- **Impact:** Users might not realize level is adjustable
+
+**Bug #6: Name Input May Auto-Advance During Typing (MEDIUM)**
+- **Location:** useEffect lines 68-91
+- **Status:** Requires user testing to verify
+- **Root Cause:** Logic attempts to prevent auto-advance but runs on every data change
+- **Impact:** Could cause jarring UX if step changes while typing
+
+**Bug #7: Validation Runs on Pristine Form (LOW)**
+- **Location:** Validation useEffect lines 93-117
+- **Impact:** May show errors before user interaction
+- **Note:** May be intentional to disable Next button
+
+**Feature 004 Created:**
+- **Location:** `specs/004-basic-info-bugs/spec.md`
+- **Status:** Specification complete with 7 bugs documented
+- **Priority Phases:**
+  - Phase 1 (Critical): Bugs #1, #2
+  - Phase 2 (UX): Bugs #3, #6
+  - Phase 3 (Enhancements): Bugs #4, #5, #7
+
+**Files Affected:**
+- `frontend/src/components/character-creation/CharacterPreview.tsx` (Bug #2)
+- `frontend/src/components/character-creation/ClassSelector.tsx` (Bug #1, duplicate of #003)
+- `frontend/src/components/wizard/steps/BasicInfoStep.tsx` (Bugs #3, #6, #7)
+
+**Technical Analysis:**
+- BasicInfoStep implements progressive disclosure pattern
+- State machine with 8 possible steps: name, race, class, subclass, background, feat, alignment, complete
+- Three separate useEffects manage: data loading, step progression, validation
+- Tight coupling between components causes cascading issues
+- Over-reliance on useEffect creates potential race conditions
+
+**User Stories Created (5 stories, prioritized P1-P3):**
+1. **P1:** Accurate class information display
+2. **P1:** Clear character preview with friendly placeholders
+3. **P2:** Flexible sub-step navigation
+4. **P2:** Smooth name entry experience
+5. **P3:** Progressive validation feedback
+
+**Success Criteria Defined:**
+- SC-001: All 12 classes show correct "Skills: X of Y" format
+- SC-002: Preview never shows "?" symbols
+- SC-003: Backward navigation works with data preservation
+- SC-004: Name typing doesn't auto-advance
+- SC-005: Validation only after user interaction
+
+**Status:** ✅ Investigation complete, comprehensive specification created
+
+**Next Steps:**
+- Review specification for completeness
+- Prioritize which bugs to fix first (likely Phase 1: Bugs #1 and #2)
+- Note: Bug #1 depends on Bug #003 fix from Session 32
+
+---
+
+### Session 34: Basic Information Bug Fixes - Technical Research (2025-12-04 Morning)
+**Objective:** Research and document technical decisions for implementing the 7 bug fixes identified in Session 33.
+
+**User Request:** "Research and document technical decisions for the Basic Information bug fixes. I need you to research 5 specific areas..."
+
+**Research Areas Completed:**
+
+1. **React Hook Best Practices for Sub-Step Navigation** ✅
+   - **Decision:** Use `<button>` elements with `aria-disabled` for incomplete steps
+   - **Rationale:** Native keyboard support (Enter + Spacebar), keeps elements in tab order for screen readers
+   - **ARIA:** Use `aria-current="step"` for current step, `aria-disabled="true"` for incomplete steps
+   - **Rejected:** `<a>` tags (wrong semantics), `<div role="button">` (requires manual handlers), native `disabled` (removes from tab order)
+   - **Note:** W3C removed wizard pattern from ARIA APG; using Navigation landmark pattern instead
+
+2. **Character Preview Placeholder Patterns** ✅
+   - **Decision:** Use descriptive text "Not selected yet" with muted styling
+   - **Rationale:** WCAG 2.1 SC 3.3.2 requires meaningful labels, "?" symbols appear broken, em-dashes lack semantic meaning
+   - **Implementation:** `{race?.name || <span className="text-muted-foreground italic">Not selected yet</span>}`
+   - **Accessibility:** Ensure 4.5:1 contrast ratio, never use color alone, translatable text
+   - **Industry Patterns:** LinkedIn uses "Add [field]", Stripe uses "Not provided", Google Forms never uses "?" or "—"
+
+3. **Validation Timing Patterns in React** ✅
+   - **Decision:** Track touched/dirty state, show errors only after user interaction (hybrid approach)
+   - **Pattern:** Disabled Next button initially, show errors after first Next attempt, subsequent validation on change
+   - **Implementation:** Use `touchedFields` Set and `hasAttemptedSubmit` boolean state
+   - **useEffect Strategy:** Use `useRef` for callback stability to prevent infinite loops (already used in Bug #23 fix)
+   - **Libraries:** React Hook Form and Formik default to validate on blur/submit, not on mount
+
+4. **Auto-Advance Prevention in useEffect** ✅
+   - **Decision:** Remove auto-advance logic entirely, require explicit Continue button clicks
+   - **Rationale:** Auto-advance creates jarring UX, useEffect runs on every data change (unpredictable), explicit buttons provide better control
+   - **Rejected:** Debouncing (still unpredictable), delayed auto-advance (500ms delay doesn't fix core issue)
+   - **Progressive Disclosure:** Maintain via disabled button states, not automatic step changes
+   - **Implementation:** Delete lines 68-91 useEffect, keep only Continue button onClick handlers
+
+5. **Implementation Dependencies** ✅
+   - **Bug #2 (CharacterPreview):** ✅ Fully independent, can start immediately (1-2 hours)
+   - **Bug #1 (Class Skills):** ⚠️ Depends on Bug #003 API fix (2-4 hours including API work)
+   - **Bug #3 (Sub-Step Navigation):** ✅ Independent (2-3 hours)
+   - **Bug #6 (Auto-Advance):** ✅ Independent (1 hour)
+   - **Bug #7 (Validation Timing):** ✅ Independent (2-3 hours)
+   - **Parallel Work:** Developer 1 can do #2, #6, #7; Developer 2 can do #3, #1 (after API)
+   - **Total Time:** 10-15 hours serial, 6-8 hours parallel
+
+**Research Document Created:**
+- **Location:** `specs/004-basic-info-bugs/research.md` (comprehensive 500+ line document)
+- **Contents:**
+  - 5 research areas with decisions, rationale, alternatives, and code examples
+  - ARIA accessibility requirements from W3C WAI
+  - WCAG 2.1 compliance guidelines
+  - React Hook Form and form library best practices
+  - Industry UX patterns (LinkedIn, Stripe, Google)
+  - Implementation dependency analysis
+  - Decision matrix and reference links
+
+**Key Technical Decisions:**
+- **Sub-step indicators:** `<button>` with `aria-disabled`, not `<div>` or `<a>`
+- **Placeholder text:** "Not selected yet", not "?" or "—"
+- **Validation:** Hybrid timing (submit then change), not immediate or on blur only
+- **Auto-advance:** Remove entirely, not debounce or delay
+- **Implementation:** Bug #2 first (quick win), then parallel work on #3, #6, #7
+
+**Sources Consulted:**
+- W3C ARIA Authoring Practices Guide (APG)
+- WCAG 2.1 Guidelines (SC 3.3.2, SC 1.4.3, SC 2.4.6)
+- MDN Web Docs (ARIA roles and attributes)
+- React Hook Form documentation
+- Final Form FormState patterns
+- Multiple accessibility resources (DigitalA11Y, Deque)
+- UX best practices articles
+
+**Status:** ✅ Research complete, planning artifacts created, ready for implementation
+
+**Planning Artifacts Created (Session 35 Morning):**
+- `plan.md` - Implementation strategy with 3 phases
+- `data-model.md` - Component state models and data flow
+- `contracts/CharacterPreview.contract.md` - Bug #2 component behavior contract
+- `contracts/BasicInfoStep.contract.md` - Bugs #3, #6, #7 component behavior contract
+- `quickstart.md` - Developer implementation guide with step-by-step instructions
+- `tasks.md` - 97 dependency-ordered implementation tasks
+
+**Next Steps:**
+- Execute `/speckit.implement` to begin task execution starting with Bug #2
+- Or manually implement following quickstart.md guide
+- Feature 005 (Cleric bug) should be fixed as hotfix before Feature 004
+
+---
+
+### Session 35: Feature 004 Planning + Feature 005 Investigation (2025-12-05)
+**Objective:** Complete Feature 004 planning phase and investigate Cleric class selection bug.
+
+**User Request 1:** "continue" - Resume work on Feature 004
+
+**Feature 004 Planning Complete:**
+- Executed `/speckit.plan` workflow to generate design artifacts
+- Created 5 comprehensive planning documents (1,500+ lines total)
+- Used Task subagent for technical research
+- Updated CLAUDE.md agent context with React patterns
+- Committed and pushed all artifacts to branch 004-basic-info-bugs (commit b9823fa)
+
+**Planning Documents:**
+- **plan.md** - Implementation strategy, language/framework context, 3 phases
+- **research.md** - Technical research with 5 decision areas (created by Task subagent)
+- **data-model.md** - Component state models, interfaces, data flow diagrams
+- **contracts/CharacterPreview.contract.md** - Bug #2 component contract (never display "?")
+- **contracts/BasicInfoStep.contract.md** - Bugs #3, #6, #7 component contracts
+- **quickstart.md** - Developer implementation guide (4 phases, ~10 hours total time)
+
+**User Request 2:** "commit and push" - ✅ Committed planning artifacts
+
+**User Request 3:** `/speckit.tasks` - Generate implementation tasks
+
+**Tasks Generated:**
+- **Total:** 97 tasks organized by user story
+- **Phase Structure:**
+  - Phase 2: Foundational (T001-T006) - Read and understand code
+  - Phase 3: US1/Bug #2 (T007-T020) - CharacterPreview fix (1-2 hours)
+  - Phase 4: US2/Bug #3 (T021-T040) - Sub-step navigation (2-3 hours)
+  - Phase 5: US3/Bug #6 (T041-T050) - Auto-advance removal (1 hour)
+  - Phase 6: US4/Bug #7 (T051-T064) - Validation timing (2-3 hours)
+  - Phase 7: Integration (T065-T073) - Component integration testing
+  - Phase 8: Manual Testing (T074-T088) - User acceptance testing
+  - Phase 9: Deployment (T089-T097) - Production deployment
+
+**Task Format:**
+```markdown
+- [ ] [TaskID] [P?] [Story?] Description with file path
+```
+
+**MVP Strategy:**
+- Bug #2 (CharacterPreview) identified as quick win (1-2 hours)
+- Independent file, high visibility, immediate UX improvement
+- Should be implemented first before other bugs
+
+**User Request 4:** "commit and push" - ✅ Committed tasks.md (commit pushed)
+
+**User Request 5:** `/speckit.specify "Whenever chosing cleric it seems to break for some reason. Could you look around to figure out what could be causing the issues?"`
+
+**Feature 005 Investigation:**
+- **Created:** Branch 005-cleric-selection-bug
+- **Investigation Method:** Playwright browser automation on production site
+- **Bug Reproduced:**
+  1. Navigated to https://dnd.cyberlees.dev/characters/new
+  2. Entered name "Tiberius", selected race "Human"
+  3. Clicked Cleric class card (displays "Skills: 2 of 5" correctly)
+  4. **Observed:** Wizard advances to sub-step 4, but main content area is completely blank
+  5. **Screenshot:** Saved at `.playwright-mcp/cleric-bug-blank-screen.png`
+
+**Bug Details:**
+- **Sub-step indicator:** Shows step 4 active (blue circle)
+- **Content area:** Completely blank (no card, no UI elements)
+- **Character preview:** Shows "Verification... Level 1 ? ?" (related to Feature 004 Bug #2)
+- **Console logs:** `UPDATE_STEP_DATA: {stepId: basic-info, newSkills: undefined}`
+- **No JavaScript errors:** Logic issue, not runtime exception
+
+**Root Cause Analysis:**
+1. **Auto-advance useEffect** (BasicInfoStep.tsx:68-91) sets `currentStep='subclass'` when Cleric selected
+2. **Rendering condition** (line 377): `{currentStep === 'subclass' && data.classData?.subclasses && (...)}`
+3. **Issue:** `data.classData.subclasses` is undefined or empty, preventing SubclassSelector from rendering
+4. **Suspected causes:**
+   - API not returning subclasses array for Cleric
+   - Timing issue: useEffect runs before classData is updated
+   - Missing null-safety check in rendering logic
+
+**Specification Created:**
+- **File:** `specs/005-cleric-selection-bug/spec.md`
+- **User Stories:** 3 prioritized stories (P1: Fix Cleric, P2: All classes consistency, P3: Error messages)
+- **Functional Requirements:** 8 requirements for sub-step progression
+- **Success Criteria:** 5 measurable outcomes
+- **Recommended Fixes:**
+  1. Add null-safety and fallback UI to subclass rendering condition
+  2. Add defensive logging to diagnose issue
+  3. Check for data.classData existence before advancing to 'subclass' step
+
+**Relationship to Feature 004:**
+- **Independent but related** to Bug #6 (auto-advance removal)
+- **Recommendation:** Fix Feature 005 first as hotfix to unblock Cleric creation
+- Then implement Feature 004 Bug #6 to prevent similar issues
+- **Conflict risk:** Low (different lines in BasicInfoStep.tsx)
+
+**Commits:**
+- b9823fa: Feature 004 planning artifacts
+- [tasks commit]: Feature 004 tasks.md
+- 3216c4d: Feature 005 specification and screenshot
+
+**Planning Complete (Session 35 Afternoon):**
+- ✅ Feature 005: `/speckit.plan` executed successfully
+- Created plan.md (397 lines), research.md (by Task agent), data-model.md (479 lines)
+- Created contracts/dnd5eApi.contract.md (503 lines), quickstart.md (542 lines)
+- Updated CLAUDE.md agent context with React patterns
+- Root cause identified: Missing line in transformClassData() function
+- Fix: Add `subclasses: apiClass.subclasses || []` at line 148
+
+**Commits:**
+- 2dbfac8: Feature 005 planning artifacts (Phase 0 + Phase 1)
+- 935b7f8: Feature 005 tasks.md (99 tasks across 6 phases)
+
+**Task Generation Complete (Session 35 Evening):**
+- ✅ Feature 005: `/speckit.tasks` executed successfully
+- Generated tasks.md with 99 implementation tasks
+- Organized by 3 user stories (P1: Cleric fix, P2: All classes, P3: Error handling)
+- MVP approach: Phase 3 only (22 tasks, 30-45 minutes)
+- Full feature: All 6 phases (99 tasks, 2-3 hours)
+- Parallel opportunities: 24 tasks (Phase 4 class testing)
+
+**Status:**
+- ✅ Feature 004: Fully planned, 97 tasks ready for implementation
+- ✅ Feature 005: Fully planned with 99 tasks, ready for immediate implementation
+
+**Next Steps:**
+- Feature 005: Execute MVP (Phase 3: T012-T033) following quickstart.md (HOTFIX PRIORITY)
+- Feature 004: Can begin implementation with Bug #2 (CharacterPreview) as MVP
+- Feature 003: API fix for class skills (dependency for Feature 004 Bug #1)
+
+---
+
+## Previous Session Context (2025-11-27)
 
 ### Session 32: Class Skill Display Bug Investigation (2025-11-27)
 **Objective:** Investigate user report of issues with the Cleric class.

@@ -146,6 +146,7 @@ function transformClassData(apiClass: any): Class {
       return equipment;
     })(),
     class_features: CLASS_FEATURES[apiClass.id?.toLowerCase()] || [], // Load static class features data
+    subclasses: apiClass.subclasses || [],
     spellcasting: apiClass.spellcastingAbility ? {
       ability: apiClass.spellcastingAbility,
       spells_known: undefined,
