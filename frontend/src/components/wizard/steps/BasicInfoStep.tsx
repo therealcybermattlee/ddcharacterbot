@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { Input, Button, Badge, Card, CardContent, CardHeader, CardTitle } from '../../ui'
 import { WizardStepProps, getSubclassLevel } from '../../../types/wizard'
 import { Race, Class, Background, Subclass } from '../../../types/dnd5e'
@@ -26,6 +26,15 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentStep, setCurrentStep] = useState<'name' | 'race' | 'class' | 'subclass' | 'background' | 'feat' | 'alignment' | 'complete'>('name')
+
+  // BUG FIX #006: Use ref pattern to handle unstable onValidationChange callback
+  // This ensures validation always calls the latest callback even when its identity changes
+  // Prevents Next button from staying disabled when selections are complete
+  const onValidationChangeRef = useRef(onValidationChange)
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
 
   // Determine if background offers feat choices (2024 D&D rules)
   const backgroundFeatChoices = useMemo(() => {
@@ -103,7 +112,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
 
     if (isComplete) {
       // Step is complete with valid data, mark as valid
-      onValidationChange(true, [])
+      onValidationChangeRef.current(true, [])
     } else {
       // Step is incomplete, mark as invalid
       const errors: string[] = []
@@ -112,9 +121,14 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
       if (!data.class?.trim()) errors.push('Class is required')
       if (!data.background?.trim()) errors.push('Background is required')
       if (!data.alignment) errors.push('Alignment is required')
-      onValidationChange(false, errors)
+      onValidationChangeRef.current(false, errors)
     }
-  }, [data.name, data.race, data.class, data.background, data.alignment, onValidationChange])
+  }, [data.name, data.race, data.class, data.background, data.alignment])
+  // BUG FIX #006: Use ref pattern (onValidationChangeRef.current) to call latest callback
+  // This fixes unstable callback identity issue - Next button now enables when selections complete
+  // The ref pattern allows validation to work with unstable callbacks from CharacterWizard
+  // Dependencies include data fields to trigger on selection changes
+  // onValidationChange excluded via ref pattern to prevent race conditions
 
   const handleInputChange = (field: string, value: string | number) => {
     const newData = { ...data, [field]: value }
@@ -580,7 +594,7 @@ export function BasicInfoStep({ data, onChange, onValidationChange, onNext }: Wi
                   <Button
                     onClick={() => {
                       // Trigger validation to show this step is complete and allow progression
-                      onValidationChange(true, [])
+                      onValidationChangeRef.current(true, [])
                       // Advance to next step in the main wizard
                       if (onNext) {
                         onNext()

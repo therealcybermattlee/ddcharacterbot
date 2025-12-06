@@ -1,0 +1,354 @@
+openapi: 3.0.3
+info:
+  title: D&D Character Manager - Classes API
+  version: 1.1.0
+  description: |
+    API for retrieving D&D 5e character class information.
+
+    **Version 1.1.0 Changes**:
+    - Changed `skill_proficiencies` from flat array + separate `skillChoices` to nested object
+    - Field name changed from `skillProficiencies` (camelCase) to `skill_proficiencies` (snake_case)
+    - Structure now matches frontend TypeScript interface
+
+servers:
+  - url: https://dnd-character-manager-api-dev.cybermattlee-llc.workers.dev/api
+    description: Development server
+  - url: https://dnd-character-manager-api-staging.cybermattlee-llc.workers.dev/api
+    description: Staging server
+  - url: https://dnd-character-manager-api-prod.cybermattlee-llc.workers.dev/api
+    description: Production server
+
+paths:
+  /classes:
+    get:
+      summary: Get all character classes
+      description: Returns list of all D&D 5e character classes with their proficiencies and features
+      operationId: getClasses
+      tags:
+        - Classes
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      classes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Class'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /classes/{classId}:
+    get:
+      summary: Get a specific class by ID
+      description: Returns detailed information about a single D&D 5e character class
+      operationId: getClassById
+      tags:
+        - Classes
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z]+$'
+          description: Unique class identifier (lowercase, e.g., "bard", "wizard")
+          examples:
+            bard:
+              value: bard
+            wizard:
+              value: wizard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Class'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Class:
+      type: object
+      required:
+        - id
+        - name
+        - hitDie
+        - primaryAbility
+        - savingThrowProficiencies
+        - skill_proficiencies
+        - armorProficiencies
+        - weaponProficiencies
+        - source
+        - isHomebrew
+      properties:
+        id:
+          type: string
+          pattern: '^[a-z]+$'
+          description: Unique class identifier
+          example: bard
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: Display name of the class
+          example: Bard
+        hitDie:
+          type: string
+          pattern: '^d(6|8|10|12)$'
+          description: Hit die type
+          example: d8
+        primaryAbility:
+          type: array
+          items:
+            type: string
+            enum: [strength, dexterity, constitution, intelligence, wisdom, charisma]
+          description: Primary ability scores for the class
+          example: [charisma]
+        savingThrowProficiencies:
+          type: array
+          items:
+            type: string
+            enum: [strength, dexterity, constitution, intelligence, wisdom, charisma]
+          description: Proficient saving throws
+          example: [dexterity, charisma]
+        skill_proficiencies:
+          type: object
+          required:
+            - choose
+            - from
+          properties:
+            choose:
+              type: integer
+              minimum: 0
+              description: Number of skills the player can choose
+              example: 3
+            from:
+              type: array
+              items:
+                type: string
+                enum:
+                  - Acrobatics
+                  - Animal Handling
+                  - Arcana
+                  - Athletics
+                  - Deception
+                  - History
+                  - Insight
+                  - Intimidation
+                  - Investigation
+                  - Medicine
+                  - Nature
+                  - Perception
+                  - Performance
+                  - Persuasion
+                  - Religion
+                  - Sleight of Hand
+                  - Stealth
+                  - Survival
+              description: Skills available to choose from
+              example:
+                - Acrobatics
+                - Animal Handling
+                - Arcana
+                - Athletics
+                - Deception
+                - History
+                - Insight
+                - Intimidation
+                - Investigation
+                - Medicine
+                - Nature
+                - Perception
+                - Performance
+                - Persuasion
+                - Religion
+                - Sleight of Hand
+                - Stealth
+                - Survival
+          description: Skill proficiency selection rules (CHANGED in v1.1.0)
+        armorProficiencies:
+          type: array
+          items:
+            type: string
+          description: Armor types the class is proficient with
+          example: [Light armor]
+        weaponProficiencies:
+          type: array
+          items:
+            type: string
+          description: Weapon types the class is proficient with
+          example:
+            - Simple weapons
+            - hand crossbows
+            - longswords
+            - rapiers
+            - shortswords
+        toolProficiencies:
+          type: array
+          items:
+            type: string
+          description: Tool proficiencies (optional)
+          example: [Three musical instruments of your choice]
+        startingEquipment:
+          type: object
+          description: Starting equipment configuration (JSON object)
+          additionalProperties: true
+        spellcastingAbility:
+          type: string
+          nullable: true
+          enum: [intelligence, wisdom, charisma, null]
+          description: Spellcasting ability (null if not a spellcaster)
+          example: charisma
+        source:
+          type: string
+          description: Source book abbreviation
+          example: PHB
+        isHomebrew:
+          type: boolean
+          description: Whether this is a homebrew class
+          example: false
+
+    Error:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              description: Human-readable error message
+            code:
+              type: string
+              description: Machine-readable error code
+            details:
+              type: object
+              description: Additional error context
+              additionalProperties: true
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: Class not found
+              code: NOT_FOUND
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: Internal server error
+              code: INTERNAL_ERROR
+
+  examples:
+    BardClass:
+      summary: Bard class (all 18 skills available)
+      value:
+        success: true
+        data:
+          id: bard
+          name: Bard
+          hitDie: d8
+          primaryAbility: [charisma]
+          savingThrowProficiencies: [dexterity, charisma]
+          skill_proficiencies:
+            choose: 3
+            from:
+              - Acrobatics
+              - Animal Handling
+              - Arcana
+              - Athletics
+              - Deception
+              - History
+              - Insight
+              - Intimidation
+              - Investigation
+              - Medicine
+              - Nature
+              - Perception
+              - Performance
+              - Persuasion
+              - Religion
+              - Sleight of Hand
+              - Stealth
+              - Survival
+          armorProficiencies: [Light armor]
+          weaponProficiencies:
+            - Simple weapons
+            - hand crossbows
+            - longswords
+            - rapiers
+            - shortswords
+          toolProficiencies: [Three musical instruments of your choice]
+          spellcastingAbility: charisma
+          source: PHB
+          isHomebrew: false
+
+    ClericClass:
+      summary: Cleric class (5 specific skills)
+      value:
+        success: true
+        data:
+          id: cleric
+          name: Cleric
+          hitDie: d8
+          primaryAbility: [wisdom]
+          savingThrowProficiencies: [wisdom, charisma]
+          skill_proficiencies:
+            choose: 2
+            from:
+              - History
+              - Insight
+              - Medicine
+              - Persuasion
+              - Religion
+          armorProficiencies: [Light armor, Medium armor, Shields]
+          weaponProficiencies: [Simple weapons]
+          toolProficiencies: []
+          spellcastingAbility: wisdom
+          source: PHB
+          isHomebrew: false
