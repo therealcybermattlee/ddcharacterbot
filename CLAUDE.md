@@ -136,6 +136,10 @@ Use Sonnet (claude-sonnet-4) as the primary model for main tasks and complex rea
 - Browser localStorage (via CharacterCreationContext), Cloudflare D1 (backend) (004-basic-info-bugs)
 - TypeScript 5.x, React 18.x + React Hooks (useState, useEffect, useMemo), Radix UI components, D&D 5e API (005-cleric-selection-bug)
 - localStorage (character creation progress), context API (CharacterCreationContext) (005-cleric-selection-bug)
+- TypeScript 5.x (Frontend), TypeScript 5.x on Cloudflare Workers (Backend) + React 18, Vite (Frontend); Hono, Cloudflare Workers SDK (Backend) (003-class-skill-display-fix)
+- Cloudflare D1 SQLite database (003-class-skill-display-fix)
+- TypeScript 5.x, React 18.x + React hooks (useState, useEffect, useRef), ref pattern for unstable callbacks (006-skills-next-button)
+- localStorage (character state), CharacterCreationContext (wizard validation) (006-skills-next-button)
 
 ## Recent Changes
 - 001-fix-skills-next-button: Added TypeScript 5.6.3, React 18.3.1 + React (hooks: useState, useEffect, useMemo), React Router DOM 6.26.2, Axios 1.7.7
