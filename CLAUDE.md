@@ -140,6 +140,8 @@ Use Sonnet (claude-sonnet-4) as the primary model for main tasks and complex rea
 - Cloudflare D1 SQLite database (003-class-skill-display-fix)
 - TypeScript 5.x, React 18.x + React hooks (useState, useEffect, useRef), ref pattern for unstable callbacks (006-skills-next-button)
 - localStorage (character state), CharacterCreationContext (wizard validation) (006-skills-next-button)
+- TypeScript 5.x, React 18.x + React 18.x (useState, useEffect, useRef hooks), CharacterCreationContext, localStorage (007-ability-scores-save)
+- Client-side localStorage for character data persistence (007-ability-scores-save)
 
 ## Recent Changes
 - 001-fix-skills-next-button: Added TypeScript 5.6.3, React 18.3.1 + React (hooks: useState, useEffect, useMemo), React Router DOM 6.26.2, Axios 1.7.7
