@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { WizardStepProps } from '../../../types/wizard'
 import { AbilityScoreGenerator } from '../../character-creation/AbilityScoreGenerator'
 import { useCharacterCreation } from '../../../contexts/CharacterCreationContext'
@@ -47,6 +47,22 @@ const getRacialBonuses = (race: string) => {
 export function AbilityScoresStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
 
+  // BUG FIX #007: Use ref pattern to handle unstable onValidationChange callback
+  // This ensures validation always calls the latest callback even when its identity changes
+  // Prevents Next button from staying disabled when ability scores are complete
+  const onValidationChangeRef = useRef(onValidationChange)
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
+
+  // Also apply ref pattern to onChange for consistency and future-proofing
+  const onChangeRef = useRef(onChange)
+
+  useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
+
 
   // Extract ability score state from data prop first, then context, then defaults
   const abilityScoreState = data?.abilityScoreState || characterData.abilityScoreState || {
@@ -76,7 +92,7 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
       abilityScoreState: newState
     }
 
-    onChange(updatedData)
+    onChangeRef.current(updatedData)
     
     // Validate the state
     const errors: string[] = []
@@ -130,8 +146,8 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
     } else if (methodValid && !newState.isComplete) {
       errors.push('Please complete ability score generation')
     }
-    
-    onValidationChange(errors.length === 0, errors)
+
+    onValidationChangeRef.current(errors.length === 0, errors)
   }
 
   // Validate on mount - but only for truly fresh states
@@ -189,12 +205,14 @@ export function AbilityScoresStep({ data, onChange, onValidationChange }: Wizard
         errors.push('Please complete ability score generation')
       }
 
-      onValidationChange(errors.length === 0, errors)
+      onValidationChangeRef.current(errors.length === 0, errors)
     } else {
       // No saved data, start with valid empty state to avoid "Required" errors on initial load
-      onValidationChange(false, ['Please generate ability scores'])
+      onValidationChangeRef.current(false, ['Please generate ability scores'])
     }
   }, [])
+  // BUG FIX #007: Empty dependency array is safe because we use ref pattern
+  // onValidationChangeRef.current always calls the latest callback
 
   return (
     <div className="space-y-6">
