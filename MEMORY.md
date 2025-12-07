@@ -5,7 +5,157 @@
 
 ---
 
-## Current Session Context (2025-12-04)
+## Current Session Context (2025-12-07)
+
+### Session 37: Feature 007 Planning - Ability Scores Save Bug Fix (2025-12-07)
+**Objective:** Create comprehensive planning artifacts for ability scores save bug and prepare for implementation.
+
+**User Request 1:** `/speckit.specify when setting the ability scores in Ability Scores it doesn't save what was put there when you hit the next button. Could you find the problem and fix it?`
+
+**Specification Complete:**
+- **Feature Created:** 007-ability-scores-save
+- **Branch:** 007-ability-scores-save
+- **Short Name:** "ability-scores-save"
+- **spec.md:** 3 prioritized user stories with acceptance scenarios
+  - **US1 (P1):** Save Ability Scores on Forward Navigation - Critical bug where Next button stays disabled
+  - **US2 (P2):** Preserve Ability Scores Across Different Entry Methods - Method selection persistence
+  - **US3 (P3):** Apply Racial Modifiers to Saved Ability Scores - Enhancement for racial bonus handling
+- **Functional Requirements:** 10 requirements (FR-001 to FR-010)
+- **Success Criteria:** 6 measurable outcomes including 100% data persistence, <100ms save speed
+- **Edge Cases:** 7 identified including multi-step navigation, localStorage corruption, race conditions
+- **Validation:** requirements.md checklist - all items passed ✅
+
+**User Request 2:** `/speckit.plan`
+
+**Planning Phase Complete:**
+
+**Phase 0: Research** ✅
+- **Root Cause Identified:** Unstable callback identity from CharacterWizard's `handleValidationChange`
+- **Problem:** CharacterWizard recreates callback when `currentStep` changes (navigation)
+- **Impact:** AbilityScoresStep captures stale closures, validation updates don't reach parent wizard
+- **Key Insight:** Data IS saved via `onChange`, but validation state NOT updated via stale `onValidationChange`
+- **User Experience:** Next button stays disabled even though ability scores are complete
+- **Historical Context:** Same bug pattern as Bug #14, #22, #23, and Feature 006
+- **Solution:** Ref pattern (proven in SkillsProficienciesStep and BasicInfoStep)
+- **research.md:** 495 lines documenting:
+  - Executive summary with root cause
+  - Component location and affected files
+  - Side-by-side comparison with working components
+  - Complete data flow analysis (where save breaks)
+  - Evolution from Bug #14 → #22 → #23 → Feature 006 → Feature 007
+  - Recommended solution with specific code changes
+  - 6 manual test cases
+  - Success criteria validation mapping
+
+**Phase 1: Design & Contracts** ✅
+- **data-model.md:** Complete entity definitions
+  - Ability Scores entity (six core stats with base/modified values)
+  - Ability Score Generation Method entity (point buy, standard array, manual, dice)
+  - Character Data State entity (localStorage and context structure)
+  - Validation State entity with callback contracts
+  - Data flow diagrams (current broken vs. fixed state)
+  - Testing data scenarios for all generation methods
+- **contracts/AbilityScoresStep.contract.md:** Component interface contract
+  - Props interface (WizardStepProps)
+  - Input/output data structures
+  - Callback contracts (onChange, onValidationChange)
+  - Validation rules and error messages
+  - State management with ref pattern
+  - Lifecycle contracts (mount, update, unmount)
+  - Performance and testing requirements
+  - Breaking changes analysis (none - backward compatible)
+- **quickstart.md:** Step-by-step implementation guide
+  - 7 specific code changes with exact line numbers
+  - Complete diff summary (before/after code)
+  - 7 manual testing scenarios
+  - Troubleshooting guide with console debugging
+  - Deployment instructions
+  - Success criteria validation checklist
+  - Estimated time: 30 min implementation + 20 min testing
+- **plan.md:** Updated with technical context
+  - Language: TypeScript 5.x, React 18.x
+  - Dependencies: React hooks (useState, useEffect, useRef), CharacterCreationContext, localStorage
+  - Project type: Web application (frontend-only fix)
+  - Constitution check: PASSED (no violations)
+  - Project structure: Single component fix in wizard/steps/
+  - Phase completion status
+  - Implementation readiness confirmed
+
+**User Request 3:** `/speckit.tasks`
+
+**Task Generation Complete:**
+- **tasks.md:** 34 tasks organized by user story
+  - **Phase 1 - Setup:** 3 tasks (environment verification)
+  - **Phase 2 - Foundational:** 3 tasks (understand ref pattern from working components)
+  - **Phase 3 - User Story 1 (P1):** 12 tasks (8 implementation + 4 testing) 🎯 MVP
+  - **Phase 4 - User Story 2 (P2):** 4 tasks (method preservation testing)
+  - **Phase 5 - User Story 3 (P3):** 3 tasks (racial modifier testing)
+  - **Phase 6 - Polish:** 9 tasks (validation + deployment)
+- **Task Breakdown by Type:**
+  - Setup/Reading: 6 tasks
+  - Code Implementation: 8 tasks (all in US1)
+  - Build Verification: 1 task
+  - Manual Testing: 12 tasks
+  - Success Criteria Validation: 3 tasks
+  - Git/Deployment: 4 tasks
+- **Format Validation:** All 34 tasks follow checklist format ✅
+- **MVP Scope:** User Story 1 only (T001-T018, ~45 minutes)
+- **Full Implementation:** All 3 stories (T001-T034, ~75 minutes)
+
+**Technical Pattern - Ref Pattern for Unstable Callbacks:**
+```typescript
+// Store callback in ref
+const onValidationChangeRef = useRef(onValidationChange)
+
+// Update ref when prop changes
+useEffect(() => {
+  onValidationChangeRef.current = onValidationChange
+}, [onValidationChange])
+
+// Call via ref (always latest)
+onValidationChangeRef.current(isValid, errors)
+```
+
+**Files Affected:**
+- **Primary:** `frontend/src/components/wizard/steps/AbilityScoresStep.tsx`
+  - Line 1: Add `useRef` import
+  - After line 49: Add ref setup (14 lines)
+  - Lines 79, 134, 192, 195: Update callback calls to use refs
+  - Line 197: Add dependency array comment
+- **Reference (working examples):**
+  - `SkillsProficienciesStep.tsx` (Bug #23 fix, commit a3d3873)
+  - `BasicInfoStep.tsx` (Feature 006 fix, commit 0a40d83)
+
+**Artifacts Created (8 files, 2507 lines):**
+1. `spec.md` - Feature specification
+2. `research.md` - Root cause analysis
+3. `plan.md` - Implementation plan
+4. `data-model.md` - Entity definitions
+5. `contracts/AbilityScoresStep.contract.md` - Component contract
+6. `quickstart.md` - Implementation guide
+7. `tasks.md` - Task breakdown
+8. `checklists/requirements.md` - Spec validation
+
+**Commit:** ba7a5dd - "docs: Complete Feature 007 planning - Ability scores save bug fix"
+**Branch:** 007-ability-scores-save
+**Status:** ✅ Planning complete, ready for implementation
+
+**Next Steps:**
+- Execute tasks.md (34 tasks) or follow quickstart.md
+- MVP: Complete User Story 1 only (T001-T018, 45 minutes)
+- Full: Complete all 3 user stories (T001-T034, 75 minutes)
+- Deploy when testing passes
+
+**Key Insights:**
+- This is the 4th occurrence of the same callback identity bug (Bug #14 → #22 → #23 → Feature 006 → Feature 007)
+- Pattern established: All wizard step components should use ref pattern for callbacks from CharacterWizard
+- Solution is proven (worked for 2 previous components)
+- No breaking changes, fully backward compatible
+- Simple fix: ~10 lines of code changes in one file
+
+---
+
+## Previous Sessions (2025-12-04)
 
 ### Session 33: Basic Information Area Bug Investigation (2025-12-04)
 **Objective:** Comprehensive investigation of bugs in the Basic Information step of character creation wizard.
