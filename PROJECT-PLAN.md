@@ -41,6 +41,13 @@ Establish secure, production-ready infrastructure with proper development workfl
 - **Project Configuration**: Enhanced CLAUDE.md with mandatory agent usage and Wrangler commands
 - **Memory System**: Established project memory tracking with MEMORY.md
 - **Environment Setup**: Confirmed development environment policy and deployment targets
+- **Feature 007 Planning** (2025-12-07): Ability scores save bug fix - comprehensive planning complete
+  - Root cause: Unstable callback identity causing stale closures in AbilityScoresStep
+  - Solution: Apply ref pattern (proven in Features 006, Bug #23)
+  - Artifacts: spec.md, research.md, plan.md, data-model.md, contracts, quickstart.md, tasks.md (8 files, 2507 lines)
+  - Status: Ready for implementation (34 tasks, ~75 minutes estimated)
+  - Branch: 007-ability-scores-save
+  - Commit: ba7a5dd
 
 ### Day 1-2: Critical Security Fixes
 - **Priority:** CRITICAL
