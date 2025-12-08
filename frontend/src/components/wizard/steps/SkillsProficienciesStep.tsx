@@ -617,15 +617,41 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Class Skill Choices</span>
-              <Badge className={PROFICIENCY_COLORS.class}>
+              <Badge className={
+                selectedClassSkills.size === (classData?.skillChoices || 0)
+                  ? 'bg-green-100 text-green-800 border-green-300'
+                  : selectedClassSkills.size > 0
+                  ? 'bg-amber-100 text-amber-800 border-amber-300'
+                  : PROFICIENCY_COLORS.class
+              }>
                 {selectedClassSkills.size}/{classData?.skillChoices || 0} selected
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Choose <strong>{classData?.skillChoices || 0}</strong> skills from your <strong>{characterData.class}</strong> class options:
-            </p>
+            {/* Clear requirement notice */}
+            <div className={`p-3 border rounded-lg ${
+              selectedClassSkills.size === (classData?.skillChoices || 0)
+                ? 'bg-green-50 border-green-300'
+                : 'bg-blue-50 border-blue-300'
+            }`}>
+              <p className={`text-sm font-medium ${
+                selectedClassSkills.size === (classData?.skillChoices || 0)
+                  ? 'text-green-800'
+                  : 'text-blue-800'
+              }`}>
+                {selectedClassSkills.size === (classData?.skillChoices || 0) ? (
+                  <>✓ All {classData?.skillChoices || 0} required skills selected</>
+                ) : (
+                  <>
+                    Select exactly <strong>{classData?.skillChoices || 0}</strong> skills from the options below
+                    {selectedClassSkills.size > 0 && (
+                      <> (need {(classData?.skillChoices || 0) - selectedClassSkills.size} more)</>
+                    )}
+                  </>
+                )}
+              </p>
+            </div>
             
             <div className="grid grid-cols-1 gap-2">
               {(classData?.availableSkills || []).map((skill) => {
@@ -712,15 +738,41 @@ export function SkillsProficienciesStep({ data, onChange, onValidationChange }: 
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Racial Skill Choices</span>
-              <Badge className={PROFICIENCY_COLORS.race}>
+              <Badge className={
+                selectedRaceSkills.size === raceSkillCount
+                  ? 'bg-green-100 text-green-800 border-green-300'
+                  : selectedRaceSkills.size > 0
+                  ? 'bg-amber-100 text-amber-800 border-amber-300'
+                  : PROFICIENCY_COLORS.race
+              }>
                 {selectedRaceSkills.size}/{raceSkillCount} selected
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Your <strong>{characterData.race}</strong> race allows you to choose additional skills:
-            </p>
+            {/* Clear requirement notice */}
+            <div className={`p-3 border rounded-lg ${
+              selectedRaceSkills.size === raceSkillCount
+                ? 'bg-green-50 border-green-300'
+                : 'bg-purple-50 border-purple-300'
+            }`}>
+              <p className={`text-sm font-medium ${
+                selectedRaceSkills.size === raceSkillCount
+                  ? 'text-green-800'
+                  : 'text-purple-800'
+              }`}>
+                {selectedRaceSkills.size === raceSkillCount ? (
+                  <>✓ All {raceSkillCount} required racial skills selected</>
+                ) : (
+                  <>
+                    Select exactly <strong>{raceSkillCount}</strong> skills for your <strong>{characterData.race}</strong> race
+                    {selectedRaceSkills.size > 0 && (
+                      <> (need {raceSkillCount - selectedRaceSkills.size} more)</>
+                    )}
+                  </>
+                )}
+              </p>
+            </div>
             
             <div className="grid grid-cols-1 gap-2">
               {raceSkillChoices.map((skill) => {
