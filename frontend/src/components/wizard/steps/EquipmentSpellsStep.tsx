@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { Button, Badge, Card, CardContent, CardHeader, CardTitle } from '../../ui'
 import { WizardStepProps } from '../../../types/wizard'
 import { useCharacterCreation } from '../../../contexts/CharacterCreationContext'
@@ -119,6 +119,16 @@ const SPELLCASTING_CLASSES: Record<string, SpellcastingClassInfo> = {
 
 export function EquipmentSpellsStep({ data, onChange, onValidationChange }: WizardStepProps) {
   const { characterData } = useCharacterCreation()
+
+  // BUG FIX #2: Use ref pattern to handle unstable onValidationChange callback
+  // This ensures validation always calls the latest callback even when its identity changes
+  // Prevents Next button from staying disabled when equipment and spells are complete
+  const onValidationChangeRef = useRef(onValidationChange)
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
+
   const [selectedEquipmentChoices, setSelectedEquipmentChoices] = useState<Record<number, number>>({})
   const [weaponSelectorChoices, setWeaponSelectorChoices] = useState<Record<number, { weapons: EquipmentItem[], includesShield: boolean }>>({})
   const [selectedSpells, setSelectedSpells] = useState<{
@@ -383,8 +393,9 @@ export function EquipmentSpellsStep({ data, onChange, onValidationChange }: Wiza
       }
     }
 
-    onValidationChange(errors.length === 0, errors)
-  }, [finalEquipment, selectedSpells, selectedEquipmentChoices, weaponSelectorChoices, availableSpells, classData, isSpellcaster, spellcastingInfo, onChange, onValidationChange])
+    onValidationChangeRef.current(errors.length === 0, errors)
+  }, [finalEquipment, selectedSpells, selectedEquipmentChoices, weaponSelectorChoices, availableSpells, classData, isSpellcaster, spellcastingInfo, onChange])
+  // BUG FIX #2: Removed onValidationChange from dependencies, using ref pattern instead
 
   if (!characterData.class) {
     return (

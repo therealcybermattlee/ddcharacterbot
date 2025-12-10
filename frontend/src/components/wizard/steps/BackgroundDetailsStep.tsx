@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { Button, Badge } from '../../ui'
 import { WizardStepProps } from '../../../types/wizard'
 
 export function BackgroundDetailsStep({ data, onChange, onValidationChange }: WizardStepProps) {
+  // BUG FIX #1: Use ref pattern to handle unstable onValidationChange callback
+  // This ensures validation always calls the latest callback even when its identity changes
+  // Prevents Next button from staying disabled when data is valid
+  const onValidationChangeRef = useRef(onValidationChange)
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
+
   const currentData = data || {
     notes: '',
     armorClass: 10,
@@ -27,8 +36,8 @@ export function BackgroundDetailsStep({ data, onChange, onValidationChange }: Wi
     if (newData.hitPoints.temporary < 0) {
       errors.push('Temporary hit points cannot be negative')
     }
-    
-    onValidationChange(errors.length === 0, errors)
+
+    onValidationChangeRef.current(errors.length === 0, errors)
   }
 
   const handleHitPointsChange = (field: string, value: number) => {
